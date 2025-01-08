@@ -1,4 +1,4 @@
-package com.example.composetrainer.ui.screens
+package com.example.login.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
