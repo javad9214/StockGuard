@@ -12,18 +12,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.login.ui.viewmodels.LoginViewModel
 
 @Composable
-fun LoginScreen(onLoginSuccess: () -> Unit) {
-
-    val username = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
+fun LoginScreen(
+    onLoginSuccess: () -> Unit,
+    viewModel: LoginViewModel = hiltViewModel()
+) {
+    val username by viewModel.username
+    val password by viewModel.password
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     Column(
         modifier = Modifier
@@ -38,8 +44,8 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
         Spacer(modifier = Modifier.height(32.dp))
 
         OutlinedTextField(
-            value = username.value,
-            onValueChange = { username.value = it },
+            value = username,
+            onValueChange = { viewModel.updateUsername(it)},
             label = { Text("Username") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
@@ -48,21 +54,26 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = password.value,
-            onValueChange = { password.value = it },
+            value = password,
+            onValueChange = { viewModel.updatePassword(it) },
             label = { Text("Password") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation()
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        if(!errorMessage.isNullOrBlank()){
+            Text(
+                text = errorMessage!!,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(bottom = 16.dp))
+        }
+
         Button(
             onClick = {
-                if (username.value.isNotBlank() && password.value.isNotBlank()) {
-                    onLoginSuccess()
-                }
+                viewModel.login(onLoginSuccess)
             },
             modifier = Modifier.fillMaxWidth()
         ) {

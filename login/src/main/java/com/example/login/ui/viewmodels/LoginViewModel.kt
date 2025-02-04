@@ -1,47 +1,62 @@
 package com.example.login.ui.viewmodels
 
+
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.login.domain.usecase.LoginUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class LoginViewModel: ViewModel() {
+@HiltViewModel
+class LoginViewModel(
+    private val loginUseCase: LoginUseCase
+): ViewModel() {
 
-    private val _email = MutableStateFlow("")
-    val email: StateFlow<String> get() = _email
+    val username: State<String> get() = _username
+    val password: State<String> get() = _password
 
-    private val _password = MutableStateFlow("")
-    val password: StateFlow<String> get() = _password
+    private val _username = mutableStateOf("")
+    private val _password = mutableStateOf("")
 
-    private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
-    val loginState: StateFlow<LoginState> get() = _loginState
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> get() = _errorMessage
 
-    fun onEmailChange(newEmail: String) {
-        _email.value = newEmail
+    fun updateUsername(newUsername: String) {
+        _username.value = newUsername
     }
 
-    fun onPasswordChange(newPassword: String) {
+    fun updatePassword(newPassword: String) {
         _password.value = newPassword
     }
 
-    fun login(){
+    fun login(onSuccess: () -> Unit) {
         viewModelScope.launch {
-            _loginState.value = LoginState.Loading
-            // Simulate login process
-            kotlinx.coroutines.delay(1000)
-            if (_email.value == "admin@test.com" && _password.value == "password") {
-                _loginState.value = LoginState.Success
-            } else {
-                _loginState.value = LoginState.Error("Invalid credentials")
+            if (validateInputs()){
+                val result = loginUseCase(username.value, password.value)
+                if(result.isSuccess){
+                    onSuccess()
+                }else{
+                    _errorMessage.value
+                }
             }
         }
     }
 
-    sealed class LoginState {
-        object Idle : LoginState()
-        object Loading : LoginState()
-        object Success : LoginState()
-        data class Error(val message: String) : LoginState()
+    private fun validateInputs():Boolean{
+        return when{
+            username.value.isBlank() -> {
+                _errorMessage.value = "Username cannot be empty"
+                false
+            }
+            password.value.isBlank() -> {
+                _errorMessage.value = "Password cannot be empty"
+                false
+            }
+            else -> true
+        }
     }
 }

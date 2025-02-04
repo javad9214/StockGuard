@@ -14,4 +14,5 @@ class LoginRepositoryImpl: LoginRepository {
             Result.failure(Exception("Invalid username or password"))
         }
     }
+
 }
