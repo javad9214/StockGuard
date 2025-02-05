@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.composetrainer.ui.navigation.Routes
 import com.example.composetrainer.ui.screens.HomeScreen
+import com.example.composetrainer.ui.screens.ProductScreen
 import com.example.login.ui.screens.LoginScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,12 +28,16 @@ class MainActivity : ComponentActivity() {
                 composable(Routes.LOGIN) {
                     LoginScreen(
                         onLoginSuccess = {
-                            navController.navigate(Routes.HOME) {
+                            navController.navigate(Routes.PRODUCT) {
                                 popUpTo(Routes.LOGIN) { inclusive = true }
                             }
                         }
                     )
                 }
+                composable(Routes.PRODUCT){
+                    ProductScreen()
+                }
+
                 composable(Routes.HOME) {
                     HomeScreen()
                 }
