@@ -10,11 +10,19 @@ import javax.inject.Inject
 class GetProductUseCase @Inject constructor(
     private val repository: ProductRepository
 ) {
-    operator fun invoke(sortOrder: SortOrder): Flow<List<Product>>{
+    operator fun invoke(sortOrder: SortOrder,searchQuery: String): Flow<List<Product>>{
         return repository.getAllProducts().map { products ->
+            val filteredProducts = if (searchQuery.isNotBlank()) {
+                products.filter { product ->
+                    product.name.contains(searchQuery, ignoreCase = true) ||
+                            product.barcode?.contains(searchQuery, ignoreCase = true) == true
+                }
+            } else {
+                products
+            }
             when(sortOrder){
-                SortOrder.ASCENDING -> products.sortedBy { it.date }
-                SortOrder.DESCENDING -> products.sortedByDescending { it.date }
+                SortOrder.ASCENDING -> filteredProducts.sortedBy { it.date }
+                SortOrder.DESCENDING -> filteredProducts.sortedByDescending { it.date }
             }
         }
     }

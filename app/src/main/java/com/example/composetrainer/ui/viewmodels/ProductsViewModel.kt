@@ -17,7 +17,7 @@ import javax.inject.Inject
 class ProductsViewModel @Inject constructor(
     private val getProductsUseCase: GetProductUseCase,
     private val addProductUseCase: AddProductUseCase
-): ViewModel(){
+) : ViewModel() {
     private val _products = MutableStateFlow<List<Product>>(emptyList())
     val products: StateFlow<List<Product>> get() = _products
 
@@ -27,21 +27,25 @@ class ProductsViewModel @Inject constructor(
     private val _sortOrder = MutableStateFlow(SortOrder.DESCENDING)
     val sortOrder: StateFlow<SortOrder> get() = _sortOrder
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> get() = _searchQuery
+
+
     init {
         loadProducts()
     }
 
-    private fun loadProducts(){
+    private fun loadProducts() {
         viewModelScope.launch {
             _isLoading.value = true
-            getProductsUseCase(sortOrder.value).collectLatest{ products ->
+            getProductsUseCase(sortOrder.value, searchQuery.value).collectLatest { products ->
                 _products.value = products
                 _isLoading.value = false
             }
         }
     }
 
-    fun addProduct(product: Product){
+    fun addProduct(product: Product) {
         viewModelScope.launch {
             addProductUseCase(product)
         }
@@ -51,6 +55,11 @@ class ProductsViewModel @Inject constructor(
         _sortOrder.value = newOrder
         Log.i(TAG, "updateSortOrder: $newOrder")
         loadProducts()
+    }
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+        loadProducts() // Re-fetch products when query changes
     }
 }
 
