@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composetrainer.domain.model.Product
@@ -58,9 +61,16 @@ fun AddProductBottomSheet(
         // Barcode
         OutlinedTextField(
             value = barcode,
-            onValueChange = { barcode = it },
+            onValueChange = { newValue ->
+                if (newValue.all { it.isDigit() } && newValue.length <= 12) {
+                    barcode = newValue
+                }
+            },
             label = { Text("Barcode (Optional)") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -70,7 +80,10 @@ fun AddProductBottomSheet(
             value = price,
             onValueChange = { price = it },
             label = { Text("Price (Optional)") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -80,7 +93,10 @@ fun AddProductBottomSheet(
             value = categoryID,
             onValueChange = { categoryID = it },
             label = { Text("Category ID (Optional)") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -106,20 +122,20 @@ fun AddProductBottomSheet(
             ),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Add Product", color = Color.White,style = MaterialTheme.typography.bodyLarge)
+            Text("Add Product", color = Color.White, style = MaterialTheme.typography.bodyLarge)
         }
 
     }
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewAddProductBottomSheet() {
-    ComposeTrainerTheme {
-        AddProductBottomSheet(
-            onAddProduct = {},
-            onDismiss = {}
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewAddProductBottomSheet() {
+//    ComposeTrainerTheme {
+//        AddProductBottomSheet(
+//            onAddProduct = {},
+//            onDismiss = {}
+//        )
+//    }
+//}

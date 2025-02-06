@@ -154,12 +154,12 @@ fun SortingDropdown(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewProductsScreen() {
-    ComposeTrainerTheme {
-        ProductScreen(viewModel = hiltViewModel())
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewProductsScreen() {
+//    ComposeTrainerTheme {
+//        ProductScreen(viewModel = hiltViewModel())
+//    }
+//}
 
 

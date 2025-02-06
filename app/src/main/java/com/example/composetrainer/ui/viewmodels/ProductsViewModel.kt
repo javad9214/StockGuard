@@ -1,5 +1,6 @@
 package com.example.composetrainer.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composetrainer.domain.model.Product
@@ -33,7 +34,7 @@ class ProductsViewModel @Inject constructor(
     private fun loadProducts(){
         viewModelScope.launch {
             _isLoading.value = true
-            getProductsUseCase(SortOrder.DESCENDING).collectLatest{ products ->
+            getProductsUseCase(sortOrder.value).collectLatest{ products ->
                 _products.value = products
                 _isLoading.value = false
             }
@@ -48,6 +49,8 @@ class ProductsViewModel @Inject constructor(
 
     fun updateSortOrder(newOrder: SortOrder) {
         _sortOrder.value = newOrder
+        Log.i(TAG, "updateSortOrder: $newOrder")
+        loadProducts()
     }
 }
 
@@ -55,3 +58,5 @@ enum class SortOrder {
     ASCENDING, // Oldest first
     DESCENDING // Newest first (default)
 }
+
+private const val TAG = "ProductsViewModel"

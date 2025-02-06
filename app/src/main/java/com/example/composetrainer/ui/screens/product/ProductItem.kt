@@ -50,20 +50,20 @@ fun formatDate(timestamp: Long): String {
     return formatter.format(Date(timestamp))
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewProductItem() {
-    ComposeTrainerTheme {
-        ProductItem(
-            product = Product(
-                id = 1,
-                name = "Sample Product",
-                barcode = "123456789",
-                price = 1000,
-                image = null,
-                categoryID = 1,
-                date = System.currentTimeMillis()
-            )
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewProductItem() {
+//    ComposeTrainerTheme {
+//        ProductItem(
+//            product = Product(
+//                id = 1,
+//                name = "Sample Product",
+//                barcode = "123456789",
+//                price = 1000,
+//                image = null,
+//                categoryID = 1,
+//                date = System.currentTimeMillis()
+//            )
+//        )
+//    }
+//}
