@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.composetrainer.ui.navigation.Routes
 import com.example.composetrainer.ui.screens.HomeScreen
-import com.example.composetrainer.ui.screens.ProductScreen
+import com.example.composetrainer.ui.screens.product.ProductScreen
 import com.example.login.ui.screens.LoginScreen
 import dagger.hilt.android.AndroidEntryPoint
 

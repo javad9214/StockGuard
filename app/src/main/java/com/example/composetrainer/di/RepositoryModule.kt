@@ -1,6 +1,5 @@
 package com.example.composetrainer.di
 
-import com.example.composetrainer.data.local.dao.ProductDao
 import com.example.composetrainer.data.repository.ProductRepoImpl
 import com.example.composetrainer.domain.repository.ProductRepository
 import dagger.Module
