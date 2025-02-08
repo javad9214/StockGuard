@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -39,11 +38,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.domain.model.Product
-import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
 import com.example.composetrainer.ui.viewmodels.SortOrder
 
@@ -64,17 +61,25 @@ fun ProductScreen(
 
     val selectedProductForEdit = remember { mutableStateOf<Product?>(null) }
 
-    if (isAddProductSheetOpen.value) {
+    if (selectedProductForEdit.value != null || isAddProductSheetOpen.value) {
         ModalBottomSheet(
             onDismissRequest = { isAddProductSheetOpen.value = false },
             sheetState = sheetState
         ) {
             AddProductBottomSheet(
-                onAddProduct = { product ->
-                    viewModel.addProduct(product)
+                onSave = { product ->
+                    if (selectedProductForEdit.value == null) {
+                        viewModel.addProduct(product)
+                    } else {
+                        viewModel.editProduct(product)
+                    }
+                    selectedProductForEdit.value = null
                     isAddProductSheetOpen.value = false
                 },
-                onDismiss = { isAddProductSheetOpen.value = false }
+                onDismiss = {
+                    selectedProductForEdit.value = null
+                    isAddProductSheetOpen.value = false
+                }
             )
         }
     }
