@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.composetrainer.domain.model.Product
+import com.example.composetrainer.utils.BarcodeGenerator
 
 
 @Composable
@@ -104,7 +105,7 @@ fun AddProductBottomSheet(
                 val newProduct = Product(
                     id = initialProduct?.id ?: 0, // Use existing ID if editing
                     name = name,
-                    barcode = barcode.ifBlank { null },
+                    barcode = BarcodeGenerator.generateBarcodeNumber(),
                     price = price.toLongOrNull(),
                     image = null,
                     categoryID = categoryID.toIntOrNull(),

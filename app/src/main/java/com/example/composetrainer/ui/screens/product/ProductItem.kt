@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,8 +30,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.*
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import java.text.SimpleDateFormat
@@ -49,58 +54,102 @@ fun ProductItem(
 
     var showMenu by remember { mutableStateOf(false) }
 
+    val myFontFamily = FontFamily(
+        Font(R.font.zar_bold, FontWeight.Normal) // Link to res/font
+    )
+
     Card(
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = product.name, style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Price: $${product.price ?: "N/A"}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = "Barcode: ${product.barcode ?: "N/A"}",
-                style = MaterialTheme.typography.bodyMedium
-            )
             Row(
                 modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box() {
+                    IconButton(
+                        onClick = { showMenu = true },
+                        modifier = Modifier.align(Alignment.CenterStart)
+                    ) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = "Menu"
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Edit") },
+                            onClick = {
+                                showMenu = false
+                                onEdit()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Delete") },
+                            onClick = {
+                                showMenu = false
+                                onDelete()
+                            }
+                        )
+                    }
+                }
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.End,
+                    text = product.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontFamily = myFontFamily
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Date",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = formatDate(product.date),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
 
                 // Category ID
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "${product.categoryID ?: "N/A"}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
                     Icon(
                         imageVector = Icons.Default.Category,
                         contentDescription = "Category",
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                }
+
+                // Barcode
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
                     Text(
-                        text = "${product.categoryID ?: "N/A"}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        text = product.barcode ?: "N/A",
+                        style = MaterialTheme.typography.bodyMedium
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        painter = painterResource(id = R.drawable.barcode_24px),
+                        contentDescription = "barcode"
+                    )
+
+
                 }
             }
-
 
             // Stock Section
             Row(
@@ -122,35 +171,35 @@ fun ProductItem(
                 }
             }
 
+            Spacer(
+                modifier = Modifier.height(4.dp)
+            )
 
-            Box(modifier = Modifier.fillMaxWidth()){
-                IconButton(
-                    onClick = {showMenu = true },
-                    modifier = Modifier.align(Alignment.TopEnd)
-                ) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "Menu")
-                }
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth(),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
 
-                DropdownMenu(
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Edit") },
-                        onClick = {
-                            showMenu = false
-                            onEdit()
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Delete") },
-                        onClick = {
-                            showMenu = false
-                            onDelete()
-                        }
-                    )
-                }
+            Spacer(
+                modifier = Modifier.height(4.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Absolute.Right
+            ) {
+                // Price
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Right,
+                    text = stringResource(id = R.string.price) +
+                            " ${product.price}" +
+                            stringResource(id = R.string.toman),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
+
         }
     }
 }
@@ -160,20 +209,25 @@ fun formatDate(timestamp: Long): String {
     return formatter.format(Date(timestamp))
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewProductItem() {
-//    ComposeTrainerTheme {
-//        ProductItem(
-//            product = Product(
-//                id = 1,
-//                name = "Sample Product",
-//                barcode = "123456789",
-//                price = 1000,
-//                image = null,
-//                categoryID = 1,
-//                date = System.currentTimeMillis()
-//            )
-//        )
-//    }
-//}
+@Preview(showBackground = true)
+@Composable
+fun PreviewProductItem() {
+    ComposeTrainerTheme {
+        ProductItem(
+            product = Product(
+                id = 1,
+                name = "Sample Product",
+                barcode = "123456789",
+                price = 1000,
+                image = null,
+                categoryID = 1,
+                date = System.currentTimeMillis(),
+                stock = 10
+            ),
+            onEdit = {},
+            onDelete = {},
+            onIncreaseStock = {},
+            onDecreaseStock = {}
+        )
+    }
+}
