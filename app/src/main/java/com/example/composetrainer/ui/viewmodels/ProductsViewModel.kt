@@ -61,7 +61,6 @@ class ProductsViewModel @Inject constructor(
 
     fun updateSortOrder(newOrder: SortOrder) {
         _sortOrder.value = newOrder
-        Log.i(TAG, "updateSortOrder: $newOrder")
         loadProducts()
     }
 
