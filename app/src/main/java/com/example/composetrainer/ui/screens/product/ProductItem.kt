@@ -224,11 +224,6 @@ fun ProductItem(
     }
 }
 
-fun formatDate(timestamp: Long): String {
-    val formatter = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
-    return formatter.format(Date(timestamp))
-}
-
 @Preview(showBackground = true)
 @Composable
 fun PreviewProductItem() {
