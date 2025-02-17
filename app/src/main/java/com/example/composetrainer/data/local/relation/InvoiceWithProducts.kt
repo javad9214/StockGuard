@@ -17,5 +17,5 @@ data class InvoiceWithProducts (
             entityColumn = "productId"
         )
     )
-    val products: List<ProductWithQuantity>
+    val products: List<EntityProductWithQuantity>
 )

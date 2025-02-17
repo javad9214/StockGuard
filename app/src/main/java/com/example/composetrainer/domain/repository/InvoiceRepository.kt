@@ -1,7 +1,8 @@
 package com.example.composetrainer.domain.repository
 
-import com.example.composetrainer.data.relation.ProductWithQuantity
+
 import com.example.composetrainer.domain.model.Invoice
+import com.example.composetrainer.domain.model.ProductWithQuantity
 import kotlinx.coroutines.flow.Flow
 
 interface InvoiceRepository {

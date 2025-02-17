@@ -4,6 +4,6 @@ data class Invoice(
     val id: Long,
     val numberId: Long,
     val dateTime: Long,
-    val products: List<Product>,
+    val products: List<ProductWithQuantity>,
     val totalPrice: Long
 )

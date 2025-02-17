@@ -20,7 +20,7 @@ fun InvoiceItem(invoice: Invoice) {
             Text("Date: ${formatDate(invoice.dateTime)}")
             Text("Total: $${invoice.totalPrice}")
             invoice.products.forEach { product ->
-                Text("${product.quantity}x ${product.name}")
+                Text("${product.quantity}x ${product.product.name}")
             }
         }
     }
