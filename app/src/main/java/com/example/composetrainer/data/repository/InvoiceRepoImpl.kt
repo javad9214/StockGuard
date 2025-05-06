@@ -114,7 +114,7 @@ class InvoiceRepoImpl @Inject constructor(
         }
     }
 
-    private suspend fun getNextInvoiceNumberId(): Long {
+    override suspend fun getNextInvoiceNumberId(): Long {
         // Get the highest existing numberId and increment
         val lastInvoice = invoiceDao.getLastInvoice()
         return if (lastInvoice == null) 100L else lastInvoice.invoiceNumber + 1

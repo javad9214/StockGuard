@@ -1,5 +1,6 @@
 package com.example.composetrainer.ui.screens.invoice
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
@@ -31,16 +36,23 @@ import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
 import com.example.composetrainer.utils.DateFormatter
 import com.example.composetrainer.data.local.entity.InvoiceEntity
+import com.example.composetrainer.domain.model.Invoice
 import com.example.composetrainer.domain.model.buildInvoiceCode
+import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
 
 @Composable
 fun InvoiceScreen(
     onComplete: () -> Unit,
     onClose: () -> Unit,
-    invoice: InvoiceEntity? = null
+    viewModel: InvoiceViewModel = hiltViewModel()
 ) {
     val persianDate = remember { DateFormatter.getHijriShamsiDate() }
     val currentTime = remember { DateFormatter.getCurrentTimeFormatted() }
+    val nextInvoiceNumber by viewModel.nextInvoiceNumber.collectAsState()
+
+    LaunchedEffect(key1 = true) {
+        viewModel.getNextInvoiceNumberId()
+    }
 
     Column {
         Row(
@@ -55,19 +67,20 @@ fun InvoiceScreen(
                     contentDescription = "Close",
                 )
             }
-            invoice?.let {
-                Text(
-                    text = it.buildInvoiceCode(),
-                    fontSize = dimenTextSize(R.dimen.text_size_md),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
-                )
-            } ?: Spacer(modifier = Modifier.weight(1f))
+
+            Text(
+                text = nextInvoiceNumber?.toString() ?: "...",
+                fontSize = dimenTextSize(R.dimen.text_size_md),
+                modifier = Modifier.padding(start = dimen(R.dimen.space_2))
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
             Text(
                 text = str(R.string.sale_invoice),
                 fontSize = dimenTextSize(R.dimen.text_size_xl),
                 textAlign = TextAlign.End,
-                modifier = Modifier.padding(end = dimen(R.dimen.space_2))
+                modifier = Modifier.padding(end = dimen(R.dimen.space_4))
             )
         }
         Row(
@@ -107,7 +120,9 @@ fun InvoiceScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
-                    horizontalAlignment = Alignment.End
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxHeight()
                 ) {
                     Text(text = str(R.string.buyer))
                     Text(text = str(R.string.unknown))
@@ -135,14 +150,7 @@ fun InvoiceScreenPreview() {
     ComposeTrainerTheme {
         InvoiceScreen(
             onComplete = {},
-            onClose = {},
-            invoice = InvoiceEntity(
-                prefix = "INV",
-                invoiceDate = "1403-02-16",
-                invoiceNumber = 25,
-                invoiceType = "S",
-                customerCode = "C001"
-            )
+            onClose = {}
         )
     }
 }

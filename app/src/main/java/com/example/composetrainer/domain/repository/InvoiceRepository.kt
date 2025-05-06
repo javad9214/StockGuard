@@ -14,4 +14,6 @@ interface InvoiceRepository {
     suspend fun getAllInvoices(): Flow<List<InvoiceWithProducts>>
 
     suspend fun deleteInvoice(invoiceId: Long)
+
+    suspend fun getNextInvoiceNumberId(): Long
 }

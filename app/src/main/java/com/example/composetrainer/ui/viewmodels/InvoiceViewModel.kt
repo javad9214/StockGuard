@@ -32,6 +32,8 @@ class InvoiceViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> get() = _errorMessage
 
+    private val _nextInvoiceNumber = MutableStateFlow<Long?>(null)
+    val nextInvoiceNumber: StateFlow<Long?> get() = _nextInvoiceNumber
 
 
     init {
@@ -106,6 +108,21 @@ class InvoiceViewModel @Inject constructor(
 
     fun clearCurrentInvoice(){
         _currentInvoice.value = emptyList()
+    }
+
+    fun getNextInvoiceNumberId() {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                val nextNumber = invoiceRepository.getNextInvoiceNumberId()
+                _nextInvoiceNumber.value = nextNumber
+                _errorMessage.value = null
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to get next invoice number: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 
     fun calculateTotalPrice(): Long {
