@@ -30,11 +30,14 @@ import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
 import com.example.composetrainer.utils.DateFormatter
+import com.example.composetrainer.data.local.entity.InvoiceEntity
+import com.example.composetrainer.domain.model.buildInvoiceCode
 
 @Composable
 fun InvoiceScreen(
     onComplete: () -> Unit,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    invoice: InvoiceEntity? = null
 ) {
     val persianDate = remember { DateFormatter.getHijriShamsiDate() }
     val currentTime = remember { DateFormatter.getCurrentTimeFormatted() }
@@ -52,7 +55,14 @@ fun InvoiceScreen(
                     contentDescription = "Close",
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
+            invoice?.let {
+                Text(
+                    text = it.buildInvoiceCode(),
+                    fontSize = dimenTextSize(R.dimen.text_size_md),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+            } ?: Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = str(R.string.sale_invoice),
                 fontSize = dimenTextSize(R.dimen.text_size_xl),
@@ -125,7 +135,14 @@ fun InvoiceScreenPreview() {
     ComposeTrainerTheme {
         InvoiceScreen(
             onComplete = {},
-            onClose = {}
+            onClose = {},
+            invoice = InvoiceEntity(
+                prefix = "INV",
+                invoiceDate = "1403-02-16",
+                invoiceNumber = 25,
+                invoiceType = "S",
+                customerCode = "C001"
+            )
         )
     }
 }

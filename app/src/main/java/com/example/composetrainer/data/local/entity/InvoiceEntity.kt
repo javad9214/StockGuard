@@ -10,7 +10,7 @@ data class InvoiceEntity(
 
     val prefix: String = "INV",         // Fixed prefix, e.g., "INV"
     val invoiceDate: String,            // In format like "1403-02-16" (Jalali)
-    val invoiceNumber: Int,             // e.g., 12
+    val invoiceNumber: Long,             // e.g., 12
 
     val invoiceType: String? = null,    // e.g., "S", "B" — optional for future
     val customerCode: String? = null,   // e.g., "C005" — optional for future

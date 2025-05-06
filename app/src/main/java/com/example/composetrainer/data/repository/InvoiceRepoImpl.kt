@@ -26,7 +26,7 @@ class InvoiceRepoImpl @Inject constructor(
         val nextNumberId = getNextInvoiceNumberId()
 
         val invoiceEntity = InvoiceEntity(
-            invoiceNumber = nextNumberId.toInt(),
+            invoiceNumber = nextNumberId,
             invoiceDate = getCurrentJalaliDate()
         )
 
@@ -66,7 +66,7 @@ class InvoiceRepoImpl @Inject constructor(
                         InvoiceWithProducts(
                             invoice = InvoiceEntity(
                                 id = invoiceId,
-                                invoiceNumber = numberId.toInt(),
+                                invoiceNumber = numberId,
                                 invoiceDate = invoiceDate
                             ),
                             products = groupRows.map {
@@ -86,7 +86,7 @@ class InvoiceRepoImpl @Inject constructor(
 
         val invoice = InvoiceEntity(
             id = rows.first().invoiceId,
-            invoiceNumber = rows.first().numberId.toInt(),
+            invoiceNumber = rows.first().numberId,
             invoiceDate = rows.first().invoiceDate
         )
 
@@ -117,7 +117,7 @@ class InvoiceRepoImpl @Inject constructor(
     private suspend fun getNextInvoiceNumberId(): Long {
         // Get the highest existing numberId and increment
         val lastInvoice = invoiceDao.getLastInvoice()
-        return if (lastInvoice == null) 10000L else lastInvoice.invoiceNumber.toLong() + 1
+        return if (lastInvoice == null) 100L else lastInvoice.invoiceNumber + 1
     }
 
     // Helper function to get current date in Jalali format
