@@ -38,24 +38,26 @@ fun MainScreen(navController: NavHostController) {
 
     Scaffold (
         bottomBar = {
-            NavigationBar {
-                bottomNavItems.forEach{ item ->
-                    NavigationBarItem(
-                        icon = {
-                            Icon(item.icon, contentDescription = item.title)
-                        },
-                        label = { Text(item.title) },
-                        selected = currentRoute == item.route,
-                        onClick = {
-                            navController.navigate(item.route){
-                                popUpTo(navController.graph.startDestinationId){
-                                    saveState = true
+            if (currentRoute != Routes.INVOICE) {
+                NavigationBar {
+                    bottomNavItems.forEach { item ->
+                        NavigationBarItem(
+                            icon = {
+                                Icon(item.icon, contentDescription = item.title)
+                            },
+                            label = { Text(item.title) },
+                            selected = currentRoute == item.route,
+                            onClick = {
+                                navController.navigate(item.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }

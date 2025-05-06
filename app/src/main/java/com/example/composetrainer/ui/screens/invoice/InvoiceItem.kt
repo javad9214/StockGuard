@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composetrainer.domain.model.Invoice
-import com.example.composetrainer.utils.DateFormatter.formatDate
 
 @Composable
 fun InvoiceItem(
@@ -34,9 +33,12 @@ fun InvoiceItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Invoice #${invoice.numberId}", style = MaterialTheme.typography.titleMedium)
                 Text(
-                    text = formatDate(invoice.dateTime),
+                    "Invoice #${invoice.invoiceNumber}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = invoice.invoiceDate,
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -54,14 +56,13 @@ fun InvoiceItemPreview() {
     InvoiceItem(
         Invoice(
             id = 1,
-            numberId = 12345,
-            dateTime = System.currentTimeMillis(),
+            invoiceNumber = 12345,
+            invoiceDate = "1403-02-16",
+            prefix = "INV",
             totalPrice = 1000,
             products = emptyList()
-
         ),
         onClick = {},
         onDelete = {}
-
     )
 }

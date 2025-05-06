@@ -17,16 +17,16 @@ interface InvoiceDao {
     @Query("DELETE FROM invoices WHERE id = :invoiceId")
     suspend fun deleteInvoice(invoiceId: Long)
 
-    @Query("SELECT * FROM invoices ORDER BY numberId DESC")
+    @Query("SELECT * FROM invoices ORDER BY invoiceNumber DESC")
     fun getAllInvoices(): Flow<List<InvoiceEntity>>
 
     // Get the last invoice (used to generate the next numberId)
-    @Query("SELECT * FROM invoices ORDER BY numberId DESC LIMIT 1")
+    @Query("SELECT * FROM invoices ORDER BY invoiceNumber DESC LIMIT 1")
     suspend fun getLastInvoice(): InvoiceEntity?
 
     @Transaction
     @Query("""
-        SELECT i.id AS invoiceId, i.numberId, i.dateTime, p.*, ip.quantity
+        SELECT i.id AS invoiceId, i.invoiceNumber as numberId, i.invoiceDate AS invoiceDate, p.*, ip.quantity
         FROM invoices AS i
         JOIN invoice_products AS ip ON i.id = ip.invoiceId
         JOIN products AS p ON p.id = ip.productId
@@ -34,11 +34,9 @@ interface InvoiceDao {
     """)
     suspend fun getInvoiceWithProducts(invoiceId: Long): List<InvoiceWithProduct>
 
-
-
     @Transaction
     @Query("""
-        SELECT i.id AS invoiceId, i.numberId, i.dateTime, p.*, ip.quantity
+        SELECT i.id AS invoiceId, i.invoiceNumber as numberId, i.invoiceDate AS invoiceDate, p.*, ip.quantity
         FROM invoices AS i 
         INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
         INNER JOIN products AS p ON ip.productId = p.id

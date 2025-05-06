@@ -9,11 +9,11 @@ data class InvoiceWithProducts (
     fun toDomain(): Invoice {
         return Invoice(
             id = invoice.id,
-            numberId = invoice.numberId,
-            dateTime = invoice.dateTime,
+            invoiceNumber = invoice.invoiceNumber,
+            invoiceDate = invoice.invoiceDate,
+            prefix = invoice.prefix,
             products = products,
             totalPrice = products.sumOf { it.product.price?.times(it.quantity) ?: 0L},
         )
     }
 }
-
