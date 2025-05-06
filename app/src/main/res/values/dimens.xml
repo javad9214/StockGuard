@@ -11,6 +11,8 @@
     <dimen name="radius_md">12dp</dimen>
     <dimen name="radius_lg">14dp</dimen>
     <dimen name="radius_xl">16dp</dimen>
+    <dimen name="radius_xxl">24dp</dimen>
+    <dimen name="radius_3xl">32dp</dimen>
     <dimen name="radius_circle">500dp</dimen>
 
 

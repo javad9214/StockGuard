@@ -34,7 +34,7 @@ fun InvoiceItem(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    "Invoice #${invoice.invoiceNumber}",
+                    text = "Invoice #${invoice.invoiceNumber}",
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
