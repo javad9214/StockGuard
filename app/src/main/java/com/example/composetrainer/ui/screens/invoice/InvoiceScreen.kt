@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -26,7 +28,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,6 +61,8 @@ fun InvoiceScreen(
     val persianDate = remember { DateFormatter.getHijriShamsiDate() }
     val currentTime = remember { DateFormatter.getCurrentTimeFormatted() }
     val nextInvoiceNumber by viewModel.nextInvoiceNumber.collectAsState()
+    var showProductSelection by remember { mutableStateOf(false) }
+    val products by viewModel.products.collectAsState()
 
     val view = LocalView.current
     val context = LocalContext.current
@@ -166,7 +172,33 @@ fun InvoiceScreen(
                     )
                 }
             }
+            // Add product button
+            Button(
+                onClick = { showProductSelection = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = dimen(R.dimen.space_4),
+                        vertical = dimen(R.dimen.space_2)
+                    )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Product",
+                    modifier = Modifier.padding(end = dimen(R.dimen.space_2))
+                )
+                Text(text = str(R.string.add_product))
+            }
         }
+    }
+    if (showProductSelection) {
+        ProductSelectionBottomSheet(
+            products = products,
+            onAddToInvoice = { product, quantity ->
+                viewModel.addToCurrentInvoice(product, quantity)
+            },
+            onDismiss = { showProductSelection = false }
+        )
     }
 }
 

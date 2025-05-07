@@ -6,6 +6,7 @@
     <string name="total">مجموع</string>
     <string name="buyer">خریدار</string>
     <string name="unknown">ناشناخته</string>
+    <string name="add_product">افزودن محصول</string>
 
     <!-- Product Item -->
     <string name="price">قیمت</string>

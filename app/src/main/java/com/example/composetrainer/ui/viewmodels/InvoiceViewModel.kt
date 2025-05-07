@@ -35,9 +35,13 @@ class InvoiceViewModel @Inject constructor(
     private val _nextInvoiceNumber = MutableStateFlow<Long?>(null)
     val nextInvoiceNumber: StateFlow<Long?> get() = _nextInvoiceNumber
 
+    private val _products = MutableStateFlow<List<Product>>(emptyList())
+    val products: StateFlow<List<Product>> get() = _products
+
 
     init {
         loadInvoices()
+        loadProducts()
     }
 
     fun loadInvoices(){
@@ -51,6 +55,18 @@ class InvoiceViewModel @Inject constructor(
             }catch (e: Exception){
                 _errorMessage.value = e.message
                 _isLoading.value = false
+            }
+        }
+    }
+
+    fun loadProducts() {
+        viewModelScope.launch {
+            try {
+                productRepository.getAllProducts().collectLatest { productList ->
+                    _products.value = productList
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to load products: ${e.message}"
             }
         }
     }
