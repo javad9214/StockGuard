@@ -5,4 +5,5 @@ object Routes {
     const val HOME = "home"
     const val PRODUCT = "product"
     const val INVOICE = "invoice"
+    const val ANALYZE = "analyze"
 }

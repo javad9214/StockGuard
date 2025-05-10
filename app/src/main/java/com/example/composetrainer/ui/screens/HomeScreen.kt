@@ -54,14 +54,6 @@ fun HomeScreen(
             Text("Add Random Products")
         }
         Spacer(modifier = Modifier.padding(dimen(R.dimen.space_4)))
-        Button(
-            onClick = onButtonClick,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = dimen(R.dimen.space_4))
-        ) {
-            Text("Create Invoice")
-        }
 
         if (showBottomSheet) {
           ProductSelectionBottomSheet(
