@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -26,24 +25,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.navigation.BottomNavItem
 import com.example.composetrainer.ui.navigation.Routes
 import com.example.composetrainer.ui.screens.product.ProductScreen
 import com.example.composetrainer.ui.screens.invoice.InvoiceScreen
+import com.example.composetrainer.ui.screens.invoice.InvoicesListScreen
 import com.example.login.ui.screens.LoginScreen
 
 @Composable
 fun MainScreen(navController: NavHostController) {
 
     val bottomNavItems = listOf(
-        BottomNavItem("Invoices", Routes.INVOICE),
+        BottomNavItem("Invoices", Routes.INVOICES_LIST),
         BottomNavItem("Analyze", Routes.ANALYZE),
-        BottomNavItem("Products", Routes.PRODUCT),
+        BottomNavItem("Products", Routes.PRODUCTS_LIST),
         BottomNavItem("Home", Routes.HOME)
     )
 
@@ -70,7 +72,7 @@ fun MainScreen(navController: NavHostController) {
                         NavigationBarItem(
                             icon = {
                                 when (item.route) {
-                                    Routes.INVOICE -> Icon(
+                                    Routes.INVOICES_LIST -> Icon(
                                         painter = painterResource(id = R.drawable.receipt_long_24px),
                                         contentDescription = item.title
                                     )
@@ -105,7 +107,7 @@ fun MainScreen(navController: NavHostController) {
                         NavigationBarItem(
                             icon = {
                                 when (item.route) {
-                                    Routes.PRODUCT -> Icon(
+                                    Routes.PRODUCTS_LIST -> Icon(
                                         painter = painterResource(id = R.drawable.package_2_24px),
                                         contentDescription = item.title
                                     )
@@ -136,7 +138,7 @@ fun MainScreen(navController: NavHostController) {
                 // Floating Action Button
                 FloatingActionButton(
                     onClick = {
-                        navController.navigate(Routes.INVOICE) {
+                        navController.navigate(Routes.INVOICE_CREATE) {
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
@@ -172,25 +174,45 @@ fun MainScreen(navController: NavHostController) {
                     }
                 )
             }
-            composable(Routes.PRODUCT){
+            composable(Routes.PRODUCTS_LIST){
                 ProductScreen()
             }
 
             composable(Routes.HOME) {
                 HomeScreen(onButtonClick = {
-                    navController.navigate(Routes.INVOICE)
+                    navController.navigate(Routes.INVOICES_LIST)
                 })
             }
 
-            composable(Routes.INVOICE) {
+            composable(Routes.INVOICES_LIST) {
+                InvoicesListScreen(
+                    onCreateNew = {
+                        navController.navigate(Routes.INVOICE_CREATE)
+                    },
+                    onInvoiceClick = { invoiceId ->
+                        navController.navigate(Routes.INVOICE_DETAILS.replace("{invoiceId}", invoiceId.toString()))
+                    }
+                )
+            }
+
+            composable(Routes.INVOICE_CREATE) {
                 InvoiceScreen(
                     onComplete = {
-                        // Handle completion if needed
+                        navController.popBackStack()
                     },
                     onClose = {
                         navController.popBackStack()
                     }
                 )
+            }
+
+            composable(
+                route = Routes.INVOICE_DETAILS,
+                arguments = listOf(navArgument("invoiceId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val invoiceId = backStackEntry.arguments?.getLong("invoiceId") ?: 0L
+                // You'll need to create an InvoiceDetailScreen component
+                Text("Invoice Details for $invoiceId")
             }
 
             composable(Routes.ANALYZE) {
