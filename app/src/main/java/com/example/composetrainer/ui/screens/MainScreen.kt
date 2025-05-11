@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -39,6 +42,7 @@ import com.example.composetrainer.ui.navigation.Routes
 import com.example.composetrainer.ui.screens.product.ProductScreen
 import com.example.composetrainer.ui.screens.invoice.InvoiceScreen
 import com.example.composetrainer.ui.screens.invoice.InvoicesListScreen
+import com.example.composetrainer.utils.dimen
 import com.example.login.ui.screens.LoginScreen
 
 @Composable
@@ -153,26 +157,34 @@ fun MainScreen(navController: NavHostController) {
                     }
 
                     // Floating Action Button
-                    FloatingActionButton(
-                        onClick = {
-                            navController.navigate(Routes.INVOICE_CREATE) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                            }
-                        },
+                    Card(
                         modifier = Modifier
                             .offset(y = (-32).dp)
                             .zIndex(1f),
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        elevation = FloatingActionButtonDefaults.elevation(8.dp)
+                        elevation = CardDefaults.cardElevation(0.dp),
+                        shape = CircleShape,
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.barcode_scanner_24px),
-                            contentDescription = "Scan Barcode",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
+                        FloatingActionButton(
+                            onClick = {
+                                navController.navigate(Routes.INVOICE_CREATE) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                }
+                            },
+                            modifier = Modifier.padding(dimen(R.dimen.space_2)),
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            elevation = FloatingActionButtonDefaults.elevation(0.dp),
+                            shape = CircleShape
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.barcode_scanner_24px),
+                                contentDescription = "Scan Barcode",
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
                     }
                 }
             }
