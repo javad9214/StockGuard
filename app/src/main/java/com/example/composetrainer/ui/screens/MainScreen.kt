@@ -1,11 +1,13 @@
 package com.example.composetrainer.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -16,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +35,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.res.painterResource
@@ -52,8 +56,12 @@ import com.example.composetrainer.ui.navigation.Routes
 import com.example.composetrainer.ui.screens.product.ProductScreen
 import com.example.composetrainer.ui.screens.invoice.InvoiceScreen
 import com.example.composetrainer.ui.screens.invoice.InvoicesListScreen
+import com.example.composetrainer.utils.CustomNavigationBar
 import com.example.composetrainer.utils.dimen
 import com.example.login.ui.screens.LoginScreen
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 
 @Composable
 fun MainScreen(navController: NavHostController) {
@@ -82,146 +90,18 @@ fun MainScreen(navController: NavHostController) {
     Scaffold (
         bottomBar = {
             if (shouldShowBottomNav) {
-                Box(
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    // Bottom Navigation Bar
-                    NavigationBar(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(80.dp)
-                            .shadow(8.dp)
-                            .zIndex(0f),
-                        containerColor = Color.White
-                    ) {
-                        // First half of the nav items
-                        bottomNavItems.take(2).forEach { item ->
-                            NavigationBarItem(
-                                icon = {
-                                    when (item.route) {
-                                        Routes.INVOICES_LIST -> Icon(
-                                            painter = painterResource(id = R.drawable.receipt_long_24px),
-                                            contentDescription = item.title
-                                        )
-
-                                        Routes.ANALYZE -> Icon(
-                                            painter = painterResource(id = R.drawable.monitoring_24px),
-                                            contentDescription = item.title
-                                        )
-
-                                        else -> Icon(
-                                            painter = painterResource(id = R.drawable.home_24px),
-                                            contentDescription = item.title
-                                        )
-                                    }
-                                },
-                                selected = currentRoute == item.route,
-                                onClick = {
-                                    navController.navigate(item.route) {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                }
-                            )
-                        }
-
-                        // Center space for FAB
-                        Spacer(modifier = Modifier.weight(1f))
-
-                        // Second half of the nav items
-                        bottomNavItems.takeLast(2).forEach { item ->
-                            NavigationBarItem(
-                                icon = {
-                                    when (item.route) {
-                                        Routes.PRODUCTS_LIST -> Icon(
-                                            painter = painterResource(id = R.drawable.package_2_24px),
-                                            contentDescription = item.title
-                                        )
-
-                                        Routes.HOME -> Icon(
-                                            painter = painterResource(id = R.drawable.home_24px),
-                                            contentDescription = item.title
-                                        )
-
-                                        else -> Icon(
-                                            painter = painterResource(id = R.drawable.home_24px),
-                                            contentDescription = item.title
-                                        )
-                                    }
-                                },
-                                selected = currentRoute == item.route,
-                                onClick = {
-                                    navController.navigate(item.route) {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                }
-                            )
-                        }
-                    }
-
-                    // Floating Action Button
-                    Card(
-                        modifier = Modifier
-                            .offset(y = (-40).dp)
-                            .zIndex(1f)
-                            .graphicsLayer {
-                                shadowElevation = 0f
-                                shape = CircleShape
+                CustomNavigationBar(
+                    navController = navController,
+                    currentRoute = currentRoute,
+                    onFabClick = {
+                        navController.navigate(Routes.INVOICE_CREATE) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
                             }
-                            .drawBehind {
-                                val shadowColor = Color.Black.copy(alpha = 0.2f)
-                                val shadowRadius = 2.dp.toPx()
-                                val shadowOffsetY = -2.dp.toPx()
-                                drawIntoCanvas {
-                                    val paint = Paint()
-                                    val frameworkPaint = paint.asFrameworkPaint()
-                                    frameworkPaint.color = shadowColor.toArgb()
-                                    frameworkPaint.setShadowLayer(
-                                        shadowRadius,
-                                        0f,
-                                        shadowOffsetY,
-                                        shadowColor.toArgb()
-                                    )
-                                    it.drawCircle(
-                                        center = Offset(size.width / 2, size.height / 2),
-                                        radius = size.minDimension / 2,
-                                        paint = paint
-                                    )
-                                }
-                            },
-                        elevation = CardDefaults.cardElevation(0.dp),
-                        shape = CircleShape,
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
-                    ) {
-                        FloatingActionButton(
-                            onClick = {
-                                navController.navigate(Routes.INVOICE_CREATE) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                }
-                            },
-                            modifier = Modifier.padding(dimen(R.dimen.space_2)),
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            elevation = FloatingActionButtonDefaults.elevation(0.dp),
-                            shape = CircleShape
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.barcode_scanner_24px),
-                                contentDescription = "Scan Barcode",
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
+                            launchSingleTop = true
                         }
                     }
-                }
+                )
             }
         },
     ){ innerPadding ->
