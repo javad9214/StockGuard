@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -25,9 +26,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -79,7 +89,7 @@ fun MainScreen(navController: NavHostController) {
                     NavigationBar(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(70.dp)
+                            .height(80.dp)
                             .shadow(8.dp)
                             .zIndex(0f),
                         containerColor = Color.White
@@ -159,8 +169,33 @@ fun MainScreen(navController: NavHostController) {
                     // Floating Action Button
                     Card(
                         modifier = Modifier
-                            .offset(y = (-32).dp)
-                            .zIndex(1f),
+                            .offset(y = (-40).dp)
+                            .zIndex(1f)
+                            .graphicsLayer {
+                                shadowElevation = 0f
+                                shape = CircleShape
+                            }
+                            .drawBehind {
+                                val shadowColor = Color.Black.copy(alpha = 0.2f)
+                                val shadowRadius = 2.dp.toPx()
+                                val shadowOffsetY = -2.dp.toPx()
+                                drawIntoCanvas {
+                                    val paint = Paint()
+                                    val frameworkPaint = paint.asFrameworkPaint()
+                                    frameworkPaint.color = shadowColor.toArgb()
+                                    frameworkPaint.setShadowLayer(
+                                        shadowRadius,
+                                        0f,
+                                        shadowOffsetY,
+                                        shadowColor.toArgb()
+                                    )
+                                    it.drawCircle(
+                                        center = Offset(size.width / 2, size.height / 2),
+                                        radius = size.minDimension / 2,
+                                        paint = paint
+                                    )
+                                }
+                            },
                         elevation = CardDefaults.cardElevation(0.dp),
                         shape = CircleShape,
                         colors = CardDefaults.cardColors(containerColor = Color.White)
