@@ -56,6 +56,7 @@ import com.example.composetrainer.ui.navigation.Routes
 import com.example.composetrainer.ui.screens.product.ProductScreen
 import com.example.composetrainer.ui.screens.invoice.InvoiceScreen
 import com.example.composetrainer.ui.screens.invoice.InvoicesListScreen
+import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.utils.CustomNavigationBar
 import com.example.composetrainer.utils.dimen
 import com.example.login.ui.screens.LoginScreen
@@ -174,5 +175,7 @@ fun MainScreen(navController: NavHostController) {
 fun MainScreenPreview() {
     // Create a NavController for preview purposes.
     val navController = rememberNavController()
-    MainScreen(navController = navController)
+    ComposeTrainerTheme {
+        MainScreen(navController = navController)
+    }
 }

@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import com.example.composetrainer.ui.screens.MainScreen
+import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,9 +16,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-            MainScreen(navController = navController)
+            ComposeTrainerTheme {
+                MainScreen(navController = navController)
+            }
         }
     }
 }
-
-
