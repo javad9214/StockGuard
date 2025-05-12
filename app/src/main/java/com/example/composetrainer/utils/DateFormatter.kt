@@ -26,6 +26,21 @@ object DateFormatter {
         return "${persianDate[2]}/${persianDate[1]}/${persianDate[0]}"
     }
 
+    fun getFormattedHijriShamsiDate(): String {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH) + 1
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val persianDate = gregorianToShamsi(year, month, day)
+        return "${persianDate[0]}/${String.format("%02d", persianDate[1])}/${
+            String.format(
+                "%02d",
+                persianDate[2]
+            )
+        }"
+    }
+
     /**
      * Converts Gregorian date to Hijri Shamsi (Persian) date
      * @return Array of [year, month, day]

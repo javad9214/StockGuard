@@ -27,6 +27,18 @@ val BComps = FontFamily(
     Font(R.font.b_comps_bd, FontWeight.Bold)
 )
 
+val BLotus = FontFamily(
+    Font(R.font.b_lotus_bd, FontWeight.Bold)
+)
+
+val BMitra = FontFamily(
+    Font(R.font.b_mitra_bd, FontWeight.Bold)
+)
+
+val BHoma = FontFamily(
+    Font(R.font.b_homa, FontWeight.Bold)
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(

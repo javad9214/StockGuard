@@ -54,7 +54,7 @@ import com.example.composetrainer.R
 import com.example.composetrainer.ui.navigation.BottomNavItem
 import com.example.composetrainer.ui.navigation.Routes
 import com.example.composetrainer.ui.screens.product.ProductScreen
-import com.example.composetrainer.ui.screens.invoice.InvoiceScreen
+import com.example.composetrainer.ui.screens.invoice.invoicescreen.InvoiceScreen
 import com.example.composetrainer.ui.screens.invoice.InvoicesListScreen
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.utils.CustomNavigationBar
