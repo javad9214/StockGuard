@@ -39,9 +39,11 @@ import androidx.compose.ui.unit.dp
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.ui.theme.BHoma
+import com.example.composetrainer.ui.theme.BMitra
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.utils.PriceValidator
 import com.example.composetrainer.utils.dimen
+import com.example.composetrainer.utils.dimenTextSize
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -71,7 +73,7 @@ fun ProductItem(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Box() {
+                Box {
                     IconButton(
                         onClick = { showMenu = true },
                         modifier = Modifier.align(Alignment.CenterStart)
@@ -123,8 +125,8 @@ fun ProductItem(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "${product.categoryID ?: "N/A"}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        fontSize = dimenTextSize(R.dimen.text_size_md),
+                        fontFamily = BHoma
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Icon(
@@ -142,7 +144,8 @@ fun ProductItem(
                 ) {
                     Text(
                         text = product.barcode ?: "N/A",
-                        style = MaterialTheme.typography.bodyMedium
+                        fontSize = dimenTextSize(R.dimen.text_size_md),
+                        fontFamily = BHoma
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
@@ -162,7 +165,8 @@ fun ProductItem(
             ) {
                 Text(
                     text = "Stock: ${product.stock}",
-                    style = MaterialTheme.typography.bodyMedium
+                    fontSize = dimenTextSize(R.dimen.text_size_md),
+                    fontFamily = BHoma
                 )
                 Row {
                     IconButton(onClick = onDecreaseStock) {
@@ -192,33 +196,33 @@ fun ProductItem(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
 
                 Icon(
                     painter = painterResource(id = R.drawable.toman),
                     contentDescription = "Date",
                     modifier = Modifier
-                        .size(dimen(R.dimen.size_xs))
+                        .size(dimen(R.dimen.size_sm))
                 )
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    modifier = Modifier.weight(6f),
+                    modifier = Modifier.weight(4f),
                     textAlign = TextAlign.Start,
                     text = PriceValidator.formatPrice(product.price.toString()),
-                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = dimenTextSize(R.dimen.text_size_md),
                     fontFamily = BHoma
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    modifier = Modifier.weight(4f),
+                    modifier = Modifier.weight(2f, fill = true),
                     textAlign = TextAlign.Right,
                     text = stringResource(id = R.string.price) ,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontFamily = myFontFamily
+                    fontSize = dimenTextSize(R.dimen.text_size_md),
+                    fontFamily = BMitra
                 )
             }
 
