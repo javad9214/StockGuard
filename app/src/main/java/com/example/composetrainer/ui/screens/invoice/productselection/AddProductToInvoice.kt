@@ -23,18 +23,24 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.ui.components.BottomSheetDragHandle
+import com.example.composetrainer.ui.theme.BHoma
+import com.example.composetrainer.ui.theme.Kamran
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.str
@@ -61,7 +67,10 @@ fun AddProductToInvoice(
     ) {
         Card(
             modifier = Modifier.fillMaxSize(),
-            shape = RoundedCornerShape(topStart = dimen(R.dimen.radius_xl), topEnd = dimen(R.dimen.radius_xl)),
+            shape = RoundedCornerShape(
+                topStart = dimen(R.dimen.radius_xl),
+                topEnd = dimen(R.dimen.radius_xl)
+            ),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 6.dp,
@@ -98,36 +107,47 @@ fun AddProductToInvoice(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
 
-                TextField(
-                    value = searchQuery,
-                    onValueChange = { viewModel.updateSearchQuery(it) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    placeholder = { Text(str(R.string.search_products)) },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = null
-                        )
-                    },
-                    trailingIcon = {
-                        if (searchQuery.isNotBlank()) {
-                            IconButton(onClick = { viewModel.updateSearchQuery("") }) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = str(R.string.clear_search)
-                                )
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                    TextField(
+                        value = searchQuery,
+                        onValueChange = { viewModel.updateSearchQuery(it) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        placeholder = {
+                            Text(
+                                text = str(R.string.search_products),
+                                fontFamily = BHoma
+                            )
+                        },
+                        textStyle = TextStyle(fontFamily = BHoma),
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = null
+                            )
+                        },
+                        trailingIcon = {
+                            if (searchQuery.isNotBlank()) {
+                                IconButton(onClick = { viewModel.updateSearchQuery("") }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = str(R.string.clear_search)
+                                    )
+                                }
                             }
-                        }
-                    },
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface
-                    ),
-                    shape = MaterialTheme.shapes.medium
-                )
+                        },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            focusedIndicatorColor = Color.Transparent, //  remove bottom line when focused
+                            unfocusedIndicatorColor = Color.Transparent, //  remove bottom line when not focused
+                        ),
+                        shape = MaterialTheme.shapes.medium
+                    )
+                }
+
 
                 Spacer(modifier = Modifier.height(8.dp))
 

@@ -214,21 +214,15 @@ fun InvoiceProductItem(
                     Column(
                         horizontalAlignment = Alignment.End
                     ) {
-                        Text(
-                            text = str(R.string.total),
-                            fontFamily = Kamran,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = dimenTextSize(R.dimen.text_size_lg)
-                        )
+
                         Row (
-                            verticalAlignment = Alignment.Bottom,
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.height(dimen(R.dimen.size_sm))
                         ) {
                             val itemTotal = productWithQuantity.product.price?.times(productWithQuantity.quantity) ?: 0
                             Text(
                                 text = PriceValidator.formatPrice(itemTotal.toString()),
-                                modifier = Modifier.fillMaxHeight()
-                                    .align(Alignment.Bottom),
+                                modifier = Modifier.align(Alignment.Bottom).padding(end = dimen(R.dimen.space_1)),
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary

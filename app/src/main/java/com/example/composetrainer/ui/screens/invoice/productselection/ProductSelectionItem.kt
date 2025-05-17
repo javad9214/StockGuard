@@ -33,13 +33,11 @@ fun ProductSelectionItem(
     product: Product,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    showStock: Boolean = true,
-    elevation: Dp = 4.dp
+    showStock: Boolean = true
 ) {
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(elevation),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface
