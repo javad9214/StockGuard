@@ -87,14 +87,21 @@ class InvoiceViewModel @Inject constructor(
 
     fun addToCurrentInvoice(product: Product, quantity: Int){
         val existingItem = _currentInvoice.value.find { it.product.id == product.id }
+        val availableStock = product.stock ?: 0
+        val safeQuantityToAdd = if (quantity > availableStock) availableStock else quantity
+
         val updatedList = if (existingItem != null) {
+            val newTotalQuantity = existingItem.quantity + safeQuantityToAdd
+            val finalQuantity =
+                if (newTotalQuantity > availableStock) availableStock else newTotalQuantity
+
             _currentInvoice.value.map {
                 if (it.product.id == product.id) {
-                    it.copy(quantity = it.quantity + quantity)
+                    it.copy(quantity = finalQuantity)
                 } else it
             }
         }else {
-            _currentInvoice.value + ProductWithQuantity(product, quantity)
+            _currentInvoice.value + ProductWithQuantity(product, safeQuantityToAdd)
         }
         _currentInvoice.value = updatedList
     }
@@ -143,7 +150,11 @@ class InvoiceViewModel @Inject constructor(
     fun updateItemQuantity(productId: Long, newQuantity: Int) {
         _currentInvoice.value = _currentInvoice.value.map {
             if (it.product.id == productId) {
-                it.copy(quantity = newQuantity)
+                // Get available stock
+                val availableStock = it.product.stock ?: 0
+                // Ensure new quantity doesn't exceed stock
+                val safeQuantity = if (newQuantity > availableStock) availableStock else newQuantity
+                it.copy(quantity = safeQuantity)
             } else {
                 it
             }

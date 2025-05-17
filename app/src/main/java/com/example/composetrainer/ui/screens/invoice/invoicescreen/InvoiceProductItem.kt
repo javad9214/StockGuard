@@ -1,65 +1,51 @@
 package com.example.composetrainer.ui.screens.invoice.invoicescreen
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.foundation.layout.height
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Remove
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.OutlinedIconButton
-import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.ui.res.painterResource
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.ProductWithQuantity
 import com.example.composetrainer.ui.theme.BNazanin
-import com.example.composetrainer.ui.theme.BRoya
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
-import com.example.composetrainer.ui.theme.Kamran
 import com.example.composetrainer.utils.PriceValidator
 import com.example.composetrainer.utils.dimen
-import com.example.composetrainer.utils.dimenTextSize
-import com.example.composetrainer.utils.str
 
 @Composable
 fun InvoiceProductItem(
@@ -135,6 +121,21 @@ fun InvoiceProductItem(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    // Available stock indicator
+                    Text(
+                        text = "موجودی: ${productWithQuantity.product.stock ?: 0}",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = if ((productWithQuantity.quantity) >= (productWithQuantity.product.stock
+                                    ?: 0)
+                            )
+                                MaterialTheme.colorScheme.error
+                            else
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
                 }
                 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -181,24 +182,46 @@ fun InvoiceProductItem(
                                 .padding(horizontal = 4.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "${productWithQuantity.quantity}",
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.Center
+                            val isNearingLimit =
+                                productWithQuantity.quantity >= (productWithQuantity.product.stock
+                                    ?: 0)
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "${productWithQuantity.quantity}",
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        textAlign = TextAlign.Center,
+                                        color = if (isNearingLimit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                                    )
                                 )
-                            )
+                            }
                         }
                         
                         FilledTonalIconButton(
                             onClick = {
                                 val newQuantity = productWithQuantity.quantity + 1
-                                onQuantityChange(newQuantity)
+                                val stock = productWithQuantity.product.stock ?: 0
+                                if (newQuantity <= stock) {
+                                    onQuantityChange(newQuantity)
+                                }
                             },
                             modifier = Modifier.size(32.dp),
                             colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
-                            )
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
+                                    alpha = 0.7f
+                                ),
+                                disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(
+                                    alpha = 0.38f
+                                ),
+                                disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(
+                                    alpha = 0.12f
+                                )
+                            ),
+                            enabled = productWithQuantity.quantity < (productWithQuantity.product.stock
+                                ?: 0)
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Add,
@@ -222,7 +245,9 @@ fun InvoiceProductItem(
                             val itemTotal = productWithQuantity.product.price?.times(productWithQuantity.quantity) ?: 0
                             Text(
                                 text = PriceValidator.formatPrice(itemTotal.toString()),
-                                modifier = Modifier.align(Alignment.Bottom).padding(end = dimen(R.dimen.space_1)),
+                                modifier = Modifier
+                                    .align(Alignment.Bottom)
+                                    .padding(end = dimen(R.dimen.space_1)),
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary
