@@ -9,6 +9,11 @@
     <string name="buyer">خریدار</string>
     <string name="unknown">ناشناخته</string>
     <string name="add_product">افزودن محصول</string>
+    <string name="invoice_number">شماره فاکتور</string>
+
+    <!-- Invoice List -->
+    <string name="sale_invoices">فاکتور های فروش</string>
+    <string name="items">تعداد</string>
 
     <!-- Product Item -->
     <string name="price">قیمت</string>

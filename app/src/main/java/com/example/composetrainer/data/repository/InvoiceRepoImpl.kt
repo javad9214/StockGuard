@@ -9,6 +9,7 @@ import com.example.composetrainer.data.mapper.ProductMapper
 import com.example.composetrainer.domain.model.InvoiceWithProducts
 import com.example.composetrainer.domain.model.ProductWithQuantity
 import com.example.composetrainer.domain.repository.InvoiceRepository
+import com.example.composetrainer.utils.FarsiDateUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -27,7 +28,7 @@ class InvoiceRepoImpl @Inject constructor(
 
         val invoiceEntity = InvoiceEntity(
             invoiceNumber = nextNumberId,
-            invoiceDate = getCurrentJalaliDate()
+            invoiceDate = FarsiDateUtil.getTodayPersianDate()
         )
 
         // Insert invoice and get its generated ID
@@ -77,7 +78,26 @@ class InvoiceRepoImpl @Inject constructor(
             }
     }
 
-
+    override suspend fun getAllInvoicesOldestFirst(): Flow<List<InvoiceWithProducts>> {
+        return invoiceDao.getAllInvoiceWithProductsOldestFirst()
+            .map { rows ->
+                rows
+                    .groupBy { Triple(it.invoiceId, it.numberId, it.invoiceDate) }
+                    .map { (key, groupRows) ->
+                        val (invoiceId, numberId, invoiceDate) = key
+                        InvoiceWithProducts(
+                            invoice = InvoiceEntity(
+                                id = invoiceId,
+                                invoiceNumber = numberId,
+                                invoiceDate = invoiceDate
+                            ),
+                            products = groupRows.map {
+                                ProductWithQuantity(ProductMapper.toDomain(it.product), it.quantity)
+                            }
+                        )
+                    }
+            }
+    }
 
     override suspend fun getInvoiceWithProducts(invoiceId: Long): InvoiceWithProducts {
         val rows = invoiceDao.getInvoiceWithProducts(invoiceId)
@@ -120,17 +140,4 @@ class InvoiceRepoImpl @Inject constructor(
         return if (lastInvoice == null) 100L else lastInvoice.invoiceNumber + 1
     }
 
-    // Helper function to get current date in Jalali format
-    private fun getCurrentJalaliDate(): String {
-        // For simplicity using a placeholder. In a real app, use a Jalali calendar library
-        // Example format: "1403-02-16"
-        return "1403-02-16"
-    }
-
-    // Helper function to convert timestamp to Jalali date
-    private fun convertTimestampToJalaliDate(timestamp: Long): String {
-        // For simplicity using a placeholder. In a real app, use a Jalali calendar library
-        // Convert timestamp to Jalali date format "1403-02-16"
-        return "1403-02-16"
-    }
 }

@@ -27,8 +27,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.screens.invoice.productselection.AddProductToInvoice
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
-import com.example.composetrainer.utils.DateFormatter
-import com.example.composetrainer.utils.SetStatusBarColor
+import com.example.composetrainer.utils.FarsiDateUtil
+import com.example.composetrainer.ui.components.SetStatusBarColor
 import com.example.composetrainer.utils.dimen
 
 @Composable
@@ -40,8 +40,8 @@ fun InvoiceScreen(
 
     SetStatusBarColor(color = Color.White)
 
-    val persianDate = remember { DateFormatter.getFormattedHijriShamsiDate() }
-    val currentTime = remember { DateFormatter.getCurrentTimeFormatted() }
+    val persianDate = remember { FarsiDateUtil.getTodayPersianDate()}
+    val currentTime = remember { FarsiDateUtil.getCurrentTimeFormatted() }
     val nextInvoiceNumber by viewModel.nextInvoiceNumber.collectAsState()
     var showProductSelection by remember { mutableStateOf(false) }
     val products by viewModel.products.collectAsState()
@@ -59,7 +59,7 @@ fun InvoiceScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             HeaderSection(
                 invoiceNumber = nextInvoiceNumber?.toInt(),
-                persianDate = persianDate,
+                persianDate = persianDate.toString(),
                 currentTime = currentTime,
                 onAddProductClick = { showProductSelection = true },
                 onClose = onClose

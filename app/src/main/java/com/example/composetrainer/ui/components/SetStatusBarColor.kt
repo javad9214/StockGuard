@@ -1,14 +1,12 @@
-package com.example.composetrainer.utils
+package com.example.composetrainer.ui.components
 
 import android.os.Build
 import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.example.composetrainer.R
 
 
 @Composable

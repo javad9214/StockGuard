@@ -40,10 +40,20 @@ interface InvoiceDao {
         FROM invoices AS i 
         INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
         INNER JOIN products AS p ON ip.productId = p.id
+        ORDER BY i.createdAt DESC
     """)
     fun getAllInvoiceWithProducts(): Flow<List<InvoiceWithProduct>>
 
-
-
+    @Transaction
+    @Query(
+        """
+        SELECT i.id AS invoiceId, i.invoiceNumber as numberId, i.invoiceDate AS invoiceDate, p.*, ip.quantity
+        FROM invoices AS i 
+        INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
+        INNER JOIN products AS p ON ip.productId = p.id
+        ORDER BY i.createdAt ASC
+    """
+    )
+    fun getAllInvoiceWithProductsOldestFirst(): Flow<List<InvoiceWithProduct>>
 
 }

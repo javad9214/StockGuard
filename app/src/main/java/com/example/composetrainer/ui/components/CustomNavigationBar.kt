@@ -1,4 +1,4 @@
-package com.example.composetrainer.utils
+package com.example.composetrainer.ui.components
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -38,7 +38,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.navigation.BottomNavItem

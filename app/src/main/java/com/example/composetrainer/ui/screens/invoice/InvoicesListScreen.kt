@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -16,18 +17,24 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Invoice
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.ProductWithQuantity
+import com.example.composetrainer.ui.theme.BHoma
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
+import com.example.composetrainer.utils.str
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,39 +46,52 @@ fun InvoicesListScreen(
     val invoices by viewModel.invoices.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val sortNewestFirst by viewModel.sortNewestFirst.collectAsState()
 
     val context = LocalContext.current
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Sales Invoices") },
-                actions = {
-                    IconButton(onClick = onCreateNew) {
-                        Icon(Icons.Default.Add, contentDescription = "New Invoice")
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Sales Invoices") },
+                    actions = {
+                        IconButton(onClick = { viewModel.toggleSortOrder() }) {
+                            Icon(
+                                Icons.Default.Sort,
+                                contentDescription = if (sortNewestFirst) "Sort oldest to newest" else "Sort newest to oldest"
+                            )
+                        }
+                        IconButton(onClick = onCreateNew) {
+                            Icon(Icons.Default.Add, contentDescription = "New Invoice")
+                        }
                     }
-                }
-            )
-        }
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            when {
-                isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-
-                errorMessage != null -> Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT)
-                    .show()
-
-                invoices.isEmpty() -> TODO("EmptyInvoiceView")
-
-                else -> InvoicesLazyList(
-                    invoices = invoices,
-                    onInvoiceClick = onInvoiceClick,
-                    onDelete = viewModel::deleteInvoice
                 )
-
             }
-        }
+        ) { innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding)) {
+                when {
+                    isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
 
+                    errorMessage != null -> Toast.makeText(
+                        context,
+                        errorMessage,
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+
+                    invoices.isEmpty() -> TODO("EmptyInvoiceView")
+
+                    else -> InvoicesLazyList(
+                        invoices = invoices,
+                        onInvoiceClick = onInvoiceClick,
+                        onDelete = viewModel::deleteInvoice
+                    )
+
+                }
+            }
+
+        }
     }
 }
 
@@ -81,13 +101,15 @@ private fun InvoicesLazyList(
     onInvoiceClick: (Long) -> Unit,
     onDelete: (Long) -> Unit
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(invoices, key = { it.id }) { invoice ->
-            InvoiceItem(
-                invoice = invoice,
-                onClick = { onInvoiceClick(invoice.id) },
-                onDelete = { onDelete(invoice.id) }
-            )
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(invoices, key = { it.id }) { invoice ->
+                InvoiceItem(
+                    invoice = invoice,
+                    onClick = { onInvoiceClick(invoice.id) },
+                    onDelete = { onDelete(invoice.id) }
+                )
+            }
         }
     }
 }
@@ -159,24 +181,32 @@ fun InvoicesListScreenPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InvoicesListScreenPreviewContent(invoices: List<Invoice>) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Sales Invoices") },
-                actions = {
-                    IconButton(onClick = { }) {
-                        Icon(Icons.Default.Add, contentDescription = "New Invoice")
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(str(R.string.sale_invoices), fontFamily = BHoma) },
+                    actions = {
+                        IconButton(onClick = { }) {
+                            Icon(
+                                Icons.Default.Sort,
+                                contentDescription = "Sort invoices"
+                            )
+                        }
+                        IconButton(onClick = { }) {
+                            Icon(Icons.Default.Add, contentDescription = "New Invoice")
+                        }
                     }
-                }
-            )
-        }
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            InvoicesLazyList(
-                invoices = invoices,
-                onInvoiceClick = { },
-                onDelete = { }
-            )
+                )
+            }
+        ) { innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding)) {
+                InvoicesLazyList(
+                    invoices = invoices,
+                    onInvoiceClick = { },
+                    onDelete = { }
+                )
+            }
         }
     }
 }

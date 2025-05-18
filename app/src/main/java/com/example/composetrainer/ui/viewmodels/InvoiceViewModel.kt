@@ -44,18 +44,33 @@ class InvoiceViewModel @Inject constructor(
     private val _filteredProducts = MutableStateFlow<List<Product>>(emptyList())
     val filteredProducts: StateFlow<List<Product>> get() = _filteredProducts
 
+    private val _sortNewestFirst = MutableStateFlow(true)
+    val sortNewestFirst: StateFlow<Boolean> get() = _sortNewestFirst
+
     init {
         loadInvoices()
         loadProducts()
+    }
+
+    fun toggleSortOrder() {
+        _sortNewestFirst.value = !_sortNewestFirst.value
+        loadInvoices()
     }
 
     fun loadInvoices(){
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                invoiceRepository.getAllInvoices().collectLatest { invoices ->
-                    _invoices.value = invoices.map { it.toDomain() }
-                    _isLoading.value = false
+                if (_sortNewestFirst.value) {
+                    invoiceRepository.getAllInvoices().collectLatest { invoices ->
+                        _invoices.value = invoices.map { it.toDomain() }
+                        _isLoading.value = false
+                    }
+                } else {
+                    invoiceRepository.getAllInvoicesOldestFirst().collectLatest { invoices ->
+                        _invoices.value = invoices.map { it.toDomain() }
+                        _isLoading.value = false
+                    }
                 }
             }catch (e: Exception){
                 _errorMessage.value = e.message
