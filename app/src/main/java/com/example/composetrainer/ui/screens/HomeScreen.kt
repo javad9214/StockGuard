@@ -3,6 +3,7 @@ package com.example.composetrainer.ui.screens
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Brightness4
@@ -29,9 +30,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.screens.invoice.productselection.ProductSelectionBottomSheet
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
+import com.example.composetrainer.ui.theme.Kamran
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
 import com.example.composetrainer.utils.dimen
+import com.example.composetrainer.utils.str
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,8 +66,9 @@ fun HomeScreen(
         }
 
         Text(
-            "Welcome to Home Screen! ",
-            modifier = Modifier.align(Alignment.Center)
+            str(R.string.welcomeToHomeScreen),
+            fontFamily = Kamran,
+            modifier = Modifier.align(Alignment.Center).fillMaxWidth()
         )
         Button(
             onClick = { viewModel.addRandomProducts() },

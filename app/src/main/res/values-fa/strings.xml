@@ -2,7 +2,7 @@
     <string name="app_name">ComposeTrainer</string>
 
     <!-- Home -->
-    <string name="welcomeToHomeScreen">به یارانبار خوش اومدی! </string>
+    <string name="welcomeToHomeScreen">Welcome To Yar Anbar</string>
 
     <!-- Invoice -->
     <string name="sale_invoice">فاکتور فروش</string>
@@ -24,12 +24,11 @@
     <string name="products">محصولات</string>
 
     <!-- Delete Dialog -->
-    <string name="Delete_invoice">Delete Invoice</string>
-    <string name="are_you_sure_to_delete_this_invoice">Are you sure you want to delete this invoice?</string>
-    <string name="delete">Delete</string>
-    <string name="cancel">Cancel</string>
-
-
+    <string name="Delete_invoice">حذف فاکتور</string>
+    <string name="are_you_sure_to_delete_this_invoice">"آیا مطمئن هستید که می‌خواهید این فاکتور را حذف کنید؟"</string>
+    <string name="delete">حذف</string>
+    <string name="cancel">انصراف</string>
+    
     <!-- Product Item -->
     <string name="price">قیمت</string>
     <string name="toman">تـومان</string>

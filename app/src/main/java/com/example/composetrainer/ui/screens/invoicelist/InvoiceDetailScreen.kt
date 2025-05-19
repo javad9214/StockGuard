@@ -107,10 +107,11 @@ fun InvoiceDetailScreen(
 
     // Delete confirmation dialog
     if (showDeleteConfirmDialog) {
+
         AlertDialog(
             onDismissRequest = { showDeleteConfirmDialog = false },
-            title = { Text("Delete Invoice") },
-            text = { Text("Are you sure you want to delete this invoice?") },
+            title = { Text(str(R.string.Delete_invoice)) },
+            text = { Text(str(R.string.are_you_sure_to_delete_this_invoice)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -119,15 +120,16 @@ fun InvoiceDetailScreen(
                         onNavigateBack()
                     }
                 ) {
-                    Text("Delete")
+                    Text(str(R.string.delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirmDialog = false }) {
-                    Text("Cancel")
+                    Text(str(R.string.cancel))
                 }
             }
         )
+
     }
 }
 
