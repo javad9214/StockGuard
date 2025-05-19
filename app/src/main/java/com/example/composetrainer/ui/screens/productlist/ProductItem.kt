@@ -1,4 +1,4 @@
-package com.example.composetrainer.ui.screens.product
+package com.example.composetrainer.ui.screens.productlist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,9 +44,6 @@ import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.utils.PriceValidator
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun ProductItem(

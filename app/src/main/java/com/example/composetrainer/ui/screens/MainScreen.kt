@@ -18,15 +18,20 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.composetrainer.ui.navigation.BottomNavItem
 import com.example.composetrainer.ui.navigation.Routes
-import com.example.composetrainer.ui.screens.product.ProductScreen
+import com.example.composetrainer.ui.screens.productlist.ProductScreen
 import com.example.composetrainer.ui.screens.invoice.invoicescreen.InvoiceScreen
-import com.example.composetrainer.ui.screens.invoice.InvoicesListScreen
+import com.example.composetrainer.ui.screens.invoicelist.InvoicesListScreen
+import com.example.composetrainer.ui.screens.invoicelist.InvoiceDetailScreen
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.components.CustomNavigationBar
 import com.example.login.ui.screens.LoginScreen
 
 @Composable
-fun MainScreen(navController: NavHostController) {
+fun MainScreen(
+    navController: NavHostController,
+    isDarkTheme: Boolean = false,
+    onToggleTheme: () -> Unit = {}
+) {
 
     val bottomNavItems = listOf(
         BottomNavItem("Invoices", Routes.INVOICES_LIST),
@@ -81,14 +86,18 @@ fun MainScreen(navController: NavHostController) {
                     }
                 )
             }
-            composable(Routes.PRODUCTS_LIST){
+            composable(Routes.PRODUCTS_LIST) {
                 ProductScreen()
             }
 
             composable(Routes.HOME) {
-                HomeScreen(onButtonClick = {
-                    navController.navigate(Routes.INVOICES_LIST)
-                })
+                HomeScreen(
+                    onButtonClick = {
+                        navController.navigate(Routes.INVOICES_LIST)
+                    },
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = onToggleTheme
+                )
             }
 
             composable(Routes.INVOICES_LIST) {
@@ -118,12 +127,16 @@ fun MainScreen(navController: NavHostController) {
                 arguments = listOf(navArgument("invoiceId") { type = NavType.LongType })
             ) { backStackEntry ->
                 val invoiceId = backStackEntry.arguments?.getLong("invoiceId") ?: 0L
-                // You'll need to create an InvoiceDetailScreen component
-                Text("Invoice Details for $invoiceId")
+                InvoiceDetailScreen(
+                    invoiceId = invoiceId,
+                    onNavigateBack = { navController.popBackStack() },
+                    onEditInvoice = { id ->
+                        navController.navigate(Routes.INVOICE_CREATE)
+                    }
+                )
             }
 
             composable(Routes.ANALYZE) {
-                // Placeholder for Analyze screen
                 Text(text = "Analyze Screen")
             }
         }
@@ -134,9 +147,12 @@ fun MainScreen(navController: NavHostController) {
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
-    // Create a NavController for preview purposes.
     val navController = rememberNavController()
     ComposeTrainerTheme {
-        MainScreen(navController = navController)
+        MainScreen(
+            navController = navController,
+            isDarkTheme = false,
+            onToggleTheme = {}
+        )
     }
 }

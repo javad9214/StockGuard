@@ -67,7 +67,7 @@ fun CustomNavigationBar(
                 .height(80.dp)
                 .shadow(8.dp)
                 .zIndex(0f),
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ) {
             // First half of the nav items
             bottomNavItems.take(2).forEach { item ->
@@ -85,7 +85,7 @@ fun CustomNavigationBar(
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = MaterialTheme.colorScheme.primary,
                         indicatorColor = Color.Transparent,
-                        unselectedIconColor = Color.Gray
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
             }
@@ -109,13 +109,14 @@ fun CustomNavigationBar(
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = MaterialTheme.colorScheme.primary,
                         indicatorColor = Color.Transparent,
-                        unselectedIconColor = Color.Gray
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
             }
         }
 
         // Floating Action Button
+        val shadowColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.18f)
         Card(
             modifier = Modifier
                 .offset(y = (-40).dp)
@@ -125,7 +126,6 @@ fun CustomNavigationBar(
                     shape = CircleShape
                 }
                 .drawBehind {
-                    val shadowColor = Color.Black.copy(alpha = 0.2f)
                     val shadowRadius = 2.dp.toPx()
                     val shadowOffsetY = -2.dp.toPx()
                     drawIntoCanvas {
@@ -147,7 +147,7 @@ fun CustomNavigationBar(
                 },
             elevation = CardDefaults.cardElevation(0.dp),
             shape = CircleShape,
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             FloatingActionButton(
                 onClick = onFabClick,

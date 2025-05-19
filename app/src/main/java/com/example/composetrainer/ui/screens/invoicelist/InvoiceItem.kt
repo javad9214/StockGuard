@@ -1,4 +1,4 @@
-package com.example.composetrainer.ui.screens.invoice
+package com.example.composetrainer.ui.screens.invoicelist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -19,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,7 +46,6 @@ fun InvoiceItem(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp,
         ),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -64,7 +61,9 @@ fun InvoiceItem(
                         painter = painterResource(id = R.drawable.calendar_today_24px),
                         contentDescription = "Date",
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(dimen(R.dimen.size_sm)).padding(end = 4.dp)
+                        modifier = Modifier
+                            .size(dimen(R.dimen.size_sm))
+                            .padding(end = 4.dp)
                     )
                     Text(
                         text = formattedDate,
@@ -96,7 +95,8 @@ fun InvoiceItem(
                         painter = painterResource(id = R.drawable.toman),
                         contentDescription = "toman",
                         modifier = Modifier
-                            .size(dimen(R.dimen.size_md)).padding(end = 4.dp)
+                            .size(dimen(R.dimen.size_md))
+                            .padding(end = 4.dp)
                     )
 
                     Text(
@@ -122,7 +122,9 @@ fun InvoiceItem(
                         imageVector = Icons.Outlined.ShoppingCart,
                         contentDescription = "Items",
                         tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(dimen(R.dimen.size_sm)).padding(start = 4.dp, end = 4.dp)
+                        modifier = Modifier
+                            .size(dimen(R.dimen.size_sm))
+                            .padding(start = 4.dp, end = 4.dp)
                     )
 
                 }

@@ -1,4 +1,4 @@
-package com.example.composetrainer.ui.screens.invoice
+package com.example.composetrainer.ui.screens.invoicelist
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box

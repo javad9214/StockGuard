@@ -38,7 +38,7 @@ fun InvoiceScreen(
     viewModel: InvoiceViewModel = hiltViewModel()
 ) {
 
-    SetStatusBarColor(color = Color.White)
+    SetStatusBarColor(color = MaterialTheme.colorScheme.background)
 
     val persianDate = remember { FarsiDateUtil.getTodayPersianDate()}
     val currentTime = remember { FarsiDateUtil.getCurrentTimeFormatted() }
@@ -94,7 +94,7 @@ fun InvoiceScreen(
                     Text(
                         text = "No products added yet",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }

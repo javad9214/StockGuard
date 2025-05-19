@@ -58,7 +58,7 @@ fun InvoiceProductItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = dimen(R.dimen.space_1)),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 2.dp
             ),

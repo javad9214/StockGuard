@@ -15,6 +15,11 @@
     <string name="sale_invoices">فاکتور های فروش</string>
     <string name="items">تعداد</string>
 
+    <!-- Invoice Details -->
+    <string name="invoice_details">جزییات فاکتور</string>
+    <string name="date">تاریخ</string>
+    <string name="products">محصولات</string>
+
     <!-- Product Item -->
     <string name="price">قیمت</string>
     <string name="toman">تـومان</string>

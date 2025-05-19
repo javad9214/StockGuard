@@ -71,7 +71,7 @@ fun AddProductToInvoice(
                 topStart = dimen(R.dimen.radius_xl),
                 topEnd = dimen(R.dimen.radius_xl)
             ),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 6.dp,
             )
@@ -141,8 +141,8 @@ fun AddProductToInvoice(
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = MaterialTheme.colorScheme.surface,
                             unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                            focusedIndicatorColor = Color.Transparent, //  remove bottom line when focused
-                            unfocusedIndicatorColor = Color.Transparent, //  remove bottom line when not focused
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
                         ),
                         shape = MaterialTheme.shapes.medium
                     )
