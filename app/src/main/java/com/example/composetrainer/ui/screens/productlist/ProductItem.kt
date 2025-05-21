@@ -60,7 +60,7 @@ fun ProductItem(
     var showMenu by remember { mutableStateOf(false) }
 
     val myFontFamily = FontFamily(
-        Font(R.font.b_koodak_bd, FontWeight.Normal) // Link to res/font
+        Font(R.font.b_koodak_bd, FontWeight.Normal)
     )
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Card(

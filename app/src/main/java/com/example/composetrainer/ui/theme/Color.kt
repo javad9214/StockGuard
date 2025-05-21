@@ -2,6 +2,10 @@ package com.example.composetrainer.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+// --- Custom Color Roles ---
+val muted_sage_white = Color(0xFFEAE8E1) // Muted Sage White
+val blue = Color(0xFF003d99)
+
 // --- Material 3 Color Roles ---
 // Light theme colors
 val md_theme_light_primary = Color(0xFF2240AA) // Deep Indigo

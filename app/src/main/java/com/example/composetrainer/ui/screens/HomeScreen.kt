@@ -1,5 +1,6 @@
 package com.example.composetrainer.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -21,7 +24,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,47 +52,56 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        FloatingActionButton(
-            onClick = onToggleTheme,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(16.dp)
+        Box(
+            modifier = Modifier.fillMaxSize(),
         ) {
-            Icon(
-                imageVector = if (isDarkTheme) Icons.Filled.Brightness7 else Icons.Filled.Brightness4,
-                contentDescription = if (isDarkTheme) "Switch to Light Mode" else "Switch to Dark Mode"
-            )
-        }
+            FloatingActionButton(
+                onClick = onToggleTheme,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = if (isDarkTheme) Icons.Filled.Brightness7 else Icons.Filled.Brightness4,
+                    contentDescription = if (isDarkTheme) "Switch to Light Mode" else "Switch to Dark Mode"
+                )
+            }
 
-        Text(
-            str(R.string.welcomeToHomeScreen),
-            fontFamily = Kamran,
-            modifier = Modifier.align(Alignment.Center).fillMaxWidth()
-        )
-        Button(
-            onClick = { viewModel.addRandomProducts() },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = dimen(R.dimen.space_14))
-        ) {
-            Text("Add Random Products")
-        }
-        Spacer(modifier = Modifier.padding(dimen(R.dimen.space_4)))
-
-        if (showBottomSheet) {
-            ProductSelectionBottomSheet(
-                products = products,
-                onAddToInvoice = { product, quantity ->
-                    invoiceViewModel.addToCurrentInvoice(product, quantity)
-                    showBottomSheet = false
-                },
-                onDismiss = { showBottomSheet = false }
+            Text(
+                str(R.string.welcomeToHomeScreen),
+                fontFamily = Kamran,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
             )
+            Button(
+                onClick = { viewModel.addRandomProducts() },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = dimen(R.dimen.space_14))
+            ) {
+                Text("Add Random Products")
+            }
+            Spacer(modifier = Modifier.padding(dimen(R.dimen.space_4)))
+
+            if (showBottomSheet) {
+                ProductSelectionBottomSheet(
+                    products = products,
+                    onAddToInvoice = { product, quantity ->
+                        invoiceViewModel.addToCurrentInvoice(product, quantity)
+                        showBottomSheet = false
+                    },
+                    onDismiss = { showBottomSheet = false }
+                )
+            }
         }
     }
+
+
 }
 
 @Preview(showBackground = true)
