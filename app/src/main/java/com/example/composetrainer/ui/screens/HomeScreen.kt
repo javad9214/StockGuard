@@ -18,6 +18,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,17 +27,21 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import android.widget.Toast
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.screens.invoice.productselection.ProductSelectionBottomSheet
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.theme.Kamran
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
+import com.example.composetrainer.ui.components.BarcodeScannerView
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.str
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +56,8 @@ fun HomeScreen(
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
+    var showBarcodeScannerView by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -78,14 +85,26 @@ fun HomeScreen(
                     .align(Alignment.Center)
                     .fillMaxWidth()
             )
+            // Add Random Products button
             Button(
                 onClick = { viewModel.addRandomProducts() },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = dimen(R.dimen.space_14))
+                    .padding(bottom = dimen(R.dimen.space_14) + 60.dp) // Add spacing for scan barcode button
             ) {
                 Text("Add Random Products")
             }
+            
+            // Scan Barcode button
+            Button(
+                onClick = { showBarcodeScannerView = true },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = dimen(R.dimen.space_14))
+            ) {
+                Text("Scan Barcode")
+            }
+            
             Spacer(modifier = Modifier.padding(dimen(R.dimen.space_4)))
 
             if (showBottomSheet) {
@@ -96,6 +115,16 @@ fun HomeScreen(
                         showBottomSheet = false
                     },
                     onDismiss = { showBottomSheet = false }
+                )
+            }
+            
+            if (showBarcodeScannerView) {
+                BarcodeScannerView(
+                    onBarcodeDetected = {
+                        showBarcodeScannerView = false
+                        Toast.makeText(context, "Barcode: $it", Toast.LENGTH_LONG).show()
+                    },
+                    onClose = { showBarcodeScannerView = false }
                 )
             }
         }
