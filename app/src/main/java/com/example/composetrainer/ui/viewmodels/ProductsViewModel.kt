@@ -68,7 +68,7 @@ class ProductsViewModel @Inject constructor(
                     barcode = (100000000000..999999999999).random().toString(),
                     price = listOf(100L, 250L, 499L, 999L, 1299L).random(),
                     image = null,
-                    categoryID = (1..5).random(),
+                    subCategoryId = (1..5).random(),
                     date = System.currentTimeMillis() - (0..1000000).random(),
                     stock = (1..100).random()
                 )

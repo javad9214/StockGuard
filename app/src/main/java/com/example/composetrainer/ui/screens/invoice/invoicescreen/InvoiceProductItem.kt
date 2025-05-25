@@ -285,7 +285,7 @@ fun InvoiceProductItemPreview() {
                     barcode = "123456789",
                     price = 25000,
                     image = null,
-                    categoryID = null,
+                    subCategoryId = null,
                     date = System.currentTimeMillis(),
                     stock = 10
                 ),

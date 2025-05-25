@@ -106,7 +106,7 @@ fun ProductSelectionItemPreview() {
         barcode = null,
         price = 250000L,
         image = null,
-        categoryID = null,
+        subCategoryId = null,
         date = System.currentTimeMillis(),
         stock = 5
     )

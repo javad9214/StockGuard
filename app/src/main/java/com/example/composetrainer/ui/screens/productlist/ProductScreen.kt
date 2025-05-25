@@ -247,7 +247,7 @@ fun PreviewProductsScreen() {
             price = 999L,
             stock = 5,
             image = null,
-            categoryID = 1,
+            subCategoryId = 1,
             date = System.currentTimeMillis()
         ),
         Product(
@@ -257,7 +257,7 @@ fun PreviewProductsScreen() {
             price = 499L,
             stock = 10,
             image = null,
-            categoryID = 1,
+            subCategoryId = 1,
             date = System.currentTimeMillis()
         ),
         Product(
@@ -267,7 +267,7 @@ fun PreviewProductsScreen() {
             price = 79L,
             stock = 20,
             image = null,
-            categoryID = 2,
+            subCategoryId = 2,
             date = System.currentTimeMillis()
         )
     )

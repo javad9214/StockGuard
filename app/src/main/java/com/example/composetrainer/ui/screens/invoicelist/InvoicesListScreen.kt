@@ -125,7 +125,7 @@ fun InvoicesListScreenPreview() {
                     name = "Smartphone",
                     price = 699L,
                     barcode = "123456789",
-                    categoryID = 1,
+                    subCategoryId = 1,
                     date = System.currentTimeMillis(),
                     stock = 10,
                     image = null
@@ -138,7 +138,7 @@ fun InvoicesListScreenPreview() {
                     name = "Laptop",
                     price = 1299L,
                     barcode = "987654321",
-                    categoryID = 1,
+                    subCategoryId = 1,
                     date = System.currentTimeMillis(),
                     stock = 5,
                     image = null

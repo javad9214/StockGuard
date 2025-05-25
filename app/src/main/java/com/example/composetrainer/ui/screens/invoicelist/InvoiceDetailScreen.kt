@@ -291,7 +291,7 @@ fun InvoiceDetailScreenPreview() {
                 stock = 10,
                 barcode = "123456789",
                 image = null,
-                categoryID = 1,
+                subCategoryId = 1,
                 date = System.currentTimeMillis()
             ),
             quantity = 2
@@ -304,7 +304,7 @@ fun InvoiceDetailScreenPreview() {
                 stock = 5,
                 barcode = "223456789",
                 image = null,
-                categoryID = 2,
+                subCategoryId = 2,
                 date = System.currentTimeMillis()
             ),
             quantity = 1
@@ -317,7 +317,7 @@ fun InvoiceDetailScreenPreview() {
                 stock = 3,
                 barcode = "323456789",
                 image = null,
-                categoryID = 1,
+                subCategoryId = 1,
                 date = System.currentTimeMillis()
             ),
             quantity = 3
@@ -349,7 +349,7 @@ fun InvoiceDetailScreenFullPreview() {
                 stock = 10,
                 barcode = "123456789",
                 image = null,
-                categoryID = 1,
+                subCategoryId = 1,
                 date = System.currentTimeMillis()
             ),
             quantity = 2
@@ -362,7 +362,7 @@ fun InvoiceDetailScreenFullPreview() {
                 stock = 5,
                 barcode = "223456789",
                 image = null,
-                categoryID = 2,
+                subCategoryId = 2,
                 date = System.currentTimeMillis()
             ),
             quantity = 1

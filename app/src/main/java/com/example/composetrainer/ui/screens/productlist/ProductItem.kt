@@ -124,7 +124,7 @@ fun ProductItem(
                     // Category ID
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "${product.categoryID ?: "N/A"}",
+                            text = "${product.subCategoryId ?: "N/A"}",
                             fontSize = dimenTextSize(R.dimen.text_size_md),
                             fontFamily = BHoma
                         )
@@ -242,7 +242,7 @@ fun PreviewProductItem() {
                 barcode = "123456789",
                 price = 1000,
                 image = null,
-                categoryID = 1,
+                subCategoryId = 1,
                 date = System.currentTimeMillis(),
                 stock = 10
             ),

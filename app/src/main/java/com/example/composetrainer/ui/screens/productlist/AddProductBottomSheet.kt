@@ -107,7 +107,7 @@ fun AddProductBottomSheet(
                     barcode = BarcodeGenerator.generateBarcodeNumber(),
                     price = price.toLongOrNull(),
                     image = null,
-                    categoryID = categoryID.toIntOrNull(),
+                    subCategoryId = categoryID.toIntOrNull(),
                     date = initialProduct?.date ?: System.currentTimeMillis(),
                     stock = initialProduct?.stock ?: 0
                 )

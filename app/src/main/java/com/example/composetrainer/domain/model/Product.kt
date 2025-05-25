@@ -6,7 +6,7 @@ data class Product(
     val barcode: String?,
     val price: Long?,
     val image: String?,
-    val categoryID: Int?,
+    val subCategoryId: Int?,
     val date: Long,
     val stock: Int
 )

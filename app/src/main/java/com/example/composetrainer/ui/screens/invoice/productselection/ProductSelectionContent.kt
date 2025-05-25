@@ -96,7 +96,7 @@ private fun ProductSelectionContentPreview() {
             barcode = "123456789",
             price = 69999L,
             image = null,
-            categoryID = 1,
+            subCategoryId = 1,
             date = System.currentTimeMillis(),
             stock = 15
         ),
@@ -106,7 +106,7 @@ private fun ProductSelectionContentPreview() {
             barcode = "987654321",
             price = 14999L,
             image = null,
-            categoryID = 2,
+            subCategoryId = 2,
             date = System.currentTimeMillis(),
             stock = 8
         ),
@@ -116,7 +116,7 @@ private fun ProductSelectionContentPreview() {
             barcode = "456789123",
             price = 99999L,
             image = null,
-            categoryID = 1,
+            subCategoryId = 1,
             date = System.currentTimeMillis(),
             stock = 5
         )

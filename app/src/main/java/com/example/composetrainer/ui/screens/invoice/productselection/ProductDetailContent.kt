@@ -129,7 +129,7 @@ private fun ProductDetailContentPreview() {
         barcode = "123456789",
         price = 12999000L,
         image = null,
-        categoryID = 1,
+        subCategoryId = 1,
         date = System.currentTimeMillis(),
         stock = 10
     )
