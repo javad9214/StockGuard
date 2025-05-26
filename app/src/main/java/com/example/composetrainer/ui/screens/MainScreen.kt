@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.composetrainer.ui.components.BottomNavBarVersion4
 import com.example.composetrainer.ui.navigation.BottomNavItem
 import com.example.composetrainer.ui.navigation.Routes
 import com.example.composetrainer.ui.screens.productlist.ProductScreen
@@ -23,7 +24,7 @@ import com.example.composetrainer.ui.screens.invoice.invoicescreen.InvoiceScreen
 import com.example.composetrainer.ui.screens.invoicelist.InvoicesListScreen
 import com.example.composetrainer.ui.screens.invoicelist.InvoiceDetailScreen
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
-import com.example.composetrainer.ui.components.CustomNavigationBar
+import com.example.composetrainer.ui.components.BottomNavBarVersion5
 import com.example.login.ui.screens.LoginScreen
 
 @Composable
@@ -57,9 +58,8 @@ fun MainScreen(
     Scaffold (
         bottomBar = {
             if (shouldShowBottomNav) {
-                CustomNavigationBar(
+                BottomNavBarVersion4(
                     navController = navController,
-                    currentRoute = currentRoute,
                     onFabClick = {
                         navController.navigate(Routes.INVOICE_CREATE) {
                             popUpTo(navController.graph.startDestinationId) {
