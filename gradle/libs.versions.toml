@@ -19,7 +19,7 @@ room = "2.6.1"
 persianDate = "1.7.1"
 camerax = "1.3.0-rc01"
 mlkit-barcode = "17.2.0"
-
+gson = "2.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -49,6 +49,10 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
+#Network
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+
+# Persian Date
 persianDate = { module = "com.github.samanzamani:PersianDate", version.ref = "persianDate" }
 
 # CameraX libraries

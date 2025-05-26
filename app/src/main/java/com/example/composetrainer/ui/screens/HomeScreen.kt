@@ -32,6 +32,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.ui.graphics.Color
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.screens.invoice.productselection.ProductSelectionBottomSheet
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
@@ -39,6 +43,7 @@ import com.example.composetrainer.ui.theme.Kamran
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
 import com.example.composetrainer.ui.components.BarcodeScannerView
+import com.example.composetrainer.ui.viewmodels.HomeViewModel
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.str
 
@@ -50,9 +55,11 @@ fun HomeScreen(
     onToggleTheme: () -> Unit = {},
     isDarkTheme: Boolean = false,
     viewModel: ProductsViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel(),
     invoiceViewModel: InvoiceViewModel = hiltViewModel()
 ) {
     val products by viewModel.products.collectAsState()
+    val progress by homeViewModel.progress.collectAsState()
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -104,7 +111,28 @@ fun HomeScreen(
             ) {
                 Text("Scan Barcode")
             }
-            
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .align(Alignment.BottomCenter),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Button(onClick = { homeViewModel.importProducts() }) {
+                    Text("Start Import")
+                }
+
+                if (progress in 1..99) {
+                    LinearProgressIndicator(progress = progress / 100f)
+                    Text("در حال وارد کردن: $progress%")
+                }
+
+                if (progress == 100) {
+                    Text("✅ واردسازی کامل شد!", color = Color.Green)
+                }
+            }
+
             Spacer(modifier = Modifier.padding(dimen(R.dimen.space_4)))
 
             if (showBottomSheet) {

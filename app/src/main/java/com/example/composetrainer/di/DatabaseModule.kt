@@ -37,4 +37,12 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideInvoiceProductDao(appDatabase: AppDatabase) = appDatabase.invoiceProductDao()
+
+    @Provides
+    @Singleton
+    fun provideCategoryDao(appDatabase: AppDatabase) = appDatabase.categoryDao()
+
+    @Provides
+    @Singleton
+    fun provideSubCategoryDao(appDatabase: AppDatabase) = appDatabase.subCategoryDao()
 }
