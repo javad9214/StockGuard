@@ -100,6 +100,8 @@ dependencies {
     // ML Kit Barcode Scanning
     implementation(libs.google.mlkit.barcode.scanning)
 
+    implementation(libs.accompanist.systemuicontroller)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,8 +1,14 @@
 package com.example.composetrainer.ui.screens.invoicelist
 
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -22,18 +29,24 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Invoice
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.ProductWithQuantity
+import com.example.composetrainer.ui.theme.BComps
 import com.example.composetrainer.ui.theme.BHoma
+import com.example.composetrainer.ui.theme.BLotus
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
+import com.example.composetrainer.utils.dimen
+import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,25 +64,36 @@ fun InvoicesListScreen(
     val context = LocalContext.current
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Sales Invoices") },
-                    actions = {
-                        IconButton(onClick = { viewModel.toggleSortOrder() }) {
-                            Icon(
-                                Icons.Default.Sort,
-                                contentDescription = if (sortNewestFirst) "Sort oldest to newest" else "Sort newest to oldest"
-                            )
-                        }
-                        IconButton(onClick = onCreateNew) {
-                            Icon(Icons.Default.Add, contentDescription = "New Invoice")
-                        }
-                    }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()// or use WindowInsets.statusBars.asPaddingValues()
+        ) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(start = dimen(R.dimen.space_4), end = dimen(R.dimen.space_2)),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(str(R.string.sale_invoices),fontFamily = BComps,
+                    fontSize = dimenTextSize(R.dimen.text_size_lg)
                 )
+
+                IconButton(onClick = { viewModel.toggleSortOrder() }) {
+                    Icon(
+                        Icons.Default.Sort,
+                        contentDescription = if (sortNewestFirst) "Sort oldest to newest" else "Sort newest to oldest"
+                    )
+                }
+
+
             }
-        ) { innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding)) {
+
+            Box {
                 when {
                     isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
 
@@ -90,8 +114,9 @@ fun InvoicesListScreen(
 
                 }
             }
-
         }
+
+
     }
 }
 

@@ -65,7 +65,8 @@ fun MainScreen(
         }
     }
 
-    Scaffold (
+
+    Scaffold(
         bottomBar = {
             if (shouldShowBottomNav) {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -84,7 +85,7 @@ fun MainScreen(
                 }
             }
         },
-    ){ innerPadding ->
+    ) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = Routes.LOGIN,
@@ -122,7 +123,12 @@ fun MainScreen(
                         navController.navigate(Routes.INVOICE_CREATE)
                     },
                     onInvoiceClick = { invoiceId ->
-                        navController.navigate(Routes.INVOICE_DETAILS.replace("{invoiceId}", invoiceId.toString()))
+                        navController.navigate(
+                            Routes.INVOICE_DETAILS.replace(
+                                "{invoiceId}",
+                                invoiceId.toString()
+                            )
+                        )
                     }
                 )
             }

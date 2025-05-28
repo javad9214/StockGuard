@@ -22,13 +22,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.theme.BHoma
@@ -48,161 +51,164 @@ fun HeaderSection(
     onClose: () -> Unit,
     onScanBarcodeClick: () -> Unit = {}
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(
-            bottomStart = dimen(R.dimen.radius_xl),
-            bottomEnd = dimen(R.dimen.radius_xl)
-        ),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp,
-        )
-    ) {
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = dimen(R.dimen.space_1)),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onClose) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close",
-                    )
-                }
+    CompositionLocalProvider(LocalLayoutDirection.provides(LayoutDirection.Ltr)) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(
+                bottomStart = dimen(R.dimen.radius_xl),
+                bottomEnd = dimen(R.dimen.radius_xl)
+            ),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp,
+            )
+        ) {
 
-                Text(
-                    text = invoiceNumber?.toString() ?: "...",
-                    fontFamily = BMitra,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = dimenTextSize(R.dimen.text_size_md),
-                    modifier = Modifier.padding(start = dimen(R.dimen.space_2))
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Text(
-                    text = str(R.string.sale_invoice),
-                    fontSize = dimenTextSize(R.dimen.text_size_xl),
-                    textAlign = TextAlign.End,
-                    fontFamily = BHoma,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(end = dimen(R.dimen.space_4))
-                )
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = dimen(R.dimen.space_4),
-                        vertical = dimen(R.dimen.space_4)
-                    )
-                    .height(IntrinsicSize.Min)
-            ) {
-                Column {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.height(32.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.calendar_today_24px),
-                            contentDescription = "Date",
-                            modifier = Modifier.padding(end = dimen(R.dimen.space_1))
-                        )
-                        Text(
-                            text = persianDate,
-                            fontFamily = BMitra,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .padding(vertical = dimen(R.dimen.space_1))
-                        )
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(top = dimen(R.dimen.space_2))
-                            .height(32.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.schedule_24px),
-                            contentDescription = "Time",
-                            modifier = Modifier.padding(end = dimen(R.dimen.space_1))
-                        )
-                        Text(
-                            text = currentTime,
-                            fontFamily = BMitra,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .padding(vertical = dimen(R.dimen.space_1))
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.weight(1f))
+            Column {
                 Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = dimen(R.dimen.space_1)),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                        modifier = Modifier.fillMaxHeight()
-                    ) {
-                        Text(
-                            text = str(R.string.buyer),
-                            fontFamily = BKoodak,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = str(R.string.unknown),
-                            fontFamily = BKoodak,
-                            fontWeight = FontWeight.Bold
+                    IconButton(onClick = onClose) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close",
                         )
                     }
-                    Icon(
-                        painter = painterResource(id = R.drawable.face_24px),
-                        contentDescription = "User",
-                        modifier = Modifier
-                            .padding(start = dimen(R.dimen.space_2))
-                            .fillMaxHeight()
-                            .aspectRatio(1f)
-                    )
-                }
-            }
 
-            // Add product button
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = dimen(R.dimen.space_4),
-                        vertical = dimen(R.dimen.space_2)
-                    ),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                // Add product button
-                Button(
-                    onClick = onAddProductClick,
-                    modifier = Modifier.weight(1f)
-                ) {
                     Text(
-                        text = str(R.string.add_product),
-                        style = MaterialTheme.typography.titleMedium
+                        text = invoiceNumber?.toString() ?: "...",
+                        fontFamily = BMitra,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = dimenTextSize(R.dimen.text_size_md),
+                        modifier = Modifier.padding(start = dimen(R.dimen.space_2))
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Text(
+                        text = str(R.string.sale_invoice),
+                        fontSize = dimenTextSize(R.dimen.text_size_xl),
+                        textAlign = TextAlign.End,
+                        fontFamily = BHoma,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(end = dimen(R.dimen.space_4))
                     )
                 }
 
-                // Scan barcode button
-                Button(
-                    onClick = onScanBarcodeClick,
-                    modifier = Modifier.width(56.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = dimen(R.dimen.space_4),
+                            vertical = dimen(R.dimen.space_4)
+                        )
+                        .height(IntrinsicSize.Min)
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.barcode_scanner_24px),
-                        contentDescription = "Scan Barcode"
-                    )
+                    Column {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.height(32.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.calendar_today_24px),
+                                contentDescription = "Date",
+                                modifier = Modifier.padding(end = dimen(R.dimen.space_1))
+                            )
+                            Text(
+                                text = persianDate,
+                                fontFamily = BMitra,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .padding(vertical = dimen(R.dimen.space_1))
+                            )
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(top = dimen(R.dimen.space_2))
+                                .height(32.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.schedule_24px),
+                                contentDescription = "Time",
+                                modifier = Modifier.padding(end = dimen(R.dimen.space_1))
+                            )
+                            Text(
+                                text = currentTime,
+                                fontFamily = BMitra,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .padding(vertical = dimen(R.dimen.space_1))
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.End,
+                            verticalArrangement = Arrangement.SpaceEvenly,
+                            modifier = Modifier.fillMaxHeight()
+                        ) {
+                            Text(
+                                text = str(R.string.buyer),
+                                fontFamily = BKoodak,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = str(R.string.unknown),
+                                fontFamily = BKoodak,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Icon(
+                            painter = painterResource(id = R.drawable.face_24px),
+                            contentDescription = "User",
+                            modifier = Modifier
+                                .padding(start = dimen(R.dimen.space_2))
+                                .fillMaxHeight()
+                                .aspectRatio(1f)
+                        )
+                    }
+                }
+
+                // Add product button
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = dimen(R.dimen.space_4),
+                            vertical = dimen(R.dimen.space_2)
+                        ),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Add product button
+                    Button(
+                        onClick = onAddProductClick,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = str(R.string.add_product),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
+                    // Scan barcode button
+                    Button(
+                        onClick = onScanBarcodeClick,
+                        modifier = Modifier.width(56.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.barcode_scanner_24px),
+                            contentDescription = "Scan Barcode"
+                        )
+                    }
                 }
             }
         }

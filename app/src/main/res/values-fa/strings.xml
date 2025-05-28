@@ -21,14 +21,18 @@
     <!-- Invoice Details -->
     <string name="invoice_details">جزییات فاکتور</string>
     <string name="date">تاریخ</string>
-    <string name="products">محصولات</string>
+
 
     <!-- Delete Dialog -->
     <string name="Delete_invoice">حذف فاکتور</string>
     <string name="are_you_sure_to_delete_this_invoice">"آیا مطمئن هستید که می‌خواهید این فاکتور را حذف کنید؟"</string>
     <string name="delete">حذف</string>
     <string name="cancel">انصراف</string>
-    
+
+
+    <!-- Product Screen -->
+    <string name="products">محصولات</string>
+
     <!-- Product Item -->
     <string name="price">قیمت</string>
     <string name="toman">تـومان</string>

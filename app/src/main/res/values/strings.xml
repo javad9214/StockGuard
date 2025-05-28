@@ -1,27 +1,28 @@
 <resources>
-    <string name="app_name">ComposeTrainer</string>
+    <string name="app_name">Stock Guard</string>
 
     <!-- Home -->
-    <string name="welcomeToHomeScreen">به یارانبار خوش اومدی! </string>
+    <string name="welcomeToHomeScreen">Welcome to Yaranbar!</string>
 
     <!-- Invoice -->
-    <string name="sale_invoice">فاکتور فروش</string>
-    <string name="total">مجموع</string>
-    <string name="submit">ثبت</string>
-    <string name="finalize_factor">نهایی سازی</string>
-    <string name="buyer">خریدار</string>
-    <string name="unknown">ناشناخته</string>
-    <string name="add_product">افزودن محصول</string>
-    <string name="invoice_number">شماره فاکتور</string>
+    <string name="sale_invoice">Sales Invoice</string>
+    <string name="total">Total</string>
+    <string name="submit">Submit</string>
+    <string name="finalize_factor">Finalize</string>
+    <string name="buyer">Buyer</string>
+    <string name="unknown">Unknown</string>
+    <string name="add_product">Add Product</string>
+    <string name="invoice_number">Invoice Number</string>
 
     <!-- Invoice List -->
-    <string name="sale_invoices">فاکتور های فروش</string>
-    <string name="items">تعداد</string>
+    <string name="sale_invoices">Sales Invoices</string>
+    <string name="items">Quantity</string>
 
     <!-- Invoice Details -->
-    <string name="invoice_details">جزییات فاکتور</string>
-    <string name="date">تاریخ</string>
-    <string name="products">محصولات</string>
+    <string name="invoice_details">Invoice Details</string>
+    <string name="date">Date</string>
+
+
 
     <!-- Delete Dialog -->
     <string name="Delete_invoice">Delete Invoice</string>
@@ -29,24 +30,27 @@
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
 
+    <!-- Product Screen -->
+    <string name="products">products</string>
 
     <!-- Product Item -->
-    <string name="price">قیمت</string>
-    <string name="toman">تـومان</string>
+    <string name="price">Price</string>
+    <string name="toman">Toman</string>
 
     <!-- Product Selection -->
-    <string name="select_product">انتخاب محصول</string>
-    <string name="stock">موجودی</string>
-    <string name="available">موجود</string>
-    <string name="add_to_invoice">افزودن به فاکتور</string>
-    <string name="back">بازگشت</string>
-    <string name="decrease">کاهش</string>
-    <string name="increase">افزایش</string>
-    <string name="no_products_available">محصولی موجود نیست</string>
-    <string name="search_products">جستجوی محصولات...</string>
-    <string name="clear_search">پاک کردن جستجو</string>
+    <string name="select_product">Select Product</string>
+    <string name="stock">Stock</string>
+    <string name="available">Available</string>
+    <string name="add_to_invoice">Add to Invoice</string>
+    <string name="back">Back</string>
+    <string name="decrease">Decrease</string>
+    <string name="increase">Increase</string>
+    <string name="no_products_available">No Products Available</string>
+    <string name="search_products">Search Products...</string>
+    <string name="clear_search">Clear Search</string>
 
     <!-- Barcode Scanner View -->
-    <string name="barcode_position">بارکد کالا درداخل قاب قرار دهید!</string>
+    <string name="barcode_position">Place the product barcode inside the frame!</string>
+
 
 </resources>

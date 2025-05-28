@@ -62,7 +62,7 @@ fun InvoiceDetailScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Invoice Details", fontFamily = BHoma) },
+                    title = { Text(str(R.string.invoice_details), fontFamily = BHoma) },
                     navigationIcon = {
                         IconButton(onClick = onNavigateBack) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Go back")

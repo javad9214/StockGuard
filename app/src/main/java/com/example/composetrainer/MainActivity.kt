@@ -15,6 +15,11 @@ import com.example.composetrainer.ui.screens.MainScreen
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.view.WindowCompat
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -35,6 +40,22 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             var isDarkTheme by rememberSaveable { mutableStateOf(false) }
             ComposeTrainerTheme(darkTheme = isDarkTheme) {
+                // Update system bars (status bar and navigation bar) colors
+                val systemBarsColor = if (isDarkTheme) Color.Black else Color.White
+                val systemBarsContrastColor = if (isDarkTheme) false else true
+
+                SideEffect {
+                    val window = this@MainActivity.window
+                    window.statusBarColor = systemBarsColor.toArgb()
+                    window.navigationBarColor = systemBarsColor.toArgb()
+
+                    // Set the appearance of the status bar and navigation bar icons
+                    WindowCompat.getInsetsController(window, window.decorView).apply {
+                        isAppearanceLightStatusBars = systemBarsContrastColor
+                        isAppearanceLightNavigationBars = systemBarsContrastColor
+                    }
+                }
+
                 MainScreen(
                     navController = navController,
                     isDarkTheme = isDarkTheme,

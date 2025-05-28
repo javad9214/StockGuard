@@ -44,8 +44,6 @@ fun InvoiceScreen(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
 
-    SetStatusBarColor(color = MaterialTheme.colorScheme.background)
-
     val persianDate = remember { FarsiDateUtil.getTodayPersianDate()}
     val currentTime = remember { FarsiDateUtil.getCurrentTimeFormatted() }
     val nextInvoiceNumber by viewModel.nextInvoiceNumber.collectAsState()
