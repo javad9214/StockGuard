@@ -37,6 +37,19 @@
     <string name="price">قیمت</string>
     <string name="toman">تـومان</string>
 
+    <!-- Product Screen -->
+    <string name="product_details">جزئیات محصول</string>
+    <string name="total_price">قیمت کل: %s</string>
+    <string name="search_invoices">جستجوی فاکتورها</string>
+    <string name="active_customers">مشتریان فعال</string>
+    <string name="product_count">%d محصول</string>
+    <string name="invoice_date">تاریخ فاکتور</string>
+    <string name="invoice_products">محصولات فاکتور</string>
+    <string name="invoice_total">جمع فاکتور: %s</string>
+    <string name="save">ذخیره</string>
+    <string name="search">جستجو</string>
+    <string name="ok">باشه</string>
+
     <!-- Product Selection -->
     <string name="select_product">انتخاب محصول</string>
     <string name="stock">موجودی</string>
@@ -48,6 +61,11 @@
     <string name="no_products_available">محصولی موجود نیست</string>
     <string name="search_products">جستجوی محصولات...</string>
     <string name="clear_search">پاک کردن جستجو</string>
+
+    <!-- Create Invoice Screen -->
+    <string name="invoice_creation">ایجاد فاکتور</string>
+    <string name="customer_name">نام مشتری</string>
+    <string name="save_invoice">ذخیره فاکتور</string>
 
     <!-- Barcode Scanner View -->
     <string name="barcode_position">Position barcode within frame</string>

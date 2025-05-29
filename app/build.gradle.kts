@@ -53,6 +53,13 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    // Check if we have a RAW resources file to store our sound file
+    sourceSets {
+        getByName("main") {
+            res.srcDirs("src/main/res")
+        }
+    }
 }
 
 dependencies {

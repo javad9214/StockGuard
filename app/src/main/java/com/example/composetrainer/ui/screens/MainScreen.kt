@@ -26,6 +26,7 @@ import com.example.composetrainer.ui.navigation.Routes
 import com.example.composetrainer.ui.screens.invoice.invoicescreen.InvoiceScreen
 import com.example.composetrainer.ui.screens.invoicelist.InvoiceDetailScreen
 import com.example.composetrainer.ui.screens.invoicelist.InvoicesListScreen
+import com.example.composetrainer.ui.screens.productlist.ProductDetailsScreen
 import com.example.composetrainer.ui.screens.productlist.ProductScreen
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.viewmodels.HomeViewModel
@@ -101,7 +102,7 @@ fun MainScreen(
                 )
             }
             composable(Routes.PRODUCTS_LIST) {
-                ProductScreen()
+                ProductScreen(navController = navController)
             }
 
             composable(Routes.HOME) {
@@ -157,6 +158,17 @@ fun MainScreen(
                     onEditInvoice = { id ->
                         navController.navigate(Routes.INVOICE_CREATE)
                     }
+                )
+            }
+
+            composable(
+                route = Routes.PRODUCT_DETAILS,
+                arguments = listOf(navArgument("productId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val productId = backStackEntry.arguments?.getLong("productId") ?: 0L
+                ProductDetailsScreen(
+                    productId = productId,
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
 

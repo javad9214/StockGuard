@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,6 +39,8 @@ class ProductsViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> get() = _searchQuery
 
+    private val _selectedProduct = MutableStateFlow<Product?>(null)
+    val selectedProduct: StateFlow<Product?> get() = _selectedProduct
 
     init {
         loadProducts()
@@ -115,6 +118,43 @@ class ProductsViewModel @Inject constructor(
         viewModelScope.launch {
             decreaseStockUseCase(product)
             loadProducts() // Refresh the list
+        }
+    }
+
+    fun getProductById(productId: Long) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                // Using the existing getProductsUseCase and filtering by ID
+                val allProducts = getProductsUseCase(sortOrder.value, "").first()
+                _selectedProduct.value = allProducts.find { it.id == productId }
+            } catch (e: Exception) {
+                // Handle error
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun updateProductStock(productId: Long, newStock: Int) {
+        viewModelScope.launch {
+            val product = _selectedProduct.value?.copy(stock = newStock)
+            product?.let {
+                editProductUseCase(it)
+                _selectedProduct.value = it
+                loadProducts() // Refresh the list if it's visible
+            }
+        }
+    }
+
+    fun updateProductPrice(productId: Long, newPrice: Long) {
+        viewModelScope.launch {
+            val product = _selectedProduct.value?.copy(price = newPrice)
+            product?.let {
+                editProductUseCase(it)
+                _selectedProduct.value = it
+                loadProducts() // Refresh the list if it's visible
+            }
         }
     }
 }

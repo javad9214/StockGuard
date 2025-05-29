@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.screens.invoice.productselection.AddProductToInvoice
@@ -35,6 +36,7 @@ import com.example.composetrainer.ui.components.SetStatusBarColor
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.ui.components.BarcodeScannerView
 import com.example.composetrainer.ui.viewmodels.HomeViewModel
+import com.example.composetrainer.utils.BarcodeSoundPlayer
 
 @Composable
 fun InvoiceScreen(
@@ -57,6 +59,9 @@ fun InvoiceScreen(
     val scannedProduct by homeViewModel.scannedProduct.collectAsState()
     val scannerIsLoading by homeViewModel.isLoading.collectAsState()
     val scannerErrorMessage by homeViewModel.errorMessage.collectAsState()
+
+    // Context for MediaPlayer
+    val context = LocalContext.current
 
     // Debug logs to check invoice items
     LaunchedEffect(Unit) {
@@ -170,6 +175,9 @@ fun InvoiceScreen(
                 onBarcodeDetected = { barcode ->
                     showBarcodeScannerView = false
                     Log.d("InvoiceScreen", "Barcode detected: $barcode")
+                    // Play barcode success sound
+                    BarcodeSoundPlayer.playBarcodeSuccessSound(context)
+
                     homeViewModel.searchProductByBarcode(barcode)
                 },
                 onClose = { showBarcodeScannerView = false }

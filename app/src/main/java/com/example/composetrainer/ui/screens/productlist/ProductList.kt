@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,7 +29,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -44,35 +44,44 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Product
+import com.example.composetrainer.ui.components.BarcodeScannerView
+import com.example.composetrainer.ui.navigation.Screen
 import com.example.composetrainer.ui.theme.BMitra
-import com.example.composetrainer.ui.theme.BNazanin
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
 import com.example.composetrainer.ui.viewmodels.SortOrder
-import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.str
+import com.example.composetrainer.utils.BarcodeSoundPlayer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductScreen(
-    viewModel: ProductsViewModel = hiltViewModel()
+    viewModel: ProductsViewModel = hiltViewModel(),
+    navController: NavController? = null
 ) {
     val products by viewModel.products.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val sortOrder by viewModel.sortOrder.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
+    // Context for MediaPlayer
+    val context = LocalContext.current
+
     // State for bottom sheet visibility
     val sheetState = rememberModalBottomSheetState()
     val isAddProductSheetOpen = remember { mutableStateOf(false) }
-
-
     val selectedProductForEdit = remember { mutableStateOf<Product?>(null) }
+
+    // Barcode scanner state
+    var showBarcodeScannerView by remember { mutableStateOf(false) }
 
     if (selectedProductForEdit.value != null || isAddProductSheetOpen.value) {
         ModalBottomSheet(
@@ -97,21 +106,38 @@ fun ProductScreen(
         }
     }
 
+    // Show barcode scanner when activated - moved outside to fix layering
+    if (showBarcodeScannerView) {
+        BarcodeScannerView(
+            onBarcodeDetected = { barcode ->
+                showBarcodeScannerView = false
+                // Set the search query to the scanned barcode
+                viewModel.updateSearchQuery(barcode)
 
-
-    ProductScreenContent(
-        products = products,
-        isLoading = isLoading,
-        sortOrder = sortOrder,
-        searchQuery = searchQuery,
-        onSearchQueryChange = { viewModel.updateSearchQuery(it) },
-        onSortOrderSelected = { viewModel.updateSortOrder(it) },
-        onAddProduct = { isAddProductSheetOpen.value = true },
-        onEditProduct = { selectedProductForEdit.value = it },
-        onDeleteProduct = { viewModel.deleteProduct(it) },
-        onIncreaseStock = { viewModel.increaseStock(it) },
-        onDecreaseStock = { viewModel.decreaseStock(it) }
-    )
+                // Play barcode success sound
+                BarcodeSoundPlayer.playBarcodeSuccessSound(context)
+            },
+            onClose = {
+                showBarcodeScannerView = false
+            }
+        )
+    } else {
+        ProductScreenContent(
+            products = products,
+            isLoading = isLoading,
+            sortOrder = sortOrder,
+            searchQuery = searchQuery,
+            onSearchQueryChange = { viewModel.updateSearchQuery(it) },
+            onSortOrderSelected = { viewModel.updateSortOrder(it) },
+            onAddProduct = { isAddProductSheetOpen.value = true },
+            onEditProduct = { selectedProductForEdit.value = it },
+            onDeleteProduct = { viewModel.deleteProduct(it) },
+            onIncreaseStock = { viewModel.increaseStock(it) },
+            onDecreaseStock = { viewModel.decreaseStock(it) },
+            navController = navController,
+            onScanBarcode = { showBarcodeScannerView = true }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -127,21 +153,23 @@ fun ProductScreenContent(
     onEditProduct: (Product) -> Unit,
     onDeleteProduct: (Product) -> Unit,
     onIncreaseStock: (Product) -> Unit,
-    onDecreaseStock: (Product) -> Unit
+    onDecreaseStock: (Product) -> Unit,
+    navController: NavController? = null,
+    onScanBarcode: () -> Unit = {}
 ) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = onAddProduct) {
                 Icon(Icons.Default.Add, contentDescription = "Add Product")
             }
-        }, floatingActionButtonPosition = FabPosition.Start,
+        },
+        floatingActionButtonPosition = FabPosition.Start,
         topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
-
                 TopAppBar(
                     title = { Text(str(R.string.products)) },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background // or any custom color
+                        containerColor = MaterialTheme.colorScheme.background
                     ),
                     actions = {
                         SortingDropdown(
@@ -150,14 +178,25 @@ fun ProductScreenContent(
                         )
                     }
                 )
-                // SearchBar
+                // SearchBar with barcode scan button
                 TextField(
                     value = searchQuery,
                     onValueChange = onSearchQueryChange,
                     trailingIcon = {
-                        if (searchQuery.isNotBlank()) {
-                            IconButton(onClick = { onSearchQueryChange("") }) {
-                                Icon(Icons.Default.Close, contentDescription = "Clear")
+                        Row {
+                            // Barcode scanner button
+                            IconButton(onClick = onScanBarcode) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.barcode_scanner_24px),
+                                    contentDescription = "Scan Barcode"
+                                )
+                            }
+
+                            // Clear button
+                            if (searchQuery.isNotBlank()) {
+                                IconButton(onClick = { onSearchQueryChange("") }) {
+                                    Icon(Icons.Default.Close, contentDescription = "Clear")
+                                }
                             }
                         }
                     },
@@ -185,7 +224,8 @@ fun ProductScreenContent(
                     )
                 )
             }
-        }, contentWindowInsets = WindowInsets(0)
+        },
+        contentWindowInsets = WindowInsets(0)
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -207,15 +247,16 @@ fun ProductScreenContent(
                         onEdit = { onEditProduct(product) },
                         onDelete = { onDeleteProduct(product) },
                         onIncreaseStock = { onIncreaseStock(product) },
-                        onDecreaseStock = { onDecreaseStock(product) }
+                        onDecreaseStock = { onDecreaseStock(product) },
+                        onProductClick = {
+                            navController?.navigate(Screen.ProductDetails.createRoute(product.id))
+                        }
                     )
                 }
             }
         }
     }
-
 }
-
 
 @Composable
 fun SortingDropdown(
@@ -308,7 +349,8 @@ fun PreviewProductsScreen() {
             onEditProduct = {},
             onDeleteProduct = {},
             onIncreaseStock = {},
-            onDecreaseStock = {}
+            onDecreaseStock = {},
+            navController = null
         )
     }
 }

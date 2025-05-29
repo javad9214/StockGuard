@@ -1,5 +1,6 @@
 package com.example.composetrainer.ui.screens.productlist
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -54,8 +56,10 @@ fun ProductItem(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     onIncreaseStock: () -> Unit,
-    onDecreaseStock: () -> Unit
+    onDecreaseStock: () -> Unit,
+    onProductClick: () -> Unit = {}
 ) {
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     var showMenu by remember { mutableStateOf(false) }
 
@@ -64,7 +68,12 @@ fun ProductItem(
     )
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Card(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp)
+                .clickable { onProductClick() },
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier.padding(16.dp)
