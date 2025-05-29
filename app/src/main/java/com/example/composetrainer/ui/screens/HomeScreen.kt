@@ -16,11 +16,11 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,7 +36,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
@@ -49,9 +51,9 @@ import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.theme.Kamran
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
+import com.example.composetrainer.ui.viewmodels.HomeViewModel
 import com.example.composetrainer.ui.components.BarcodeScannerView
 import com.example.composetrainer.ui.navigation.Screen
-import com.example.composetrainer.ui.viewmodels.HomeViewModel
 import com.example.composetrainer.utils.ProductImporter
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.str
@@ -81,7 +83,16 @@ fun HomeScreen(
     val scannedProduct by homeViewModel.scannedProduct.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
     val errorMessage by homeViewModel.errorMessage.collectAsState()
-    
+
+    // Observe price update completion
+    val priceUpdateMessage by viewModel.priceUpdateComplete.collectAsState()
+    val priceUpdateProgress by viewModel.priceUpdateProgress.collectAsState()
+    val productsLoading by viewModel.isLoading.collectAsState()
+
+    // Observe stock update completion
+    val stockUpdateMessage by viewModel.stockUpdateComplete.collectAsState()
+    val stockUpdateProgress by viewModel.stockUpdateProgress.collectAsState()
+
     // Handle navigation when product is found
     LaunchedEffect(scannedProduct) {
         scannedProduct?.let { product ->
@@ -103,6 +114,24 @@ fun HomeScreen(
 
             // Clear the scanned product
             homeViewModel.clearScannedProduct()
+        }
+    }
+
+    // Show toast for price update completion
+    priceUpdateMessage?.let { message ->
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        // Clear the message after showing
+        LaunchedEffect(message) {
+            viewModel.clearPriceUpdateMessage()
+        }
+    }
+
+    // Show toast for stock update completion
+    stockUpdateMessage?.let { message ->
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        // Clear the message after showing
+        LaunchedEffect(message) {
+            viewModel.clearStockUpdateMessage()
         }
     }
 
@@ -137,9 +166,59 @@ fun HomeScreen(
                 onClick = { viewModel.addRandomProducts() },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = dimen(R.dimen.space_14) + 60.dp) // Add spacing for scan barcode button
+                    .padding(bottom = dimen(R.dimen.space_14) + 180.dp) // Add more spacing for new buttons
             ) {
                 Text("Add Random Products")
+            }
+
+            // Set Random Prices button
+            Button(
+                onClick = { viewModel.setRandomPricesForNullProducts() },
+                enabled = !productsLoading && priceUpdateProgress == 0 && stockUpdateProgress == 0,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = dimen(R.dimen.space_14) + 120.dp) // Add spacing for new button
+            ) {
+                if (productsLoading && priceUpdateProgress > 0) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Text("Updating...")
+                    }
+                } else {
+                    Text("Set Random Prices")
+                }
+            }
+
+            // Set Random Stock button
+            Button(
+                onClick = { viewModel.setRandomStockForAllProducts() },
+                enabled = !productsLoading && stockUpdateProgress == 0 && priceUpdateProgress == 0,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = dimen(R.dimen.space_14) + 60.dp) // Add spacing for scan barcode button
+            ) {
+                if (productsLoading && stockUpdateProgress > 0) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Text("Updating...")
+                    }
+                } else {
+                    Text("Set Random Stock")
+                }
             }
             
             // Scan Barcode button
@@ -169,6 +248,62 @@ fun HomeScreen(
 
                 if (progress == 100) {
                     Text("✅ واردسازی کامل شد!", color = Color.Green)
+                }
+
+                // Price update progress indicator
+                if (priceUpdateProgress in 1..99) {
+                    LinearProgressIndicator(
+                        progress = priceUpdateProgress / 100f,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                    Text(
+                        "Updating prices: $priceUpdateProgress%",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                if (priceUpdateProgress == 100) {
+                    Text(
+                        "✅ Price update completed!",
+                        color = Color.Green,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
+                    // Auto-hide completion message after 3 seconds
+                    LaunchedEffect(priceUpdateProgress) {
+                        kotlinx.coroutines.delay(3000)
+                        viewModel.clearPriceUpdateMessage()
+                    }
+                }
+
+                // Stock update progress indicator
+                if (stockUpdateProgress in 1..99) {
+                    LinearProgressIndicator(
+                        progress = stockUpdateProgress / 100f,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                    Text(
+                        "Updating stock: $stockUpdateProgress%",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                if (stockUpdateProgress == 100) {
+                    Text(
+                        "✅ Stock update completed!",
+                        color = Color.Green,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
+                    // Auto-hide completion message after 3 seconds
+                    LaunchedEffect(stockUpdateProgress) {
+                        kotlinx.coroutines.delay(3000)
+                        viewModel.clearStockUpdateMessage()
+                    }
                 }
             }
 

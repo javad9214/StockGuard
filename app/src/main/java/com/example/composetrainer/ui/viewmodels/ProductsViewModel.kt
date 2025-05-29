@@ -42,6 +42,18 @@ class ProductsViewModel @Inject constructor(
     private val _selectedProduct = MutableStateFlow<Product?>(null)
     val selectedProduct: StateFlow<Product?> get() = _selectedProduct
 
+    private val _priceUpdateComplete = MutableStateFlow<String?>(null)
+    val priceUpdateComplete: StateFlow<String?> get() = _priceUpdateComplete
+
+    private val _priceUpdateProgress = MutableStateFlow(0)
+    val priceUpdateProgress: StateFlow<Int> get() = _priceUpdateProgress
+
+    private val _stockUpdateProgress = MutableStateFlow(0)
+    val stockUpdateProgress: StateFlow<Int> get() = _stockUpdateProgress
+
+    private val _stockUpdateComplete = MutableStateFlow<String?>(null)
+    val stockUpdateComplete: StateFlow<String?> get() = _stockUpdateComplete
+
     init {
         loadProducts()
     }
@@ -156,6 +168,116 @@ class ProductsViewModel @Inject constructor(
                 loadProducts() // Refresh the list if it's visible
             }
         }
+    }
+
+    fun setRandomPricesForNullProducts() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _priceUpdateProgress.value = 0
+            try {
+                // Get all products
+                val allProducts = getProductsUseCase(SortOrder.DESCENDING, "").first()
+
+                // Filter products with null prices
+                val productsWithNullPrices = allProducts.filter { it.price == null }
+
+                Log.d(TAG, "Found ${productsWithNullPrices.size} products with null prices")
+
+                if (productsWithNullPrices.isEmpty()) {
+                    _priceUpdateComplete.value = "No products with null prices found"
+                    return@launch
+                }
+
+                // Update each product with a random price between 5000 and 945000
+                productsWithNullPrices.forEachIndexed { index, product ->
+                    val randomPrice = (5000..945000).random().toLong()
+                    val updatedProduct = product.copy(price = randomPrice)
+                    editProductUseCase(updatedProduct)
+                    Log.d(TAG, "Updated product ${product.name} with price $randomPrice")
+
+                    // Update progress
+                    val progress = ((index + 1) * 100) / productsWithNullPrices.size
+                    _priceUpdateProgress.value = progress
+
+                    // Small delay to make progress visible for small datasets
+                    if (productsWithNullPrices.size < 50) {
+                        kotlinx.coroutines.delay(50)
+                    }
+                }
+
+                // Refresh the products list
+                loadProducts()
+
+                Log.d(TAG, "Finished updating prices for ${productsWithNullPrices.size} products")
+
+                // Notify completion
+                _priceUpdateComplete.value =
+                    "Updated prices for ${productsWithNullPrices.size} products"
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating null prices", e)
+                _priceUpdateComplete.value = "Error updating prices: ${e.message}"
+            } finally {
+                _isLoading.value = false
+                _priceUpdateProgress.value = 0
+            }
+        }
+    }
+
+    fun clearPriceUpdateMessage() {
+        _priceUpdateComplete.value = null
+    }
+
+    fun setRandomStockForAllProducts() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _stockUpdateProgress.value = 0
+            try {
+                // Get all products
+                val allProducts = getProductsUseCase(SortOrder.DESCENDING, "").first()
+
+                Log.d(TAG, "Found ${allProducts.size} products to update stock")
+
+                if (allProducts.isEmpty()) {
+                    _stockUpdateComplete.value = "No products found"
+                    return@launch
+                }
+
+                // Update each product with a random stock between 1 and 500
+                allProducts.forEachIndexed { index, product ->
+                    val randomStock = (1..500).random()
+                    val updatedProduct = product.copy(stock = randomStock)
+                    editProductUseCase(updatedProduct)
+                    Log.d(TAG, "Updated product ${product.name} with stock $randomStock")
+
+                    // Update progress
+                    val progress = ((index + 1) * 100) / allProducts.size
+                    _stockUpdateProgress.value = progress
+
+                    // Small delay to make progress visible for small datasets
+                    if (allProducts.size < 50) {
+                        kotlinx.coroutines.delay(30)
+                    }
+                }
+
+                // Refresh the products list
+                loadProducts()
+
+                Log.d(TAG, "Finished updating stock for ${allProducts.size} products")
+
+                // Notify completion
+                _stockUpdateComplete.value = "Updated stock for ${allProducts.size} products"
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating stock", e)
+                _stockUpdateComplete.value = "Error updating stock: ${e.message}"
+            } finally {
+                _isLoading.value = false
+                _stockUpdateProgress.value = 0
+            }
+        }
+    }
+
+    fun clearStockUpdateMessage() {
+        _stockUpdateComplete.value = null
     }
 }
 
