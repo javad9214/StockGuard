@@ -45,6 +45,7 @@ import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.ProductWithQuantity
 import com.example.composetrainer.ui.theme.BComps
 import com.example.composetrainer.ui.theme.BHoma
+import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
 import com.example.composetrainer.utils.dimen
@@ -79,7 +80,7 @@ fun InvoicesListScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.White)
-                    .padding(start = dimen(R.dimen.space_4), end = dimen(R.dimen.space_2)),
+                    .padding(start = dimen(R.dimen.space_6), end = dimen(R.dimen.space_2)),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -121,8 +122,8 @@ fun InvoicesListScreen(
                 } else {
                     Text(
                         str(R.string.sale_invoices),
-                        fontFamily = BComps,
-                        fontSize = dimenTextSize(R.dimen.text_size_lg)
+                        fontFamily = Beirut_Medium,
+                        fontSize = dimenTextSize(R.dimen.text_size_xl)
                     )
 
                     Row {

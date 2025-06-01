@@ -71,6 +71,9 @@
     <string name="search_product">جستجوی محصول...</string>
     <string name="confirm">تایید</string>
 
+    <!-- Analyze Screen -->
+    <string name="sales_analyse">تحلیل فروش</string>
+
     <!-- Create Invoice Screen -->
     <string name="invoice_creation">ایجاد فاکتور</string>
     <string name="customer_name">نام مشتری</string>

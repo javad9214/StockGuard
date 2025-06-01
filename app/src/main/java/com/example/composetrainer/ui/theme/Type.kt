@@ -47,6 +47,10 @@ val Kamran = FontFamily(
     Font(R.font.kamran_b, FontWeight.Bold)
 )
 
+val Beirut_Medium = FontFamily(
+    Font(R.font.beirut_md_mrt, FontWeight.Medium)
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(

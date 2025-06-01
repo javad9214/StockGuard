@@ -1,5 +1,6 @@
 package com.example.composetrainer.ui.screens.productlist
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -55,11 +57,14 @@ import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.ui.components.BarcodeScannerView
 import com.example.composetrainer.ui.navigation.Screen
 import com.example.composetrainer.ui.theme.BMitra
+import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
 import com.example.composetrainer.ui.viewmodels.SortOrder
 import com.example.composetrainer.utils.str
 import com.example.composetrainer.utils.BarcodeSoundPlayer
+import com.example.composetrainer.utils.dimen
+import com.example.composetrainer.utils.dimenTextSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,105 +162,121 @@ fun ProductScreenContent(
     navController: NavController? = null,
     onScanBarcode: () -> Unit = {}
 ) {
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = onAddProduct) {
-                Icon(Icons.Default.Add, contentDescription = "Add Product")
-            }
-        },
-        floatingActionButtonPosition = FabPosition.Start,
-        topBar = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                TopAppBar(
-                    title = { Text(str(R.string.products)) },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background
-                    ),
-                    actions = {
-                        SortingDropdown(
-                            currentSortOrder = sortOrder,
-                            onSortOrderSelected = onSortOrderSelected
-                        )
-                    }
-                )
-                // SearchBar with barcode scan button
-                TextField(
-                    value = searchQuery,
-                    onValueChange = onSearchQueryChange,
-                    trailingIcon = {
-                        Row {
-                            // Barcode scanner button
-                            IconButton(onClick = onScanBarcode) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.barcode_scanner_24px),
-                                    contentDescription = "Scan Barcode"
-                                )
-                            }
 
-                            // Clear button
-                            if (searchQuery.isNotBlank()) {
-                                IconButton(onClick = { onSearchQueryChange("") }) {
-                                    Icon(Icons.Default.Close, contentDescription = "Clear")
-                                }
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    placeholder = {
-                        Text(
-                            str(R.string.search_products),
-                            fontFamily = BMitra
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(Icons.Default.Search, contentDescription = "Search")
-                    },
-                    singleLine = true,
-                    shape = MaterialTheme.shapes.medium,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                        errorIndicatorColor = Color.Transparent
-                    )
-                )
-            }
-        },
-        contentWindowInsets = WindowInsets(0)
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = paddingValues.calculateTopPadding())
-        ) {
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
+    Column {
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(start = dimen(R.dimen.space_6), end = dimen(R.dimen.space_2)),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                items(products) { product ->
-                    ProductItem(
-                        product = product,
-                        onEdit = { onEditProduct(product) },
-                        onDelete = { onDeleteProduct(product) },
-                        onIncreaseStock = { onIncreaseStock(product) },
-                        onDecreaseStock = { onDecreaseStock(product) },
-                        onProductClick = {
-                            navController?.navigate(Screen.ProductDetails.createRoute(product.id))
-                        }
+
+                Text(
+                    str(R.string.products),
+                    fontFamily = Beirut_Medium,
+                    fontSize = dimenTextSize(R.dimen.text_size_xl)
+                )
+
+                IconButton(onClick = { onSortOrderSelected}) {
+                    Icon(
+                        Icons.Default.Sort,
+                        contentDescription = "Sort"
                     )
                 }
             }
+
+            // SearchBar with barcode scan button
+            TextField(
+                value = searchQuery,
+                onValueChange = onSearchQueryChange,
+                trailingIcon = {
+                    Row {
+                        // Barcode scanner button
+                        IconButton(onClick = onScanBarcode) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.barcode_scanner_24px),
+                                contentDescription = "Scan Barcode"
+                            )
+                        }
+
+                        // Clear button
+                        if (searchQuery.isNotBlank()) {
+                            IconButton(onClick = { onSearchQueryChange("") }) {
+                                Icon(Icons.Default.Close, contentDescription = "Clear")
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimen(R.dimen.space_4), vertical = dimen(R.dimen.space_2)),
+                placeholder = {
+                    Text(
+                        str(R.string.search_products),
+                        fontFamily = BMitra
+                    )
+                },
+                leadingIcon = {
+                    Icon(Icons.Default.Search, contentDescription = "Search")
+                },
+                singleLine = true,
+                shape = MaterialTheme.shapes.medium,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent
+                )
+            )
         }
+
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(products) { product ->
+                        ProductItem(
+                            product = product,
+                            onEdit = { onEditProduct(product) },
+                            onDelete = { onDeleteProduct(product) },
+                            onIncreaseStock = { onIncreaseStock(product) },
+                            onDecreaseStock = { onDecreaseStock(product) },
+                            onProductClick = {
+                                navController?.navigate(Screen.ProductDetails.createRoute(product.id))
+                            }
+                        )
+                    }
+                }
+
+                FloatingActionButton(
+                    onClick = onAddProduct,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Add Product")
+                }
+            }
+
     }
+
+
 }
 
 @Composable

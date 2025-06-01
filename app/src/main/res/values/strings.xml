@@ -65,6 +65,9 @@
     <string name="search_products">Search Products...</string>
     <string name="clear_search">Clear Search</string>
 
+    <!-- Analyze Screen -->
+    <string name="sales_analyse">Sales Analyse</string>
+    
     <!-- Create Invoice Screen -->
     <string name="invoice_creation">Create Invoice</string>
     <string name="customer_name">Customer Name</string>

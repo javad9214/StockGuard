@@ -32,7 +32,6 @@ class ProductsViewModel @Inject constructor(
 ) : ViewModel() {
     private val _products = MutableStateFlow<List<Product>>(emptyList())
     val products: StateFlow<List<Product>> get() = _products
-
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
 
@@ -96,7 +95,7 @@ class ProductsViewModel @Inject constructor(
                     date = System.currentTimeMillis() - (0..1000000).random(),
                     stock = (1..100).random()
                 )
-                addProductUseCase(randomProduct)
+                 addProductUseCase(randomProduct)
             }
             loadProducts()
         }
