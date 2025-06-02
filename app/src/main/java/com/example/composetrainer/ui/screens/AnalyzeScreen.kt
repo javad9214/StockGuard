@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,6 +16,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,6 +26,7 @@ import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.TopSellingProductInfo
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.viewmodels.AnalyzeViewModel
+import com.example.composetrainer.utils.PriceValidator.formatPrice
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
@@ -39,7 +40,6 @@ fun AnalyzeScreen(
     viewModel: AnalyzeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -65,14 +65,16 @@ fun AnalyzeScreen(
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             when {
                 uiState.isLoading -> {
                     item {
                         Box(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 32.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator()
@@ -89,9 +91,10 @@ fun AnalyzeScreen(
                             )
                         ) {
                             Text(
-                                text = "خطا: ${uiState.error}",
+                                text = stringResource(R.string.error_prefix) + uiState.error,
                                 modifier = Modifier.padding(16.dp),
-                                color = MaterialTheme.colorScheme.onErrorContainer
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         }
                     }
@@ -112,10 +115,10 @@ fun AnalyzeScreen(
                     // Top Selling Products Header
                     item {
                         Text(
-                            text = "پرفروش‌ترین محصولات این ماه",
-                            style = MaterialTheme.typography.headlineSmall,
+                            text = stringResource(R.string.top_selling_products),
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(vertical = 8.dp)
+                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                         )
                     }
 
@@ -130,9 +133,10 @@ fun AnalyzeScreen(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text(
-                                    text = "هیچ فروشی در این ماه ثبت نشده است",
+                                    text = stringResource(R.string.no_sales_recorded),
                                     modifier = Modifier.padding(16.dp),
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodyLarge
                                 )
                             }
                         }
@@ -141,6 +145,7 @@ fun AnalyzeScreen(
             }
         }
     }
+
 }
 
 @Composable
@@ -150,17 +155,17 @@ fun MonthlySummaryCard(
     totalQuantity: Int,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    ElevatedCard(
         modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "خلاصه فروش این ماه",
-                style = MaterialTheme.typography.headlineSmall,
+                text = stringResource(R.string.monthly_summary),
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
 
@@ -170,24 +175,22 @@ fun MonthlySummaryCard(
             ) {
                 SummaryItem(
                     icon = Icons.Default.AttachMoney,
-                    label = "مجموع فروش",
-                    value = NumberFormat.getNumberInstance(Locale("fa", "IR"))
-                        .format(totalSales) + " تومان",
+                    label = stringResource(R.string.total_sales),
+                    value = formatPrice(totalSales.toString()),
                     modifier = Modifier.weight(1f)
                 )
 
                 SummaryItem(
                     icon = Icons.Default.Receipt,
-                    label = "تعداد فاکتور",
-                    value = NumberFormat.getNumberInstance(Locale("fa", "IR")).format(invoiceCount),
+                    label = stringResource(R.string.invoice_count),
+                    value = formatPrice(invoiceCount.toString()),
                     modifier = Modifier.weight(1f)
                 )
 
                 SummaryItem(
                     icon = Icons.Default.ShoppingCart,
-                    label = "تعداد کالا",
-                    value = NumberFormat.getNumberInstance(Locale("fa", "IR"))
-                        .format(totalQuantity),
+                    label = stringResource(R.string.product_quantity),
+                    value = formatPrice(totalQuantity.toString()),
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -221,7 +224,7 @@ fun SummaryItem(
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
@@ -233,7 +236,7 @@ fun TopSellingProductCard(
     product: TopSellingProductInfo,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    OutlinedCard(
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
@@ -252,18 +255,17 @@ fun TopSellingProductCard(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "تعداد فروخته شده: ${
-                        NumberFormat.getNumberInstance(Locale("fa", "IR"))
-                            .format(product.totalQuantity)
-                    }",
+                    text = stringResource(
+                        R.string.sold_quantity,
+                        formatPrice(product.totalQuantity.toString())
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
             Text(
-                text = NumberFormat.getNumberInstance(Locale("fa", "IR"))
-                    .format(product.totalSales) + " تومان",
+                text = formatPrice(product.totalSales.toString()),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -271,3 +273,4 @@ fun TopSellingProductCard(
         }
     }
 }
+

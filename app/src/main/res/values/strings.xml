@@ -22,6 +22,14 @@
     <string name="invoice_details">Invoice Details</string>
     <string name="date">Date</string>
 
+    <!-- Invoice Details -->
+    <string name="quantity">Quantity</string>
+    <string name="quantity_short">Qty</string>
+    <string name="product_unit_price">Unit Price</string>
+    <string name="product_total">Subtotal</string>
+    <string name="invoice_total_amount">Total Invoice Amount</string>
+    <string name="product_not_found">Unknown product</string>
+
     <!-- Delete Dialog -->
     <string name="Delete_invoice">Delete Invoice</string>
     <string name="are_you_sure_to_delete_this_invoice">Are you sure you want to delete this invoice?</string>
@@ -66,13 +74,22 @@
     <string name="clear_search">Clear Search</string>
 
     <!-- Analyze Screen -->
-    <string name="sales_analyse">Sales Analyse</string>
+    <string name="sales_analyse">Sales Analysis</string>
+    <string name="refresh">Refresh</string>
+    <string name="monthly_summary">Monthly Sales Summary</string>
+    <string name="top_selling_products">Top Selling Products This Month</string>
+    <string name="error_prefix">Error: </string>
+    <string name="no_sales_recorded">No sales recorded this month</string>
+    <string name="total_sales">Total Sales</string>
+    <string name="invoice_count">Invoice Count</string>
+    <string name="product_quantity">Product Count</string>
+    <string name="sold_quantity">Sold: %s</string>
+    <string name="currency_suffix">%s Toman</string>
     
     <!-- Create Invoice Screen -->
     <string name="invoice_creation">Create Invoice</string>
     <string name="customer_name">Customer Name</string>
     <string name="save_invoice">Save Invoice</string>
-
 
     <!-- Barcode Scanner View -->
     <string name="barcode_position">Place the product barcode inside the frame!</string>

@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -104,7 +105,7 @@ fun InvoicesListScreen(
                             enabled = selectedInvoices.isNotEmpty()
                         ) {
                             Icon(
-                                Icons.Default.Delete,
+                                painter = painterResource(id = R.drawable.delete_24px),
                                 contentDescription = str(R.string.delete),
                                 tint = if (selectedInvoices.isEmpty())
                                     Color.Gray else MaterialTheme.colorScheme.error

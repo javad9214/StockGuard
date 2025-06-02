@@ -181,7 +181,7 @@ fun ProductScreenContent(
                     fontSize = dimenTextSize(R.dimen.text_size_xl)
                 )
 
-                IconButton(onClick = { onSortOrderSelected}) {
+                IconButton(onClick = { onSortOrderSelected }) {
                     Icon(
                         Icons.Default.Sort,
                         contentDescription = "Sort"
@@ -213,7 +213,10 @@ fun ProductScreenContent(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimen(R.dimen.space_4), vertical = dimen(R.dimen.space_2)),
+                    .padding(
+                        horizontal = dimen(R.dimen.space_4),
+                        vertical = dimen(R.dimen.space_2)
+                    ),
                 placeholder = {
                     Text(
                         str(R.string.search_products),
@@ -237,42 +240,42 @@ fun ProductScreenContent(
         }
 
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(products) { product ->
-                        ProductItem(
-                            product = product,
-                            onEdit = { onEditProduct(product) },
-                            onDelete = { onDeleteProduct(product) },
-                            onIncreaseStock = { onIncreaseStock(product) },
-                            onDecreaseStock = { onDecreaseStock(product) },
-                            onProductClick = {
-                                navController?.navigate(Screen.ProductDetails.createRoute(product.id))
-                            }
-                        )
-                    }
-                }
-
-                FloatingActionButton(
-                    onClick = onAddProduct,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp)
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Product")
+                items(products) { product ->
+                    ProductItem(
+                        product = product,
+                        onEdit = { onEditProduct(product) },
+                        onDelete = { onDeleteProduct(product) },
+                        onIncreaseStock = { onIncreaseStock(product) },
+                        onDecreaseStock = { onDecreaseStock(product) },
+                        onProductClick = {
+                            navController?.navigate(Screen.ProductDetails.createRoute(product.id))
+                        }
+                    )
                 }
             }
+
+            FloatingActionButton(
+                onClick = onAddProduct,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Product")
+            }
+        }
 
     }
 

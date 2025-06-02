@@ -22,6 +22,13 @@
     <string name="invoice_details">جزییات فاکتور</string>
     <string name="date">تاریخ</string>
 
+    <!-- Invoice Details -->
+    <string name="quantity">تعداد</string>
+    <string name="quantity_short">تعداد</string>
+    <string name="product_unit_price">قیمت واحد</string>
+    <string name="product_total">مبلغ جزء</string>
+    <string name="invoice_total_amount">مبلغ کل فاکتور</string>
+    <string name="product_not_found">محصول ناشناخته</string>
 
     <!-- Delete Dialog -->
     <string name="Delete_invoice">حذف فاکتور</string>
@@ -73,6 +80,16 @@
 
     <!-- Analyze Screen -->
     <string name="sales_analyse">تحلیل فروش</string>
+    <string name="refresh">بارگذاری مجدد</string>
+    <string name="monthly_summary">خلاصه فروش ماهانه</string>
+    <string name="top_selling_products">پرفروش‌ترین محصولات این ماه</string>
+    <string name="error_prefix">خطا: </string>
+    <string name="no_sales_recorded">هیچ فروشی در این ماه ثبت نشده است</string>
+    <string name="total_sales">مجموع فروش</string>
+    <string name="invoice_count">تعداد فاکتور</string>
+    <string name="product_quantity">تعداد کالا</string>
+    <string name="sold_quantity">فروخته شده: %s</string>
+    <string name="currency_suffix">%s تومان</string>
 
     <!-- Create Invoice Screen -->
     <string name="invoice_creation">ایجاد فاکتور</string>

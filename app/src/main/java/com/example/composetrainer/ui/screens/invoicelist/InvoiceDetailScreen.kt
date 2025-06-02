@@ -1,5 +1,6 @@
 package com.example.composetrainer.ui.screens.invoicelist
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,8 +12,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
@@ -23,8 +27,14 @@ import com.example.composetrainer.domain.model.Invoice
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.ProductWithQuantity
 import com.example.composetrainer.ui.theme.BHoma
+import com.example.composetrainer.ui.theme.BKoodak
+import com.example.composetrainer.ui.theme.BMitra
+import com.example.composetrainer.ui.theme.BNazanin
+import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
 import com.example.composetrainer.utils.PriceValidator.formatPrice
+import com.example.composetrainer.utils.dimen
+import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
 
 
@@ -59,29 +69,42 @@ fun InvoiceDetailScreen(
     }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(str(R.string.invoice_details), fontFamily = BHoma) },
-                    navigationIcon = {
-                        IconButton(onClick = onNavigateBack) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Go back")
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { onEditInvoice(invoiceId) }) {
-                            Icon(Icons.Default.Edit, contentDescription = "Edit invoice")
-                        }
-                        IconButton(onClick = { showDeleteConfirmDialog = true }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete invoice")
-                        }
-                    }
+
+        Column {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(start = dimen(R.dimen.space_6), end = dimen(R.dimen.space_2)),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    str(R.string.invoice_details),
+                    fontFamily = Beirut_Medium,
+                    fontSize = dimenTextSize(R.dimen.text_size_xl)
                 )
+
+                Row {
+
+                    IconButton(onClick = { onEditInvoice(invoiceId) }) {
+                        Icon(painter = painterResource(id = R.drawable.edit_24px), contentDescription = str(R.string.save))
+                    }
+                    IconButton(onClick = { showDeleteConfirmDialog = true }) {
+                        Icon(painter = painterResource(id = R.drawable.delete_24px), contentDescription = str(R.string.delete))
+                    }
+
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(painter = painterResource(id = R.drawable.arrow_back_ios_new_24px), contentDescription = str(R.string.back))
+                    }
+                }
+
             }
-        ) { innerPadding ->
+
             Box(
                 modifier = Modifier
-                    .padding(innerPadding)
                     .fillMaxSize()
             ) {
                 when {
@@ -89,7 +112,7 @@ fun InvoiceDetailScreen(
 
                     invoice == null -> {
                         Text(
-                            "Invoice not found",
+                            str(R.string.product_not_found),
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }
@@ -102,7 +125,9 @@ fun InvoiceDetailScreen(
                     }
                 }
             }
+
         }
+
     }
 
     // Delete confirmation dialog
@@ -118,13 +143,17 @@ fun InvoiceDetailScreen(
                         viewModel.deleteInvoice(invoiceId)
                         showDeleteConfirmDialog = false
                         onNavigateBack()
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    )
                 ) {
                     Text(str(R.string.delete))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteConfirmDialog = false }) {
+                OutlinedButton(onClick = { showDeleteConfirmDialog = false }) {
                     Text(str(R.string.cancel))
                 }
             }
@@ -144,136 +173,292 @@ private fun InvoiceDetailContent(
     ) {
         // Invoice header information
         item {
-            Card(
-                modifier = Modifier.fillMaxWidth()
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                elevation = CardDefaults.elevatedCardElevation(
+                    defaultElevation = 4.dp
+                )
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            str(R.string.invoice_number),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text("${invoice.prefix}-${invoice.invoiceNumber}")
-                    }
+                    InfoRow(
+                        label = str(R.string.invoice_number),
+                        value = "${invoice.prefix}-${invoice.invoiceNumber}"
+                    )
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            str(R.string.date),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(invoice.invoiceDate)
-                    }
+                    Divider(color = MaterialTheme.colorScheme.outlineVariant)
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            str(R.string.total),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(formatPrice(invoice.totalPrice.toString()))
-                    }
+                    InfoRow(
+                        label = str(R.string.date),
+                        value = invoice.invoiceDate
+                    )
+
+                    Divider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                    InfoRow(
+                        label = str(R.string.total),
+                        value = formatPrice(invoice.totalPrice.toString()),
+                        isAmount = true
+                    )
                 }
             }
         }
 
         // Products section header
         item {
-            Text(
-                str(R.string.products),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                fontFamily = BHoma
-            )
-        }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    str(R.string.products),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = BHoma,
+                    color = MaterialTheme.colorScheme.primary
+                )
 
-        // Product items
-        items(invoice.products) { productWithQty ->
-            Card(
-                modifier = Modifier.fillMaxWidth()
+                Text(
+                    text = stringResource(R.string.product_count, invoice.products.size),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontFamily = BMitra,
+                )
+            }
+
+            // Column headers
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                shape = MaterialTheme.shapes.small
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        Text(
-                            productWithQty.product.name ?: "Unknown product",
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Bold
-                        )
+                    Text(
+                        str(R.string.products),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(2f)
+                    )
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        str(R.string.product_unit_price),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .weight(1f)
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
 
-                        // Show product price or 0 if null, formatted as currency
+                    Text(
+                        str(R.string.quantity_short),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .weight(0.7f)
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Text(
+                        str(R.string.product_total),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .weight(1.3f)
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
+        // Product items
+        items(invoice.products) { productWithQty ->
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                ),
+                elevation = CardDefaults.elevatedCardElevation(
+                    defaultElevation = 2.dp
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier.weight(2f)
+                    ) {
                         Text(
-                            text = formatPrice((productWithQty.product.price ?: 0).toString()),
-                            style = MaterialTheme.typography.bodyMedium
+                            productWithQty.product.name ?: str(R.string.product_not_found),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontFamily = BNazanin,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            "Qty: ${productWithQty.quantity}",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                    Text(
+                        formatPrice((productWithQty.product.price ?: 0).toString()),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier
+                            .weight(1f)
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
 
-                        Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        "${productWithQty.quantity}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontFamily = BMitra,
+                        modifier = Modifier
+                            .weight(0.6f)
+                            .padding(horizontal = 4.dp)
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
 
-                        Text(
-                            "Total: ${formatPrice(((productWithQty.product.price ?: 0) * productWithQty.quantity).toString())}",
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+
+
+                    Text(
+                        formatPrice(
+                            ((productWithQty.product.price
+                                ?: 0) * productWithQty.quantity).toString()
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .weight(1.1f)
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.toman),
+                        contentDescription = "toman",
+                        modifier = Modifier
+                            .size(dimen(R.dimen.size_sm))
+                            .weight(0.3f)
+                            .padding(start = dimen(R.dimen.space_1))
+                    )
+
+
                 }
             }
         }
 
         // Total section at the bottom
         item {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            Card(
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                color = MaterialTheme.colorScheme.primaryContainer,
+                shape = MaterialTheme.shapes.medium
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Total Invoice Amount:",
+                        str(R.string.invoice_total_amount),
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = BNazanin,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
 
-                    Text(
-                        formatPrice(invoice.totalPrice.toString()),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row {
+                        Text(
+                            formatPrice(invoice.totalPrice.toString()),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Icon(
+                            painter = painterResource(id = R.drawable.toman),
+                            contentDescription = "toman",
+                            modifier = Modifier
+                                .size(dimen(R.dimen.size_sm))
+                                .padding(start = dimen(R.dimen.space_1))
+                        )
+                    }
+
+
                 }
             }
+
+            // Add some space at the bottom
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+private fun InfoRow(
+    modifier: Modifier = Modifier,
+    label: String,
+    value: String,
+    isAmount: Boolean = false
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            label,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            fontFamily = BMitra,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        if (isAmount) {
+            Row {
+                Text(
+                    formatPrice(value),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Icon(
+                    painter = painterResource(id = R.drawable.toman),
+                    contentDescription = "toman",
+                    modifier = Modifier
+                        .size(dimen(R.dimen.size_sm))
+                        .padding(start = dimen(R.dimen.space_1))
+                )
+            }
+        } else {
+            Text(
+                formatPrice(value),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                fontFamily = BMitra,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         }
     }
 }
@@ -388,16 +573,27 @@ fun InvoiceDetailScreenFullPreview() {
                 topBar = {
                     TopAppBar(
                         title = { Text(str(R.string.invoice_details), fontFamily = BHoma) },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
+                        navigationIcon = {
+                            IconButton(onClick = { }) {
+                                Icon(
+                                    Icons.Default.ArrowBack,
+                                    contentDescription = str(R.string.back)
+                                )
+                            }
+                        },
                         actions = {
                             IconButton(onClick = { }) {
-                                Icon(Icons.Default.Edit, contentDescription = "Edit invoice")
+                                Icon(Icons.Default.Edit, contentDescription = str(R.string.save))
                             }
                             IconButton(onClick = { }) {
-                                Icon(Icons.Default.Delete, contentDescription = "Delete invoice")
-                            }
-
-                            IconButton(onClick = { }) {
-                                Icon(Icons.Default.ArrowBack, contentDescription = "Go back")
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = str(R.string.delete)
+                                )
                             }
                         }
                     )
