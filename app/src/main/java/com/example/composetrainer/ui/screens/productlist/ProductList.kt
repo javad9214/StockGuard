@@ -87,6 +87,8 @@ fun ProductScreen(
 
     // Barcode scanner state
     var showBarcodeScannerView by remember { mutableStateOf(false) }
+    // Track the last scanned barcode
+    var lastScannedBarcode by remember { mutableStateOf("") }
 
     if (selectedProductForEdit.value != null || isAddProductSheetOpen.value) {
         ModalBottomSheet(
@@ -94,6 +96,20 @@ fun ProductScreen(
             sheetState = sheetState
         ) {
             AddProductBottomSheet(
+                initialProduct = selectedProductForEdit.value?.copy()
+                    ?: if (lastScannedBarcode.isNotEmpty())
+                        Product(
+                            id = 0,
+                            name = "",
+                            barcode = lastScannedBarcode,
+                            price = null,
+                            stock = 0,
+                            image = null,
+                            subCategoryId = null,
+                            date = System.currentTimeMillis()
+                        )
+                    else
+                        null,
                 onSave = { product ->
                     if (selectedProductForEdit.value == null) {
                         viewModel.addProduct(product)
@@ -102,10 +118,12 @@ fun ProductScreen(
                     }
                     selectedProductForEdit.value = null
                     isAddProductSheetOpen.value = false
+                    lastScannedBarcode = ""
                 },
                 onDismiss = {
                     selectedProductForEdit.value = null
                     isAddProductSheetOpen.value = false
+                    lastScannedBarcode = ""
                 }
             )
         }
@@ -116,11 +134,30 @@ fun ProductScreen(
         BarcodeScannerView(
             onBarcodeDetected = { barcode ->
                 showBarcodeScannerView = false
-                // Set the search query to the scanned barcode
-                viewModel.updateSearchQuery(barcode)
+                // Store the scanned barcode
+                lastScannedBarcode = barcode
 
-                // Play barcode success sound
-                BarcodeSoundPlayer.playBarcodeSuccessSound(context)
+                // Check if a product with this barcode exists
+                val productExists = products.any { it.barcode == barcode }
+
+                if (productExists) {
+                    // Set the search query to the scanned barcode
+                    viewModel.updateSearchQuery(barcode)
+                    // Play barcode success sound
+                    BarcodeSoundPlayer.playBarcodeSuccessSound(context)
+                } else {
+                    // No product found with this barcode
+                    android.widget.Toast.makeText(
+                        context,
+                        "No product found with barcode: $barcode",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+
+                    // Open the AddProductBottomSheet with the barcode pre-filled
+                    isAddProductSheetOpen.value = true
+                    // Play barcode success sound anyway to indicate successful scan
+                    BarcodeSoundPlayer.playBarcodeSuccessSound(context)
+                }
             },
             onClose = {
                 showBarcodeScannerView = false
