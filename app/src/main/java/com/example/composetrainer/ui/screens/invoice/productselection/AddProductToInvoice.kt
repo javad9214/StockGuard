@@ -76,6 +76,7 @@ fun AddProductToInvoice(
                 defaultElevation = 6.dp,
             )
         ) {
+
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -84,69 +85,71 @@ fun AddProductToInvoice(
                     onDragDown = onClose
                 )
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    IconButton(
-                        onClick = onClose,
-                        modifier = Modifier.align(Alignment.CenterStart)
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close"
+                        IconButton(
+                            onClick = onClose,
+                            modifier = Modifier.align(Alignment.CenterStart)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Close"
+                            )
+                        }
+                        Text(
+                            text = str(R.string.add_to_invoice),
+                            style = MaterialTheme.typography.titleLarge,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.align(Alignment.CenterEnd)
                         )
                     }
-                    Text(
-                        text = str(R.string.add_to_invoice),
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.align(Alignment.CenterEnd)
-                    )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
 
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                    TextField(
-                        value = searchQuery,
-                        onValueChange = { viewModel.updateSearchQuery(it) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        placeholder = {
-                            Text(
-                                text = str(R.string.search_products),
-                                fontFamily = BHoma
-                            )
-                        },
-                        textStyle = TextStyle(fontFamily = BHoma),
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = null
-                            )
-                        },
-                        trailingIcon = {
-                            if (searchQuery.isNotBlank()) {
-                                IconButton(onClick = { viewModel.updateSearchQuery("") }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = str(R.string.clear_search)
-                                    )
-                                }
+
+                TextField(
+                    value = searchQuery,
+                    onValueChange = { viewModel.updateSearchQuery(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    placeholder = {
+                        Text(
+                            text = str(R.string.search_products),
+                            fontFamily = BHoma
+                        )
+                    },
+                    textStyle = TextStyle(fontFamily = BHoma),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null
+                        )
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotBlank()) {
+                            IconButton(onClick = { viewModel.updateSearchQuery("") }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = str(R.string.clear_search)
+                                )
                             }
-                        },
-                        singleLine = true,
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = MaterialTheme.colorScheme.surface,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                        ),
-                        shape = MaterialTheme.shapes.medium
-                    )
-                }
+                        }
+                    },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    ),
+                    shape = MaterialTheme.shapes.medium
+                )
+
 
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -168,9 +171,11 @@ fun AddProductToInvoice(
                             style = MaterialTheme.typography.bodyLarge
                         )
                     } else {
+                        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize()
                         ) {
+
                             items(filteredProducts, key = { it.id }) { product ->
                                 ProductSelectionItem(
                                     product = product,
@@ -179,9 +184,11 @@ fun AddProductToInvoice(
                                 )
                             }
                         }
+                            }
                     }
                 }
             }
+
         }
     }
 }

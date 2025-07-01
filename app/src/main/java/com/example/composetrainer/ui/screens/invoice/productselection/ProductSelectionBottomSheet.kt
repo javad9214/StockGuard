@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Product
 
 /**
@@ -53,7 +54,7 @@ fun ProductSelectionBottomSheet(
         ) {
             // HEADER
             SheetHeader(
-                title = if (selectedProduct == null) stringResource(com.example.composetrainer.R.string.select_product) else selectedProduct.name,
+                title = selectedProduct?.name ?: stringResource(R.string.select_product),
                 onNavClick = {
                     if (selectedProduct == null) onDismiss() else selectedProductId = null
                 },
