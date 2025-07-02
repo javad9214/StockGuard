@@ -9,11 +9,18 @@ data class InvoiceEntity(
     val id: Long = 0,
 
     val prefix: String = "INV",         // Fixed prefix, e.g., "INV"
-    val invoiceDate: String,            // In format like "1403-02-16" (Jalali)
     val invoiceNumber: Long,             // e.g., 12
 
     val invoiceType: String? = null,    // e.g., "S", "B" — optional for future
-    val customerCode: String? = null,   // e.g., "C005" — optional for future
+    val customerId: Long? = null,   // e.g., "C005" — optional for future
 
-    val createdAt: Long = System.currentTimeMillis()
+    val totalAmount: Long? = null,
+    val status: String? = null,
+    val paymentMethod: String? = null,
+    val notes: String? = null,
+
+
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis(),
+    val isDeleted: Boolean = false
 )
