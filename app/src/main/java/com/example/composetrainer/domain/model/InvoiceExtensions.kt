@@ -8,7 +8,7 @@ fun InvoiceEntity.buildInvoiceCode(): String {
         prefix,
         invoiceType,
         invoiceDate,
-        customerCode,
+        customerId,
         invoiceNumber.toString().padStart(4, '0')
     ).joinToString("-")
 }

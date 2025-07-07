@@ -7,6 +7,7 @@ import com.example.composetrainer.data.local.dao.SubcategoryDao
 import com.example.composetrainer.data.local.entity.CategoryEntity
 import com.example.composetrainer.data.local.entity.ProductEntity
 import com.example.composetrainer.data.local.entity.SubcategoryEntity
+import com.example.composetrainer.utils.loadProductJson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -40,7 +41,15 @@ class ProductImporter @Inject constructor(
                 image = null,
                 subcategoryId = subcatId,
                 date = System.currentTimeMillis(),
-                stock = 0
+                stock = 0,
+                costPrice = null,
+                description = null,
+                supplierId = null,
+                unit = null,
+                minStockLevel = null,
+                maxStockLevel = null,
+                tags = null,
+                lastSoldDate = null
             )
 
             productDao.insertProduct(product)
@@ -66,7 +75,15 @@ class ProductImporter @Inject constructor(
                 image = null,
                 subcategoryId = subcatId,
                 date = System.currentTimeMillis(),
-                stock = 0
+                stock = 0,
+                costPrice = null,
+                description = null,
+                supplierId = null,
+                unit = null,
+                minStockLevel = null,
+                maxStockLevel = null,
+                tags = null,
+                lastSoldDate = null
             )
 
             productDao.insertProduct(product)

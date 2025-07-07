@@ -8,5 +8,10 @@ data class SubcategoryEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val name: String,
-    val categoryId: Int // FK to CategoryEntity
+    val categoryId: Int, // FK to CategoryEntity
+    val icon: String? = null,
+    val description: String? = null,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis(),
+    val isDeleted: Boolean = false
 )

@@ -29,5 +29,8 @@ import androidx.room.Index
 data class InvoiceProductCrossRef(
     val invoiceId: Long,
     val productId: Long,
-    val quantity: Int
+    val quantity: Int,
+    val priceAtSale: Long, // Snapshot of product price at time of sale
+    val discount: Long = 0,
+    val total: Long = (priceAtSale - discount) * quantity
 )

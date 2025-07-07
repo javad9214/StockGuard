@@ -112,7 +112,16 @@ private fun ProductSelectionBottomSheetPreview() {
             image = null,
             subCategoryId = 1,
             date = System.currentTimeMillis(),
-            stock = 15
+            stock = 15,
+            costPrice = null,
+            description = null,
+            supplierId = null,
+            unit = null,
+            minStockLevel = null,
+            maxStockLevel = null,
+            isActive = true,
+            tags = null,
+            lastSoldDate = null
         ),
         Product(
             id = 2L,
@@ -122,7 +131,16 @@ private fun ProductSelectionBottomSheetPreview() {
             image = null,
             subCategoryId = 2,
             date = System.currentTimeMillis(),
-            stock = 8
+            stock = 8,
+            costPrice = null,
+            description = null,
+            supplierId = null,
+            unit = null,
+            minStockLevel = null,
+            maxStockLevel = null,
+            isActive = true,
+            tags = null,
+            lastSoldDate = null
         )
     )
 

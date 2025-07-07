@@ -98,7 +98,16 @@ private fun ProductSelectionContentPreview() {
             image = null,
             subCategoryId = 1,
             date = System.currentTimeMillis(),
-            stock = 15
+            stock = 15,
+            costPrice = null,
+            description = null,
+            supplierId = null,
+            unit = null,
+            minStockLevel = null,
+            maxStockLevel = null,
+            isActive = true,
+            tags = null,
+            lastSoldDate = null
         ),
         Product(
             id = 2L,
@@ -108,7 +117,16 @@ private fun ProductSelectionContentPreview() {
             image = null,
             subCategoryId = 2,
             date = System.currentTimeMillis(),
-            stock = 8
+            stock = 8,
+            costPrice = null,
+            description = null,
+            supplierId = null,
+            unit = null,
+            minStockLevel = null,
+            maxStockLevel = null,
+            isActive = true,
+            tags = null,
+            lastSoldDate = null
         ),
         Product(
             id = 3L,
@@ -118,7 +136,16 @@ private fun ProductSelectionContentPreview() {
             image = null,
             subCategoryId = 1,
             date = System.currentTimeMillis(),
-            stock = 5
+            stock = 5,
+            costPrice = null,
+            description = null,
+            supplierId = null,
+            unit = null,
+            minStockLevel = null,
+            maxStockLevel = null,
+            isActive = true,
+            tags = null,
+            lastSoldDate = null
         )
     )
 

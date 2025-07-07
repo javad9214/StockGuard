@@ -477,7 +477,16 @@ fun InvoiceDetailScreenPreview() {
                 barcode = "123456789",
                 image = null,
                 subCategoryId = 1,
-                date = System.currentTimeMillis()
+                date = System.currentTimeMillis(),
+                costPrice = null,
+                description = null,
+                supplierId = null,
+                unit = null,
+                minStockLevel = null,
+                maxStockLevel = null,
+                isActive = true,
+                tags = null,
+                lastSoldDate = null
             ),
             quantity = 2
         ),
@@ -490,7 +499,16 @@ fun InvoiceDetailScreenPreview() {
                 barcode = "223456789",
                 image = null,
                 subCategoryId = 2,
-                date = System.currentTimeMillis()
+                date = System.currentTimeMillis(),
+                costPrice = null,
+                description = null,
+                supplierId = null,
+                unit = null,
+                minStockLevel = null,
+                maxStockLevel = null,
+                isActive = true,
+                tags = null,
+                lastSoldDate = null
             ),
             quantity = 1
         ),
@@ -503,7 +521,16 @@ fun InvoiceDetailScreenPreview() {
                 barcode = "323456789",
                 image = null,
                 subCategoryId = 1,
-                date = System.currentTimeMillis()
+                date = System.currentTimeMillis(),
+                costPrice = null,
+                description = null,
+                supplierId = null,
+                unit = null,
+                minStockLevel = null,
+                maxStockLevel = null,
+                isActive = true,
+                tags = null,
+                lastSoldDate = null
             ),
             quantity = 3
         )
@@ -535,7 +562,16 @@ fun InvoiceDetailScreenFullPreview() {
                 barcode = "123456789",
                 image = null,
                 subCategoryId = 1,
-                date = System.currentTimeMillis()
+                date = System.currentTimeMillis(),
+                costPrice = null,
+                description = null,
+                supplierId = null,
+                unit = null,
+                minStockLevel = null,
+                maxStockLevel = null,
+                isActive = true,
+                tags = null,
+                lastSoldDate = null
             ),
             quantity = 2
         ),
@@ -548,7 +584,16 @@ fun InvoiceDetailScreenFullPreview() {
                 barcode = "223456789",
                 image = null,
                 subCategoryId = 2,
-                date = System.currentTimeMillis()
+                date = System.currentTimeMillis(),
+                costPrice = null,
+                description = null,
+                supplierId = null,
+                unit = null,
+                minStockLevel = null,
+                maxStockLevel = null,
+                isActive = true,
+                tags = null,
+                lastSoldDate = null
             ),
             quantity = 1
         )

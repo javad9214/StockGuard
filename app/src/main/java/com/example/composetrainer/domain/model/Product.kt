@@ -5,8 +5,17 @@ data class Product(
     val name: String,
     val barcode: String?,
     val price: Long?,
+    val costPrice: Long?,
+    val description: String?,
     val image: String?,
     val subCategoryId: Int?,
+    val supplierId: Int?,
+    val unit: String?,
     val date: Long,
-    val stock: Int
+    val stock: Int,
+    val minStockLevel: Int?,
+    val maxStockLevel: Int?,
+    val isActive: Boolean = true,
+    val tags: String?,
+    val lastSoldDate: Long?
 )

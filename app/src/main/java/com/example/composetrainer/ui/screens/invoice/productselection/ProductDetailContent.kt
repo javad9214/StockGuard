@@ -131,7 +131,16 @@ private fun ProductDetailContentPreview() {
         image = null,
         subCategoryId = 1,
         date = System.currentTimeMillis(),
-        stock = 10
+        stock = 10,
+        costPrice = null,
+        description = null,
+        supplierId = null,
+        unit = null,
+        minStockLevel = null,
+        maxStockLevel = null,
+        isActive = true,
+        tags = null,
+        lastSoldDate = null
     )
 
     Surface(

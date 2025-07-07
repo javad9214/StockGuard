@@ -23,6 +23,7 @@ data class ProductEntity (
     val tags: String?,
     val lastSoldDate: Long?,
     val date: Long,
+    val synced: Boolean = false,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
     val isDeleted: Boolean = false

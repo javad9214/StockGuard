@@ -159,7 +159,16 @@ fun AddProductBottomSheet(
                         image = initialProduct?.image,
                         subCategoryId = categoryID.toIntOrNull(),
                         date = initialProduct?.date ?: System.currentTimeMillis(),
-                        stock = initialProduct?.stock ?: 0
+                        stock = initialProduct?.stock ?: 0,
+                        costPrice = initialProduct?.costPrice,
+                        description = initialProduct?.description,
+                        supplierId = initialProduct?.supplierId,
+                        unit = initialProduct?.unit,
+                        minStockLevel = initialProduct?.minStockLevel,
+                        maxStockLevel = initialProduct?.maxStockLevel,
+                        isActive = initialProduct?.isActive ?: true,
+                        tags = initialProduct?.tags,
+                        lastSoldDate = initialProduct?.lastSoldDate
                     )
                     onSave(newProduct)
                 },

@@ -62,6 +62,10 @@ object FarsiDateUtil {
         return "$year/$formattedMonth/$formattedDay"
     }
 
+    fun getTodayAsTimestamp(): Long {
+        return System.currentTimeMillis()
+    }
+
     fun getFormattedDate(dayOfWeek: String, day: Int, month: Int, year: Int): String {
         return String.format(
             Locale("fa", "IR"),

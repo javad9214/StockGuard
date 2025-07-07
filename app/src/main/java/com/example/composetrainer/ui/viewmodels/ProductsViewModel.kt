@@ -62,6 +62,8 @@ class ProductsViewModel @Inject constructor(
     private val _invoiceCreationComplete = MutableStateFlow<String?>(null)
     val invoiceCreationComplete: StateFlow<String?> get() = _invoiceCreationComplete
 
+    private val TAG = "ProductsViewModel"
+
     init {
         loadProducts()
     }
@@ -93,7 +95,16 @@ class ProductsViewModel @Inject constructor(
                     image = null,
                     subCategoryId = (1..5).random(),
                     date = System.currentTimeMillis() - (0..1000000).random(),
-                    stock = (1..100).random()
+                    stock = (1..100).random(),
+                    costPrice = null,
+                    description = null,
+                    supplierId = null,
+                    unit = null,
+                    minStockLevel = null,
+                    maxStockLevel = null,
+                    isActive = true,
+                    tags = null,
+                    lastSoldDate = null
                 )
                  addProductUseCase(randomProduct)
             }
@@ -363,5 +374,3 @@ enum class SortOrder {
     ASCENDING, // Oldest first
     DESCENDING // Newest first (default)
 }
-
-private const val TAG = "ProductsViewModel"

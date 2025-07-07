@@ -10,10 +10,19 @@ object ProductMapper {
             name = entity.name,
             barcode = entity.barcode,
             price = entity.price,
+            costPrice = entity.costPrice,
+            description = entity.description,
             image = entity.image,
             subCategoryId = entity.subcategoryId,
+            supplierId = entity.supplierId,
+            unit = entity.unit,
             date = entity.date,
-            stock = entity.stock
+            stock = entity.stock,
+            minStockLevel = entity.minStockLevel,
+            maxStockLevel = entity.maxStockLevel,
+            isActive = entity.isActive,
+            tags = entity.tags,
+            lastSoldDate = entity.lastSoldDate
         )
     }
 
@@ -23,10 +32,23 @@ object ProductMapper {
             name = domain.name,
             barcode = domain.barcode,
             price = domain.price,
+            costPrice = domain.costPrice,
+            description = domain.description,
             image = domain.image,
             subcategoryId = domain.subCategoryId,
+            supplierId = domain.supplierId,
+            unit = domain.unit,
+            stock = domain.stock,
+            minStockLevel = domain.minStockLevel,
+            maxStockLevel = domain.maxStockLevel,
+            isActive = domain.isActive,
+            tags = domain.tags,
+            lastSoldDate = domain.lastSoldDate,
             date = domain.date,
-            stock = domain.stock
+            synced = false,
+            createdAt = System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis(),
+            isDeleted = false
         )
     }
 }

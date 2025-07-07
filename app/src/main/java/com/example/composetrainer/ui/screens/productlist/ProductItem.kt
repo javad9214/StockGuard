@@ -219,7 +219,7 @@ fun ProductItem(
                     Text(
                         modifier = Modifier.weight(4f),
                         textAlign = TextAlign.Start,
-                        text = PriceValidator.formatPrice(product.price.toString()),
+                        text = PriceValidator.formatPrice(product.price?.toString() ?: "0"),
                         fontSize = dimenTextSize(R.dimen.text_size_md),
                         fontFamily = BHoma
                     )
@@ -250,10 +250,19 @@ fun PreviewProductItem() {
                 name = "Sample Product",
                 barcode = "123456789",
                 price = 1000,
+                costPrice = null,
+                description = null,
                 image = null,
                 subCategoryId = 1,
+                supplierId = null,
+                unit = null,
                 date = System.currentTimeMillis(),
-                stock = 10
+                stock = 10,
+                minStockLevel = null,
+                maxStockLevel = null,
+                isActive = true,
+                tags = null,
+                lastSoldDate = null
             ),
             onEdit = {},
             onDelete = {},

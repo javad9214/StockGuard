@@ -27,7 +27,7 @@ interface InvoiceDao {
     @Transaction
     @Query(
         """
-        SELECT i.id AS invoiceId, i.invoiceNumber as numberId, i.invoiceDate AS invoiceDate, p.*, ip.quantity
+        SELECT i.id AS invoiceId, i.invoiceNumber as numberId, CAST(i.invoiceDate AS TEXT) AS invoiceDate, p.*, ip.quantity
         FROM invoices AS i
         JOIN invoice_products AS ip ON i.id = ip.invoiceId
         JOIN products AS p ON p.id = ip.productId
@@ -39,7 +39,7 @@ interface InvoiceDao {
     @Transaction
     @Query(
         """
-        SELECT i.id AS invoiceId, i.invoiceNumber as numberId, i.invoiceDate AS invoiceDate, p.*, ip.quantity
+        SELECT i.id AS invoiceId, i.invoiceNumber as numberId, CAST(i.invoiceDate AS TEXT) AS invoiceDate, p.*, ip.quantity
         FROM invoices AS i 
         INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
         INNER JOIN products AS p ON ip.productId = p.id
@@ -51,7 +51,7 @@ interface InvoiceDao {
     @Transaction
     @Query(
         """
-        SELECT i.id AS invoiceId, i.invoiceNumber as numberId, i.invoiceDate AS invoiceDate, p.*, ip.quantity
+        SELECT i.id AS invoiceId, i.invoiceNumber as numberId, CAST(i.invoiceDate AS TEXT) AS invoiceDate, p.*, ip.quantity
         FROM invoices AS i 
         INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
         INNER JOIN products AS p ON ip.productId = p.id
@@ -67,7 +67,7 @@ interface InvoiceDao {
         FROM invoices AS i
         INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
         INNER JOIN products AS p ON ip.productId = p.id
-        WHERE substr(i.invoiceDate, 1, 7) = :yearMonth
+        WHERE strftime('%Y-%m', datetime(i.invoiceDate / 1000, 'unixepoch')) = :yearMonth
     """
     )
     suspend fun getTotalSalesForMonth(yearMonth: String): Long
@@ -76,7 +76,7 @@ interface InvoiceDao {
         """
         SELECT COUNT(DISTINCT i.id) as invoiceCount
         FROM invoices AS i
-        WHERE substr(i.invoiceDate, 1, 7) = :yearMonth
+        WHERE strftime('%Y-%m', datetime(i.invoiceDate / 1000, 'unixepoch')) = :yearMonth
     """
     )
     suspend fun getTotalInvoicesForMonth(yearMonth: String): Int
@@ -86,7 +86,7 @@ interface InvoiceDao {
         SELECT COALESCE(SUM(ip.quantity), 0) as totalQuantity
         FROM invoices AS i
         INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
-        WHERE substr(i.invoiceDate, 1, 7) = :yearMonth
+        WHERE strftime('%Y-%m', datetime(i.invoiceDate / 1000, 'unixepoch')) = :yearMonth
     """
     )
     suspend fun getTotalQuantityForMonth(yearMonth: String): Int
@@ -99,7 +99,7 @@ interface InvoiceDao {
         FROM invoices AS i
         INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
         INNER JOIN products AS p ON ip.productId = p.id
-        WHERE substr(i.invoiceDate, 1, 7) = :yearMonth
+        WHERE strftime('%Y-%m', datetime(i.invoiceDate / 1000, 'unixepoch')) = :yearMonth
         GROUP BY p.id, p.name
         ORDER BY totalQuantity DESC
         LIMIT 3

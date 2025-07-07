@@ -106,7 +106,16 @@ fun ProductScreen(
                             stock = 0,
                             image = null,
                             subCategoryId = null,
-                            date = System.currentTimeMillis()
+                            date = System.currentTimeMillis(),
+                            costPrice = null,
+                            description = null,
+                            supplierId = null,
+                            unit = null,
+                            minStockLevel = null,
+                            maxStockLevel = null,
+                            isActive = true,
+                            tags = null,
+                            lastSoldDate = null
                         )
                     else
                         null,
@@ -219,7 +228,7 @@ fun ProductScreenContent(
                     fontSize = dimenTextSize(R.dimen.text_size_xl)
                 )
 
-                IconButton(onClick = { onSortOrderSelected }) {
+                IconButton(onClick = { onSortOrderSelected(sortOrder) }) {
                     Icon(
                         Icons.Default.Sort,
                         contentDescription = "Sort"
@@ -375,7 +384,16 @@ fun PreviewProductsScreen() {
             stock = 5,
             image = null,
             subCategoryId = 1,
-            date = System.currentTimeMillis()
+            date = System.currentTimeMillis(),
+            costPrice = null,
+            description = null,
+            supplierId = null,
+            unit = null,
+            minStockLevel = null,
+            maxStockLevel = null,
+            isActive = true,
+            tags = null,
+            lastSoldDate = null
         ),
         Product(
             id = 2L,
@@ -385,7 +403,16 @@ fun PreviewProductsScreen() {
             stock = 10,
             image = null,
             subCategoryId = 1,
-            date = System.currentTimeMillis()
+            date = System.currentTimeMillis(),
+            costPrice = null,
+            description = null,
+            supplierId = null,
+            unit = null,
+            minStockLevel = null,
+            maxStockLevel = null,
+            isActive = true,
+            tags = null,
+            lastSoldDate = null
         ),
         Product(
             id = 3L,
@@ -395,7 +422,16 @@ fun PreviewProductsScreen() {
             stock = 20,
             image = null,
             subCategoryId = 2,
-            date = System.currentTimeMillis()
+            date = System.currentTimeMillis(),
+            costPrice = null,
+            description = null,
+            supplierId = null,
+            unit = null,
+            minStockLevel = null,
+            maxStockLevel = null,
+            isActive = true,
+            tags = null,
+            lastSoldDate = null
         )
     )
 

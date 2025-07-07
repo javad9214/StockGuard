@@ -254,7 +254,16 @@ fun InvoicesListScreenPreview() {
                     subCategoryId = 1,
                     date = System.currentTimeMillis(),
                     stock = 10,
-                    image = null
+                    image = null,
+                    costPrice = null,
+                    description = null,
+                    supplierId = null,
+                    unit = null,
+                    minStockLevel = null,
+                    maxStockLevel = null,
+                    isActive = true,
+                    tags = null,
+                    lastSoldDate = null
                 ),
                 quantity = 2
             ),
@@ -267,7 +276,16 @@ fun InvoicesListScreenPreview() {
                     subCategoryId = 1,
                     date = System.currentTimeMillis(),
                     stock = 5,
-                    image = null
+                    image = null,
+                    costPrice = null,
+                    description = null,
+                    supplierId = null,
+                    unit = null,
+                    minStockLevel = null,
+                    maxStockLevel = null,
+                    isActive = true,
+                    tags = null,
+                    lastSoldDate = null
                 ),
                 quantity = 1
             )

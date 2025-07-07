@@ -33,17 +33,19 @@ class InvoiceRepoImpl @Inject constructor(
 
         val invoice = InvoiceEntity(
             invoiceNumber = invoiceNumber,
-            invoiceDate = FarsiDateUtil.getTodayPersianDate(),
+            invoiceDate = FarsiDateUtil.getTodayAsTimestamp(),
             createdAt = System.currentTimeMillis()
         )
 
         val invoiceId = invoiceDao.insertInvoice(invoice)
 
         products.forEach { productWithQuantity ->
+            val product = productWithQuantity.product
             val invoiceProductCrossRef = InvoiceProductCrossRef(
                 invoiceId = invoiceId,
                 productId = productWithQuantity.product.id,
-                quantity = productWithQuantity.quantity
+                quantity = productWithQuantity.quantity,
+                priceAtSale = product.price ?: 0L
             )
             invoiceProductDao.insertCrossRef(invoiceProductCrossRef)
         }
@@ -103,7 +105,7 @@ class InvoiceRepoImpl @Inject constructor(
 
     override suspend fun getTopSellingProductsForMonth(yearMonth: String): List<TopSellingProductInfo> {
         return invoiceDao.getTopSellingProductsForMonth(yearMonth).map {
-        TopSellingProductInfo(
+            TopSellingProductInfo(
                 name = it.name,
                 totalQuantity = it.totalQuantity,
                 totalSales = it.totalSales
@@ -117,7 +119,10 @@ class InvoiceRepoImpl @Inject constructor(
     }
 
     override suspend fun getRecentInvoicesForDebug(): List<String> {
-        return invoiceDao.getRecentInvoicesForDebug().map { it.invoiceDate }
+        return invoiceDao.getRecentInvoicesForDebug().map {
+            val date = Date(it.invoiceDate)
+            SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(date)
+        }
     }
 
     // Helper methods
@@ -127,7 +132,7 @@ class InvoiceRepoImpl @Inject constructor(
                 invoice = InvoiceEntity(
                     id = 0,
                     invoiceNumber = 0,
-                    invoiceDate = ""
+                    invoiceDate = 0L
                 ),
                 products = emptyList()
             )
@@ -137,7 +142,12 @@ class InvoiceRepoImpl @Inject constructor(
         val invoice = InvoiceEntity(
             id = first.invoiceId,
             invoiceNumber = first.numberId,
-            invoiceDate = first.invoiceDate
+            // Convert the string date back to a timestamp
+            invoiceDate = try {
+                first.invoiceDate.toLongOrNull() ?: System.currentTimeMillis()
+            } catch (e: Exception) {
+                System.currentTimeMillis()
+            }
         )
 
         val productsWithQuantity = invoiceWithProducts.map { relation ->
@@ -148,10 +158,19 @@ class InvoiceRepoImpl @Inject constructor(
                     name = product.name,
                     barcode = product.barcode,
                     price = product.price,
+                    costPrice = product.costPrice,
+                    description = product.description,
                     image = product.image,
                     subCategoryId = product.subcategoryId,
+                    supplierId = product.supplierId,
+                    unit = product.unit,
                     date = product.date,
-                    stock = product.stock
+                    stock = product.stock,
+                    minStockLevel = product.minStockLevel,
+                    maxStockLevel = product.maxStockLevel,
+                    isActive = product.isActive,
+                    tags = product.tags,
+                    lastSoldDate = product.lastSoldDate
                 ),
                 quantity = relation.quantity
             )
