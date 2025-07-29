@@ -1,304 +1,283 @@
 package com.example.composetrainer.domain.model
 
-import com.example.composetrainer.data.local.entity.InvoiceEntity
-import com.example.composetrainer.data.local.entity.InvoiceProductCrossRefEntity
+import com.example.composetrainer.domain.model.type.Money
+import java.time.LocalDateTime
 
-import java.math.BigDecimal
-import java.math.RoundingMode
+
 
 // Domain Model
-data class InvoiceProduct(
-    val invoiceId: InvoiceId,
-    val productId: ProductId,
-    val quantity: Quantity,
-    val priceAtSale: Money,
-    val costPriceAtTransaction: Money,
-    val discount: Money,
-    val total: Money
+data class InvoiceWithProducts(
+    val invoice: Invoice,
+    val products: List<InvoiceProduct>
 ) {
-    // Business logic methods
-    fun getUnitProfitAfterDiscount(): Money {
-        val netSellingPrice = priceAtSale.amount - discount.amount
-        val unitProfit = netSellingPrice - costPriceAtTransaction.amount
-        return Money(maxOf(0L, unitProfit))
-    }
+    // Computed properties for convenience
+    val invoiceId: InvoiceId get() = invoice.id
+    val totalProductsCount: Int get() = products.size
+    val totalQuantity: Int get() = products.sumOf { it.quantity.value }
 
-    fun getTotalProfitAfterDiscount(): Money {
-        val unitProfit = getUnitProfitAfterDiscount().amount
-        return Money(unitProfit * quantity.value)
-    }
+    // Validation
+    fun isValid(): Boolean = products.all { it.invoiceId == invoice.id }
 
-    fun getProfitMargin(): BigDecimal {
-        val netSellingPrice = priceAtSale.amount - discount.amount
-        if (netSellingPrice == 0L) return BigDecimal.ZERO
+    companion object {
+        // Factory method for creating empty InvoiceWithProducts
+        fun empty(invoice: Invoice): InvoiceWithProducts {
+            return InvoiceWithProducts(
+                invoice = invoice,
+                products = emptyList()
+            )
+        }
 
-        val profit = netSellingPrice - costPriceAtTransaction.amount
-        return BigDecimal(profit)
-            .divide(BigDecimal(netSellingPrice), 4, RoundingMode.HALF_UP)
-            .multiply(BigDecimal(100))
-    }
+        // Factory method for creating with default invoice values
+        fun createDefault(
+            invoiceId: InvoiceId,
+            prefix: InvoicePrefix,
+            invoiceNumber: InvoiceNumber,
+            customerId: CustomerId? = null,
+            invoiceType: InvoiceType? = null,
+            paymentMethod: PaymentMethod? = null,
+            notes: Note? = null
+        ): InvoiceWithProducts {
+            val now = LocalDateTime.now()
+            val defaultInvoice = Invoice(
+                id = invoiceId,
+                prefix = prefix,
+                invoiceNumber = invoiceNumber,
+                invoiceDate = now,
+                invoiceType = invoiceType,
+                customerId = customerId,
+                totalAmount = Money(0),
+                totalProfit = Money(0),
+                totalDiscount = Money(0),
+                status = InvoiceStatus.DRAFT, // Assuming you have a DRAFT status
+                paymentMethod = paymentMethod,
+                notes = notes,
+                synced = false,
+                createdAt = now,
+                updatedAt = now
+            )
 
-    fun getDiscountPercentage(): BigDecimal {
-        if (priceAtSale.amount == 0L) return BigDecimal.ZERO
+            return InvoiceWithProducts(
+                invoice = defaultInvoice,
+                products = emptyList()
+            )
+        }
 
-        return BigDecimal(discount.amount)
-            .divide(BigDecimal(priceAtSale.amount), 4, RoundingMode.HALF_UP)
-            .multiply(BigDecimal(100))
-    }
+        // Factory method for creating from existing data
+        fun create(
+            invoice: Invoice,
+            products: List<InvoiceProduct>
+        ): InvoiceWithProducts {
+            // Filter products to ensure they belong to this invoice
+            val validProducts = products.filter { it.invoiceId == invoice.id }
 
-    fun getNetUnitPrice(): Money {
-        return Money(priceAtSale.amount - discount.amount)
-    }
+            return InvoiceWithProducts(
+                invoice = invoice,
+                products = validProducts
+            ).syncInvoiceTotals() // Automatically sync totals
+        }
 
-    fun hasDiscount(): Boolean {
-        return discount.amount > 0L
-    }
+        // Factory method for creating with auto-calculated totals
+        fun createWithCalculatedTotals(
+            invoiceId: InvoiceId,
+            prefix: InvoicePrefix,
+            invoiceNumber: InvoiceNumber,
+            invoiceDate: LocalDateTime,
+            products: List<InvoiceProduct>,
+            invoiceType: InvoiceType? = null,
+            customerId: CustomerId? = null,
+            status: InvoiceStatus? = null,
+            paymentMethod: PaymentMethod? = null,
+            notes: Note? = null
+        ): InvoiceWithProducts {
+            val now = LocalDateTime.now()
+            val validProducts = products.filter { it.invoiceId == invoiceId }
 
-    fun isProfitable(): Boolean {
-        return getUnitProfitAfterDiscount().amount > 0L
-    }
+            // Calculate totals from products
+            val totalAmount = validProducts.fold(Money(0)) { acc, product -> acc + product.total }
+            val totalProfit = validProducts.fold(Money(0)) { acc, product ->
+                val profitPerUnit = product.priceAtSale - product.costPriceAtTransaction
+                val totalProfit = Money(profitPerUnit.amount * product.quantity.value)
+                acc + totalProfit
+            }
+            val totalDiscount = validProducts.fold(Money(0)) { acc, product -> acc + product.discount }
 
-    fun isLossTransaction(): Boolean {
-        val netSellingPrice = priceAtSale.amount - discount.amount
-        return netSellingPrice < costPriceAtTransaction.amount
-    }
+            val invoice = Invoice(
+                id = invoiceId,
+                prefix = prefix,
+                invoiceNumber = invoiceNumber,
+                invoiceDate = invoiceDate,
+                invoiceType = invoiceType,
+                customerId = customerId,
+                totalAmount = totalAmount,
+                totalProfit = totalProfit,
+                totalDiscount = totalDiscount,
+                status = status,
+                paymentMethod = paymentMethod,
+                notes = notes,
+                synced = false,
+                createdAt = now,
+                updatedAt = now
+            )
 
-    fun getMarkupPercentage(): BigDecimal {
-        if (costPriceAtTransaction.amount == 0L) return BigDecimal.ZERO
-
-        val netSellingPrice = priceAtSale.amount - discount.amount
-        val markup = netSellingPrice - costPriceAtTransaction.amount
-
-        return BigDecimal(markup)
-            .divide(BigDecimal(costPriceAtTransaction.amount), 4, RoundingMode.HALF_UP)
-            .multiply(BigDecimal(100))
-    }
-
-    fun isHighQuantity(): Boolean {
-        return quantity.value >= 10
-    }
-
-    fun isBulkOrder(): Boolean {
-        return quantity.value >= 50
-    }
-
-    fun getTransactionType(): TransactionType {
-        return when {
-            isLossTransaction() -> TransactionType.LOSS
-            !isProfitable() -> TransactionType.BREAK_EVEN
-            getProfitMargin() >= BigDecimal(30) -> TransactionType.HIGH_MARGIN
-            getProfitMargin() >= BigDecimal(15) -> TransactionType.GOOD_MARGIN
-            else -> TransactionType.LOW_MARGIN
+            return InvoiceWithProducts(
+                invoice = invoice,
+                products = validProducts
+            )
         }
     }
 
-    fun shouldApplyBulkDiscount(): Boolean {
-        return isBulkOrder() && !hasDiscount()
-    }
-
-    fun calculateTotal(): Money {
-        val netUnitPrice = getNetUnitPrice().amount
-        return Money(netUnitPrice * quantity.value)
-    }
-
-    fun validateTotalCalculation(): Boolean {
-        return total.amount == calculateTotal().amount
-    }
 }
 
-// Value Objects
-@JvmInline
-value class ProductId(val value: Long) {
-    init {
-        require(value > 0) { "Product ID must be positive" }
-    }
-}
-
-@JvmInline
-value class Quantity(val value: Int) {
-    init {
-        require(value > 0) { "Quantity must be positive" }
-        require(value <= 10000) { "Quantity cannot exceed 10,000 units" }
-    }
-}
-
-// Enums for business logic
-enum class TransactionType {
-    LOSS,
-    BREAK_EVEN,
-    LOW_MARGIN,
-    GOOD_MARGIN,
-    HIGH_MARGIN
-}
-
-// Mapping Extension Functions
-fun InvoiceProductCrossRefEntity.toDomain(): InvoiceProduct {
-    return InvoiceProduct(
-        invoiceId = InvoiceId(invoiceId),
-        productId = ProductId(productId),
-        quantity = Quantity(quantity),
-        priceAtSale = Money(priceAtSale),
-        costPriceAtTransaction = Money(costPriceAtTransaction),
-        discount = Money(discount),
-        total = Money(total)
+// Extension functions for Invoice
+fun Invoice.withProducts(products: List<InvoiceProduct>): InvoiceWithProducts {
+    return InvoiceWithProducts(
+        invoice = this,
+        products = products.filter { it.invoiceId == this.id }
     )
 }
 
-fun InvoiceProduct.toEntity(): InvoiceProductCrossRefEntity {
-    return InvoiceProductCrossRefEntity(
-        invoiceId = invoiceId.value,
-        productId = productId.value,
-        quantity = quantity.value,
-        priceAtSale = priceAtSale.amount,
-        costPriceAtTransaction = costPriceAtTransaction.amount,
-        discount = discount.amount,
-        total = total.amount
+fun Invoice.withoutProducts(): InvoiceWithProducts {
+    return InvoiceWithProducts(
+        invoice = this,
+        products = emptyList()
     )
 }
 
-// Factory for creating invoice products
-object InvoiceProductFactory {
-    fun create(
-        invoiceId: Long,
-        productId: Long,
-        quantity: Int,
-        priceAtSale: Long,
-        costPriceAtTransaction: Long,
-        discount: Long = 0L
-    ): InvoiceProduct {
-        val netUnitPrice = priceAtSale - discount
-        val calculatedTotal = netUnitPrice * quantity
+// Extension functions for InvoiceWithProducts
+fun InvoiceWithProducts.addProduct(product: InvoiceProduct): InvoiceWithProducts {
+    require(product.invoiceId == this.invoiceId) {
+        "Product invoiceId must match invoice id"
+    }
+    return this.copy(products = products + product)
+}
 
-        return InvoiceProduct(
-            invoiceId = InvoiceId(invoiceId),
-            productId = ProductId(productId),
-            quantity = Quantity(quantity),
-            priceAtSale = Money(priceAtSale),
-            costPriceAtTransaction = Money(costPriceAtTransaction),
-            discount = Money(discount),
-            total = Money(calculatedTotal)
+fun InvoiceWithProducts.removeProduct(productId: ProductId): InvoiceWithProducts {
+    return this.copy(products = products.filterNot { it.productId == productId })
+}
+
+fun InvoiceWithProducts.updateProduct(
+    productId: ProductId,
+    updater: (InvoiceProduct) -> InvoiceProduct
+): InvoiceWithProducts {
+    return this.copy(
+        products = products.map { product ->
+            if (product.productId == productId) {
+                updater(product).also { updated ->
+                    require(updated.invoiceId == this.invoiceId) {
+                        "Updated product invoiceId must match invoice id"
+                    }
+                }
+            } else {
+                product
+            }
+        }
+    )
+}
+
+fun InvoiceWithProducts.getProduct(productId: ProductId): InvoiceProduct? {
+    return products.find { it.productId == productId }
+}
+
+fun InvoiceWithProducts.hasProduct(productId: ProductId): Boolean {
+    return products.any { it.productId == productId }
+}
+
+// Calculation extension functions
+fun InvoiceWithProducts.calculateTotalAmount(): Money {
+    return products.fold(Money(0)) { acc, product -> acc + product.total }
+}
+
+fun InvoiceWithProducts.calculateTotalProfit(): Money {
+    return products.fold(Money(0)) { acc, product ->
+        val profitPerUnit = product.priceAtSale - product.costPriceAtTransaction
+        val totalProfit = Money(profitPerUnit.amount * product.quantity.value)
+        acc + totalProfit
+    }
+}
+
+fun InvoiceWithProducts.calculateTotalDiscount(): Money {
+    return products.fold(Money(0)) { acc, product -> acc + product.discount }
+}
+
+fun InvoiceWithProducts.calculateTotalCost(): Money {
+    return products.fold(Money(0)) { acc, product ->
+        val totalCost = Money(product.costPriceAtTransaction.amount * product.quantity.value)
+        acc + totalCost
+    }
+}
+
+// Update invoice totals based on products
+fun InvoiceWithProducts.syncInvoiceTotals(): InvoiceWithProducts {
+    val calculatedTotal = calculateTotalAmount()
+    val calculatedProfit = calculateTotalProfit()
+    val calculatedDiscount = calculateTotalDiscount()
+
+    return this.copy(
+        invoice = invoice.copy(
+            totalAmount = calculatedTotal,
+            totalProfit = calculatedProfit,
+            totalDiscount = calculatedDiscount,
+            updatedAt = LocalDateTime.now()
         )
-    }
-
-    fun createWithAutoDiscount(
-        invoiceId: Long,
-        productId: Long,
-        quantity: Int,
-        priceAtSale: Long,
-        costPriceAtTransaction: Long,
-        bulkDiscountThreshold: Int = 50,
-        bulkDiscountPercentage: Int = 5
-    ): InvoiceProduct {
-        val discount = if (quantity >= bulkDiscountThreshold) {
-            (priceAtSale * bulkDiscountPercentage) / 100
-        } else {
-            0L
-        }
-
-        return create(
-            invoiceId = invoiceId,
-            productId = productId,
-            quantity = quantity,
-            priceAtSale = priceAtSale,
-            costPriceAtTransaction = costPriceAtTransaction,
-            discount = discount
-        )
-    }
-}
-
-// Extension functions for updating invoice products
-fun InvoiceProduct.updateQuantity(newQuantity: Int): InvoiceProduct {
-    val quantity = Quantity(newQuantity)
-    val newTotal = getNetUnitPrice().amount * quantity.value
-
-    return copy(
-        quantity = quantity,
-        total = Money(newTotal)
     )
 }
 
-fun InvoiceProduct.updatePriceAtSale(newPrice: Long): InvoiceProduct {
-    val newTotal = (newPrice - discount.amount) * quantity.value
+// Mapping functions for different use cases
+fun InvoiceWithProducts.toInvoiceOnly(): Invoice = invoice
 
-    return copy(
-        priceAtSale = Money(newPrice),
-        total = Money(newTotal)
+fun InvoiceWithProducts.toProductsOnly(): List<InvoiceProduct> = products
+
+fun InvoiceWithProducts.toInvoiceSummary(): InvoiceSummary {
+    return InvoiceSummary(
+        id = invoice.id,
+        invoiceNumber = invoice.invoiceNumber,
+        invoiceDate = invoice.invoiceDate,
+        customerName = null, // You might need to join with customer data
+        totalAmount = invoice.totalAmount ?: calculateTotalAmount(),
+        status = invoice.status,
+        productsCount = products.size
     )
 }
 
-fun InvoiceProduct.applyDiscount(discountAmount: Long): InvoiceProduct {
-    val newDiscount = Money(discountAmount)
-    val newTotal = (priceAtSale.amount - discountAmount) * quantity.value
+// Helper data class for summary view
+data class InvoiceSummary(
+    val id: InvoiceId,
+    val invoiceNumber: InvoiceNumber,
+    val invoiceDate: LocalDateTime,
+    val customerName: String?,
+    val totalAmount: Money,
+    val status: InvoiceStatus?,
+    val productsCount: Int
+)
 
-    return copy(
-        discount = newDiscount,
-        total = Money(newTotal)
-    )
-}
-
-fun InvoiceProduct.applyPercentageDiscount(percentage: Int): InvoiceProduct {
-    require(percentage in 0..100) { "Discount percentage must be between 0 and 100" }
-
-    val discountAmount = (priceAtSale.amount * percentage) / 100
-    return applyDiscount(discountAmount)
-}
-
-fun InvoiceProduct.removeDiscount(): InvoiceProduct {
-    return copy(
-        discount = Money(0L),
-        total = Money(priceAtSale.amount * quantity.value)
-    )
-}
-
-fun InvoiceProduct.updateCostPrice(newCostPrice: Long): InvoiceProduct {
-    return copy(
-        costPriceAtTransaction = Money(newCostPrice)
-    )
-}
-
-// Business analysis extensions
-fun InvoiceProduct.getTransactionSummary(): String {
-    return buildString {
-        append("Qty: ${quantity.value}, ")
-        append("Unit Price: $${priceAtSale.toDisplayAmount()}, ")
-        if (hasDiscount()) {
-            append("Discount: $${discount.toDisplayAmount()}, ")
-        }
-        append("Total: $${total.toDisplayAmount()}, ")
-        append("Profit: $${getTotalProfitAfterDiscount().toDisplayAmount()}, ")
-        append("Margin: ${getProfitMargin().setScale(1, RoundingMode.HALF_UP)}%")
+// Collection extension functions
+fun List<InvoiceWithProducts>.getTotalRevenue(): Money {
+    return fold(Money(0)) { acc, invoiceWithProducts ->
+        acc + invoiceWithProducts.calculateTotalAmount()
     }
 }
 
-fun InvoiceProduct.getOptimizationSuggestion(): String {
-    return when (getTransactionType()) {
-        TransactionType.LOSS -> "Warning: This transaction results in a loss. Consider increasing price."
-        TransactionType.BREAK_EVEN -> "This transaction breaks even. Consider slight price increase."
-        TransactionType.LOW_MARGIN -> "Low profit margin. Consider optimizing cost or price."
-        TransactionType.GOOD_MARGIN -> "Good profit margin. Transaction is healthy."
-        TransactionType.HIGH_MARGIN -> "Excellent profit margin. Consider competitive pricing."
+fun List<InvoiceWithProducts>.getTotalProfit(): Money {
+    return fold(Money(0)) { acc, invoiceWithProducts ->
+        acc + invoiceWithProducts.calculateTotalProfit()
     }
 }
 
-// Collection extensions for multiple invoice products
-fun List<InvoiceProduct>.getTotalAmount(): Money {
-    return Money(sumOf { it.total.amount })
+fun List<InvoiceWithProducts>.filterByStatus(status: InvoiceStatus): List<InvoiceWithProducts> {
+    return filter { it.invoice.status == status }
 }
 
-fun List<InvoiceProduct>.getTotalProfit(): Money {
-    return Money(sumOf { it.getTotalProfitAfterDiscount().amount })
-}
-
-fun List<InvoiceProduct>.getTotalDiscount(): Money {
-    return Money(sumOf { it.discount.amount * it.quantity.value })
-}
-
-fun List<InvoiceProduct>.getAverageProfitMargin(): BigDecimal {
-    if (isEmpty()) return BigDecimal.ZERO
-
-    val totalMargin = fold(BigDecimal.ZERO) { acc, item ->
-        acc.add(item.getProfitMargin())
+fun List<InvoiceWithProducts>.filterByDateRange(
+    startDate: LocalDateTime,
+    endDate: LocalDateTime
+): List<InvoiceWithProducts> {
+    return filter {
+        it.invoice.invoiceDate.isAfter(startDate) && it.invoice.invoiceDate.isBefore(endDate)
     }
-
-    return totalMargin.divide(BigDecimal(size), 2, RoundingMode.HALF_UP)
 }
+
+// Money class extension functions for calculations
+operator fun Money.plus(other: Money): Money = Money(this.amount + other.amount)
+operator fun Money.minus(other: Money): Money = Money(this.amount - other.amount)
+operator fun Money.times(multiplier: Int): Money = Money(this.amount * multiplier)
+operator fun Money.times(multiplier: Long): Money = Money(this.amount * multiplier)

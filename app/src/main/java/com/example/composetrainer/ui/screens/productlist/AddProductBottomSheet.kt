@@ -41,7 +41,7 @@ fun AddProductBottomSheet(
     var name by remember { mutableStateOf(initialProduct?.name ?: "") }
     var barcode by remember { mutableStateOf(initialProduct?.barcode ?: "") }
     var price by remember { mutableStateOf(initialProduct?.price?.toString() ?: "") }
-    var categoryID by remember { mutableStateOf(initialProduct?.subCategoryId?.toString() ?: "") }
+    var categoryID by remember { mutableStateOf(initialProduct?.subcategoryId?.toString() ?: "") }
 
     Card(
         modifier = Modifier.fillMaxWidth(),

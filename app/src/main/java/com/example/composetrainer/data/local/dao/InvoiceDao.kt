@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import com.example.composetrainer.data.local.entity.InvoiceEntity
-import com.example.composetrainer.data.local.relation.InvoiceWithProduct
+import com.example.composetrainer.data.local.relation.InvoiceWithProductsRelation
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -27,38 +27,35 @@ interface InvoiceDao {
     @Transaction
     @Query(
         """
-        SELECT i.id AS invoiceId, i.invoiceNumber as numberId, CAST(i.invoiceDate AS TEXT) AS invoiceDate, p.*, ip.quantity
+        SELECT i.id AS invoiceId,i.*, ip.*
         FROM invoices AS i
         JOIN invoice_products AS ip ON i.id = ip.invoiceId
-        JOIN products AS p ON p.id = ip.productId
         WHERE i.id = :invoiceId
     """
     )
-    suspend fun getInvoiceWithProducts(invoiceId: Long): List<InvoiceWithProduct>
+    fun getInvoiceWithProducts(invoiceId: Long): Flow<List<InvoiceWithProductsRelation>>
 
     @Transaction
     @Query(
         """
-        SELECT i.id AS invoiceId, i.invoiceNumber as numberId, CAST(i.invoiceDate AS TEXT) AS invoiceDate, p.*, ip.quantity
+        SELECT i.id AS invoiceId,i.*, ip.quantity
         FROM invoices AS i 
         INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
-        INNER JOIN products AS p ON ip.productId = p.id
         ORDER BY i.createdAt DESC
     """
     )
-    fun getAllInvoiceWithProducts(): Flow<List<InvoiceWithProduct>>
+    fun getAllInvoiceWithProducts(): Flow<List<InvoiceWithProductsRelation>>
 
     @Transaction
     @Query(
         """
-        SELECT i.id AS invoiceId, i.invoiceNumber as numberId, CAST(i.invoiceDate AS TEXT) AS invoiceDate, p.*, ip.quantity
+        SELECT i.id AS invoiceId,i.*, ip.quantity
         FROM invoices AS i 
         INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
-        INNER JOIN products AS p ON ip.productId = p.id
         ORDER BY i.createdAt ASC
     """
     )
-    fun getAllInvoiceWithProductsOldestFirst(): Flow<List<InvoiceWithProduct>>
+    fun getAllInvoiceWithProductsOldestFirst(): Flow<List<InvoiceWithProductsRelation>>
 
     // Analytics queries
     @Query(

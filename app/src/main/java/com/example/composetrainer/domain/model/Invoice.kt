@@ -1,6 +1,7 @@
 package com.example.composetrainer.domain.model
 
 import com.example.composetrainer.data.local.entity.InvoiceEntity
+import com.example.composetrainer.domain.model.type.Money
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId

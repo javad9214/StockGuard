@@ -1,7 +1,6 @@
 package com.example.composetrainer.data.repository
 
 import com.example.composetrainer.data.local.dao.ProductDao
-import com.example.composetrainer.data.mapper.ProductMapper
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.repository.ProductRepository
 import kotlinx.coroutines.flow.Flow

@@ -4,14 +4,15 @@ import com.example.composetrainer.data.local.dao.InvoiceDao
 import com.example.composetrainer.data.local.dao.InvoiceProductDao
 import com.example.composetrainer.data.local.dao.ProductDao
 import com.example.composetrainer.data.local.entity.InvoiceEntity
-import com.example.composetrainer.data.local.entity.InvoiceProductCrossRefEntity
-import com.example.composetrainer.data.local.relation.InvoiceWithProduct
+import com.example.composetrainer.data.local.relation.InvoiceWithProductsRelation
+import com.example.composetrainer.domain.model.InvoiceProduct
+import com.example.composetrainer.domain.model.InvoiceProductFactory
 import com.example.composetrainer.domain.model.InvoiceWithProducts
 import com.example.composetrainer.domain.model.ProductWithQuantity
 import com.example.composetrainer.domain.model.TopSellingProductInfo
+import com.example.composetrainer.domain.model.toDomain
 import com.example.composetrainer.domain.repository.InvoiceRepository
 import com.example.composetrainer.domain.usecase.sales.AddToProductSalesSummaryUseCase
-import com.example.composetrainer.utils.dateandtime.TimeStampUtil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.text.SimpleDateFormat
@@ -26,40 +27,14 @@ class InvoiceRepoImpl @Inject constructor(
     private val addToProductSalesSummaryUseCase: AddToProductSalesSummaryUseCase
 ) : InvoiceRepository {
 
-    override suspend fun createInvoiceold(products: List<ProductWithQuantity>) {
-        val invoiceNumber = getNextInvoiceNumberId()
-
-        val invoice = InvoiceEntity(
-            invoiceNumber = invoiceNumber,
-            invoiceDate = TimeStampUtil.getTodayAsTimestamp(),
-            createdAt = System.currentTimeMillis()
-        )
-
-        val invoiceId = invoiceDao.insertInvoice(invoice)
-
-        products.forEach { productWithQuantity ->
-            val product = productWithQuantity.product
-            val invoiceProductCrossRefEntity = InvoiceProductCrossRefEntity(
-                invoiceId = invoiceId,
-                productId = productWithQuantity.product.id,
-                quantity = productWithQuantity.quantity,
-                priceAtSale = product.price ?: 0L,
-                costPriceAtTransaction = product.costPrice ?: 0L
-            )
-            invoiceProductDao.insertCrossRef(invoiceProductCrossRefEntity)
-        }
-
-        // Update product sales summary
-        addToProductSalesSummaryUseCase(products)
-    }
-
     override suspend fun createInvoice(products: List<ProductWithQuantity>) {
 
     }
 
-    override suspend fun getInvoiceWithProducts(invoiceId: Long): InvoiceWithProducts {
-        val invoiceWithProducts = invoiceDao.getInvoiceWithProducts(invoiceId)
-        return mapToInvoiceWithProducts(invoiceWithProducts)
+    override suspend fun getInvoiceWithProducts(invoiceId: Long): Flow<InvoiceWithProducts>{
+        return invoiceDao.getInvoiceWithProducts(invoiceId).map {
+            mapToInvoiceWithProducts(it)
+        }
     }
 
     override suspend fun getAllInvoices(): Flow<List<InvoiceWithProducts>> {
@@ -133,56 +108,55 @@ class InvoiceRepoImpl @Inject constructor(
     }
 
     // Helper methods
-    private fun mapToInvoiceWithProducts(invoiceWithProducts: List<InvoiceWithProduct>): InvoiceWithProducts {
-        if (invoiceWithProducts.isEmpty()) {
-            return InvoiceWithProducts(
-                invoice = InvoiceEntity(
-                    id = 0,
-                    invoiceNumber = 0,
-                    invoiceDate = 0L
-                ),
-                products = emptyList()
-            )
+    private fun mapToInvoiceWithProducts(
+        invoiceWithProductsRelations: List<InvoiceWithProductsRelation>
+    ): InvoiceWithProducts {
+        require(invoiceWithProductsRelations.isNotEmpty()) {
+            "InvoiceWithProductsRelations list cannot be empty"
         }
 
-        val first = invoiceWithProducts.first()
-        val invoice = InvoiceEntity(
-            id = first.invoiceId,
-            invoiceNumber = first.numberId,
-            // Convert the string date back to a timestamp
-            invoiceDate = try {
-                first.invoiceDate.toLongOrNull() ?: System.currentTimeMillis()
-            } catch (e: Exception) {
-                System.currentTimeMillis()
-            }
+        // All relations should have the same invoice
+        val firstRelation = invoiceWithProductsRelations.first()
+        val invoiceEntity = firstRelation.invoice
+
+        // Validate that all relations belong to the same invoice
+        require(invoiceWithProductsRelations.all { it.invoice.id == invoiceEntity.id }) {
+            "All relations must belong to the same invoice"
+        }
+
+        // Map InvoiceEntity to Invoice domain model
+        val invoice = invoiceEntity.toDomain()
+
+        // Map ProductEntities to InvoiceProduct domain models
+        val products = firstRelation.invoiceProducts.map { it.toDomain() }
+
+        return InvoiceWithProducts(
+            invoice = invoice,
+            products = products
         )
+    }
 
-        val productsWithQuantity = invoiceWithProducts.map { relation ->
-            val product = relation.product
-            ProductWithQuantity(
-                product = com.example.composetrainer.domain.model.Product(
-                    id = product.id,
-                    name = product.name,
-                    barcode = product.barcode,
-                    price = product.price,
-                    costPrice = product.costPrice,
-                    description = product.description,
-                    image = product.image,
-                    subCategoryId = product.subcategoryId,
-                    supplierId = product.supplierId,
-                    unit = product.unit,
-                    date = product.date,
-                    stock = product.stock,
-                    minStockLevel = product.minStockLevel,
-                    maxStockLevel = product.maxStockLevel,
-                    isActive = product.isActive,
-                    tags = product.tags,
-                    lastSoldDate = product.lastSoldDate
-                ),
-                quantity = relation.quantity
-            )
-        }
+    // Alternative version if you need to handle empty lists
+    private fun mapToInvoiceWithProductsOrNull(
+        invoiceWithProductsRelations: List<InvoiceWithProductsRelation>
+    ): InvoiceWithProducts? {
+        if (invoiceWithProductsRelations.isEmpty()) return null
+        return mapToInvoiceWithProducts(invoiceWithProductsRelations)
+    }
 
-        return InvoiceWithProducts(invoice, productsWithQuantity)
+    // Extension function version for cleaner usage
+    private fun List<InvoiceWithProductsRelation>.toInvoiceWithProducts(): InvoiceWithProducts {
+        return mapToInvoiceWithProducts(this)
+    }
+
+    // Group multiple invoices if needed
+    private fun mapToMultipleInvoicesWithProducts(
+        invoiceWithProductsRelations: List<InvoiceWithProductsRelation>
+    ): List<InvoiceWithProducts> {
+        return invoiceWithProductsRelations
+            .groupBy { it.invoiceId }
+            .map { (_, relations) ->
+                mapToInvoiceWithProducts(relations)
+            }
     }
 }
