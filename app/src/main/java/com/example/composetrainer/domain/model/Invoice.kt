@@ -10,7 +10,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 // Domain Model
-data class Invoice(
+data class Invoice (
     val id: InvoiceId,
     val prefix: InvoicePrefix,
     val invoiceNumber: InvoiceNumber,
@@ -232,13 +232,14 @@ fun Invoice.toEntity(): InvoiceEntity {
 // Factory for creating new invoices
 object InvoiceFactory {
     fun createDraft(
+        invoiceId: InvoiceId = InvoiceId(0),
         customerId: Long? = null,
         invoiceType: InvoiceType = InvoiceType.SALE,
         prefix: String = "INV"
     ): Invoice {
         val now = LocalDateTime.now()
         return Invoice(
-            id = InvoiceId(0), // Will be set by database
+            id = invoiceId, // Will be set by database
             prefix = InvoicePrefix(prefix),
             invoiceNumber = InvoiceNumber(0), //Must Be Set Later
             invoiceDate = now,

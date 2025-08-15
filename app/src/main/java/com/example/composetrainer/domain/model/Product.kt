@@ -371,7 +371,8 @@ fun Product.toEntity(): ProductEntity {
 // Factory for creating products
 object ProductFactory {
     fun createBasic(
-        name: String,
+        name: ProductName,
+        barcode: Barcode?,
         price: Long,
         costPrice: Long,
         initialStock: Int = 0
@@ -379,8 +380,8 @@ object ProductFactory {
         val now = LocalDateTime.now()
         return Product(
             id = ProductId(0),
-            name = ProductName(name),
-            barcode = null,
+            name = name,
+            barcode = barcode,
             price = Money(price),
             costPrice = Money(costPrice),
             description = null,

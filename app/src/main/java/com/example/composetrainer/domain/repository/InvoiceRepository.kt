@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface InvoiceRepository {
 
-    suspend fun createInvoice(invoice : Invoice)
+    suspend fun createInvoice(invoice : Invoice): Long
 
     /**
      * Get a single invoice and its products by invoice ID. The returned InvoiceWithProducts

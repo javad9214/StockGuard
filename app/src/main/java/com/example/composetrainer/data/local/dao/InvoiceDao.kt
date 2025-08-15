@@ -23,7 +23,7 @@ interface InvoiceDao {
     // Get the last invoice (used to generate the next numberId)
     @Query("SELECT * FROM invoices ORDER BY invoiceNumber DESC LIMIT 1")
     suspend fun getLastInvoice(): InvoiceEntity?
-
+    
     @Transaction
     @Query("SELECT * FROM invoices WHERE id = :invoiceId")
     fun getInvoiceWithProducts(invoiceId: Long): Flow<InvoiceWithProductsRelation>

@@ -25,8 +25,8 @@ class InvoiceRepoImpl @Inject constructor(
     private val productDao: ProductDao
 ) : InvoiceRepository {
 
-    override suspend fun createInvoice(invoice: Invoice) {
-        invoiceDao.insertInvoice(invoice.toEntity())
+    override suspend fun createInvoice(invoice: Invoice): Long {
+        return invoiceDao.insertInvoice(invoice.toEntity())
     }
 
     override fun getInvoiceWithProducts(invoiceId: Long): Flow<InvoiceWithProducts> {
