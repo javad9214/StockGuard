@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -40,22 +39,24 @@ import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.ui.components.BottomSheetDragHandle
 import com.example.composetrainer.ui.theme.BHoma
-import com.example.composetrainer.ui.viewmodels.InvoiceListViewModel
+import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
+import com.example.composetrainer.ui.viewmodels.ProductsViewModel
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.str
 
 @Composable
 fun AddProductToInvoice(
     onClose: () -> Unit = {},
-    viewModel: InvoiceListViewModel = hiltViewModel()
+    productsViewModel: ProductsViewModel = hiltViewModel(),
+    invoiceViewModel: InvoiceViewModel = hiltViewModel(),
 ) {
-    val products by viewModel.products.collectAsState()
-    val filteredProducts by viewModel.filteredProducts.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val searchQuery by viewModel.searchQuery.collectAsState()
+    val products by productsViewModel.products.collectAsState()
+    val filteredProducts by productsViewModel.filteredProducts.collectAsState()
+    val isLoading by productsViewModel.isLoading.collectAsState()
+    val searchQuery by productsViewModel.searchQuery.collectAsState()
 
     fun onProductSelected(product: Product) {
-        viewModel.addToCurrentInvoice(product, 1)
+        invoiceViewModel.addToCurrentInvoice(product, 1)
         onClose()
     }
 
@@ -112,7 +113,7 @@ fun AddProductToInvoice(
 
                 TextField(
                     value = searchQuery,
-                    onValueChange = { viewModel.updateSearchQuery(it) },
+                    onValueChange = { productsViewModel.updateSearchQuery(it) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
@@ -131,7 +132,7 @@ fun AddProductToInvoice(
                     },
                     trailingIcon = {
                         if (searchQuery.isNotBlank()) {
-                            IconButton(onClick = { viewModel.updateSearchQuery("") }) {
+                            IconButton(onClick = { productsViewModel.updateSearchQuery("") }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = str(R.string.clear_search)

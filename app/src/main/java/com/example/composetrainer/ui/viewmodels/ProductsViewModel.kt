@@ -1,26 +1,17 @@
 package com.example.composetrainer.ui.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.composetrainer.domain.model.Barcode
-import com.example.composetrainer.domain.model.InvoiceProduct
-import com.example.composetrainer.domain.model.InvoiceProductFactory
 import com.example.composetrainer.domain.model.Product
-import com.example.composetrainer.domain.model.ProductFactory
-import com.example.composetrainer.domain.model.ProductId
-import com.example.composetrainer.domain.model.ProductName
 import com.example.composetrainer.domain.model.StockQuantity
-import com.example.composetrainer.domain.model.SubcategoryId
 import com.example.composetrainer.domain.model.type.Money
 import com.example.composetrainer.domain.usecase.product.AddProductUseCase
 import com.example.composetrainer.domain.usecase.product.DecreaseStockUseCase
 import com.example.composetrainer.domain.usecase.product.DeleteProductUseCase
 import com.example.composetrainer.domain.usecase.product.EditProductUseCase
-import com.example.composetrainer.domain.usecase.product.GetProductUseCase
+import com.example.composetrainer.domain.usecase.product.GetAllProductUseCase
+import com.example.composetrainer.domain.usecase.product.GetProductByQueryUseCase
 import com.example.composetrainer.domain.usecase.product.IncreaseStockUseCase
-import com.example.composetrainer.domain.repository.InvoiceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
-    private val getProductsUseCase: GetProductUseCase,
+    private val getProductsUseCase: GetProductByQueryUseCase,
+    private val getAllProductUseCase: GetAllProductUseCase,
     private val addProductUseCase: AddProductUseCase,
     private val deleteProductUseCase: DeleteProductUseCase,
     private val editProductUseCase: EditProductUseCase,
@@ -44,11 +36,18 @@ class ProductsViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> get() = _errorMessage
+
+
     private val _sortOrder = MutableStateFlow(SortOrder.DESCENDING)
     val sortOrder: StateFlow<SortOrder> get() = _sortOrder
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> get() = _searchQuery
+
+    private val _filteredProducts = MutableStateFlow<List<Product>>(emptyList())
+    val filteredProducts: StateFlow<List<Product>> get() = _filteredProducts
 
     private val _selectedProduct = MutableStateFlow<Product?>(null)
     val selectedProduct: StateFlow<Product?> get() = _selectedProduct
@@ -80,9 +79,25 @@ class ProductsViewModel @Inject constructor(
     private fun loadProducts() {
         viewModelScope.launch {
             _isLoading.value = true
-            getProductsUseCase(sortOrder.value, searchQuery.value).collectLatest { products ->
-                _products.value = products
+            try {
+                val query = _searchQuery.value
+                val sortOrder = _sortOrder.value
+                if (query.isBlank()) {
+                    getAllProductUseCase.invoke(sortOrder).collectLatest { productList ->
+                        _products.value = productList
+                        _filteredProducts.value = productList
+                        _isLoading.value = false
+                    }
+                } else {
+                    getProductsUseCase.invoke(sortOrder,query).collectLatest { productList ->
+                        _products.value = productList
+                        _filteredProducts.value = productList
+                        _isLoading.value = false
+                    }
+                }
+            } catch (e: Exception) {
                 _isLoading.value = false
+                _errorMessage.value = "Failed to load products: ${e.message}"
             }
         }
     }

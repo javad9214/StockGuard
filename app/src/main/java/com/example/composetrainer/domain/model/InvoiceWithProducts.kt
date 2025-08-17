@@ -13,6 +13,7 @@ data class InvoiceWithProducts(
 ) {
     // Computed properties for convenience
     val invoiceId: InvoiceId get() = invoice.id
+    val invoiceNumber: InvoiceNumber get() = invoice.invoiceNumber
     val totalProductsCount: Int get() = invoiceProducts.size
     val totalQuantity: Int get() = invoiceProducts.sumOf { it.quantity.value }
 

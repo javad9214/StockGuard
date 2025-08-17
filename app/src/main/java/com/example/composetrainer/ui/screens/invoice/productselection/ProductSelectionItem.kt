@@ -75,7 +75,7 @@ fun ProductSelectionItem(
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = product.name,
+                    text = product.name.value,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -85,7 +85,7 @@ fun ProductSelectionItem(
                         text = "${stringResource(R.string.stock)} : ${product.stock}",
                         fontFamily = BRoya,
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (product.stock > 0)
+                        color = if (product.stock.value > 0)
                             MaterialTheme.colorScheme.primary
                         else
                             MaterialTheme.colorScheme.error
@@ -95,33 +95,4 @@ fun ProductSelectionItem(
 
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProductSelectionItemPreview() {
-    val sampleProduct = Product(
-        id = 1L,
-        name = "Sample Product",
-        barcode = null,
-        price = 250000L,
-        image = null,
-        subCategoryId = null,
-        date = System.currentTimeMillis(),
-        stock = 5,
-        costPrice = null,
-        description = null,
-        supplierId = null,
-        unit = null,
-        minStockLevel = null,
-        maxStockLevel = null,
-        isActive = true,
-        tags = null,
-        lastSoldDate = null
-    )
-
-    ProductSelectionItem(
-        product = sampleProduct,
-        onClick = {}
-    )
 }

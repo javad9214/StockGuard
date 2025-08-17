@@ -97,7 +97,7 @@ fun ProductDetailContent(
                         value = quantity,
                         onValueChange = onQuantityChange,
                         min = 1,
-                        max = product.stock
+                        max = product.stock.value
                     )
                 }
             }
@@ -108,54 +108,13 @@ fun ProductDetailContent(
         Button(
             onClick = onAddToInvoice,
             modifier = Modifier.fillMaxWidth(),
-            enabled = quantity in 1..product.stock,
+            enabled = quantity in 1..product.stock.value,
             shape = RoundedCornerShape(12.dp)
         ) {
             Text(
                 text = "${stringResource(R.string.add_to_invoice)} (${quantity}×)",
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(vertical = 8.dp)
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ProductDetailContentPreview() {
-    val sampleProduct = Product(
-        id = 1L,
-        name = "گوشی هوشمند سامسونگ",
-        barcode = "123456789",
-        price = 12999000L,
-        image = null,
-        subCategoryId = 1,
-        date = System.currentTimeMillis(),
-        stock = 10,
-        costPrice = null,
-        description = null,
-        supplierId = null,
-        unit = null,
-        minStockLevel = null,
-        maxStockLevel = null,
-        isActive = true,
-        tags = null,
-        lastSoldDate = null
-    )
-
-    Surface(
-        color = MaterialTheme.colorScheme.background
-    ) {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            ProductDetailContent(
-                product = sampleProduct,
-                quantity = 2,
-                onQuantityChange = {},
-                onBack = {},
-                onAddToInvoice = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
             )
         }
     }

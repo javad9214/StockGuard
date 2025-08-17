@@ -37,7 +37,7 @@ fun ProductSelectionBottomSheet(
     val layoutDirection = LocalLayoutDirection.current
     var selectedProductId by rememberSaveable { mutableStateOf<Long?>(null) }
     var quantity by rememberSaveable { mutableIntStateOf(1) }
-    val selectedProduct = selectedProductId?.let { id -> products.find { it.id == id } }
+    val selectedProduct = selectedProductId?.let { id -> products.find { it.id.value == id } }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -53,13 +53,15 @@ fun ProductSelectionBottomSheet(
                 .padding(bottom = 16.dp)
         ) {
             // HEADER
-            SheetHeader(
-                title = selectedProduct?.name ?: stringResource(R.string.select_product),
-                onNavClick = {
-                    if (selectedProduct == null) onDismiss() else selectedProductId = null
-                },
-                navIcon = if (selectedProduct == null) Icons.Filled.Close else Icons.Filled.ArrowBack
-            )
+            selectedProduct?.name?.value?.let {
+                SheetHeader(
+                    title = it,
+                    onNavClick = {
+                        selectedProductId = null
+                    },
+                    navIcon = Icons.Filled.ArrowBack
+                )
+            }
 
             Divider(modifier = Modifier.fillMaxWidth())
 
@@ -75,7 +77,7 @@ fun ProductSelectionBottomSheet(
                     ProductSelectionContent(
                         products = products,
                         onProductSelected = {
-                            selectedProductId = it.id
+                            selectedProductId = it.id.value
                             quantity = 1 // reset on new product
                         }
                     )
@@ -94,61 +96,5 @@ fun ProductSelectionBottomSheet(
                 }
             }
         }
-    }
-}
-
-
-
-@Preview
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ProductSelectionBottomSheetPreview() {
-    val sampleProducts = listOf(
-        Product(
-            id = 1L,
-            name = "گوشی هوشمند",
-            barcode = "123456789",
-            price = 69999L,
-            image = null,
-            subCategoryId = 1,
-            date = System.currentTimeMillis(),
-            stock = 15,
-            costPrice = null,
-            description = null,
-            supplierId = null,
-            unit = null,
-            minStockLevel = null,
-            maxStockLevel = null,
-            isActive = true,
-            tags = null,
-            lastSoldDate = null
-        ),
-        Product(
-            id = 2L,
-            name = "هدفون بی‌سیم",
-            barcode = "987654321",
-            price = 14999L,
-            image = null,
-            subCategoryId = 2,
-            date = System.currentTimeMillis(),
-            stock = 8,
-            costPrice = null,
-            description = null,
-            supplierId = null,
-            unit = null,
-            minStockLevel = null,
-            maxStockLevel = null,
-            isActive = true,
-            tags = null,
-            lastSoldDate = null
-        )
-    )
-
-    Surface {
-        ProductSelectionBottomSheet(
-            products = sampleProducts,
-            onAddToInvoice = { _, _ -> },
-            onDismiss = {}
-        )
     }
 }

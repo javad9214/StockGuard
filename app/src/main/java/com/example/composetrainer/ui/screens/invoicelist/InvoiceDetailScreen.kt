@@ -23,7 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Invoice
+import com.example.composetrainer.domain.model.InvoiceWithProducts
 import com.example.composetrainer.domain.model.Product
+import com.example.composetrainer.domain.model.calculateTotalAmount
+import com.example.composetrainer.domain.model.calculateTotalCost
 import com.example.composetrainer.ui.theme.BHoma
 import com.example.composetrainer.ui.theme.BMitra
 import com.example.composetrainer.ui.theme.BNazanin
@@ -43,12 +46,12 @@ fun InvoiceDetailScreen(
     onEditInvoice: (Long) -> Unit,
     viewModel: InvoiceListViewModel = hiltViewModel()
 ) {
-    val invoices by viewModel.invoices.collectAsState()
+    val invoiceWithProducts by viewModel.invoices.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val context = LocalContext.current
 
-    val invoice = invoices.find { it.id == invoiceId }
+    val invoice = invoiceWithProducts.find { it.invoice.id.value == invoiceId }
 
     // Dialog state
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
@@ -116,7 +119,7 @@ fun InvoiceDetailScreen(
 
                     else -> {
                         InvoiceDetailContent(
-                            invoice = invoice,
+                            invoiceWithProducts = invoice,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -161,7 +164,7 @@ fun InvoiceDetailScreen(
 
 @Composable
 private fun InvoiceDetailContent(
-    invoice: Invoice,
+    invoiceWithProducts: InvoiceWithProducts,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -187,21 +190,21 @@ private fun InvoiceDetailContent(
                 ) {
                     InfoRow(
                         label = str(R.string.invoice_number),
-                        value = "${invoice.prefix}-${invoice.invoiceNumber}"
+                        value = "${invoiceWithProducts.invoice.prefix}-${invoiceWithProducts.invoiceNumber}"
                     )
 
                     Divider(color = MaterialTheme.colorScheme.outlineVariant)
 
                     InfoRow(
                         label = str(R.string.date),
-                        value = invoice.invoiceDate
+                        value = invoiceWithProducts.invoice.invoiceDate.toString()
                     )
 
                     Divider(color = MaterialTheme.colorScheme.outlineVariant)
 
                     InfoRow(
                         label = str(R.string.total),
-                        value = formatPrice(invoice.totalPrice.toString()),
+                        value = formatPrice(invoiceWithProducts.calculateTotalAmount().toString()),
                         isAmount = true
                     )
                 }
@@ -226,7 +229,7 @@ private fun InvoiceDetailContent(
                 )
 
                 Text(
-                    text = stringResource(R.string.product_count, invoice.products.size),
+                    text = stringResource(R.string.product_count, ),
                     style = MaterialTheme.typography.bodyMedium,
                     fontFamily = BMitra,
                 )
@@ -287,7 +290,7 @@ private fun InvoiceDetailContent(
         }
 
         // Product items
-        items(invoice.products) { productWithQty ->
+        items(invoiceWithProducts.products.size) { item  ->
             ElevatedCard(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.elevatedCardColors(
@@ -307,7 +310,7 @@ private fun InvoiceDetailContent(
                         modifier = Modifier.weight(2f)
                     ) {
                         Text(
-                            productWithQty.product.name ?: str(R.string.product_not_found),
+                            item.product.name ?: str(R.string.product_not_found),
                             style = MaterialTheme.typography.bodyMedium,
                             fontFamily = BNazanin,
                             fontWeight = FontWeight.Bold,
@@ -316,7 +319,7 @@ private fun InvoiceDetailContent(
                     }
 
                     Text(
-                        formatPrice((productWithQty.product.price ?: 0).toString()),
+                        formatPrice((item.product.price ?: 0).toString()),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier
                             .weight(1f)
@@ -325,7 +328,7 @@ private fun InvoiceDetailContent(
                     )
 
                     Text(
-                        "${productWithQty.quantity}",
+                        "${item.quantity}",
                         style = MaterialTheme.typography.bodyMedium,
                         fontFamily = BMitra,
                         modifier = Modifier
@@ -339,8 +342,8 @@ private fun InvoiceDetailContent(
 
                     Text(
                         formatPrice(
-                            ((productWithQty.product.price
-                                ?: 0) * productWithQty.quantity).toString()
+                            ((item.product.price
+                                ?: 0) * item.quantity).toString()
                         ),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
@@ -389,7 +392,7 @@ private fun InvoiceDetailContent(
 
                     Row {
                         Text(
-                            formatPrice(invoice.totalPrice.toString()),
+                            formatPrice(invoiceWithProducts.calculateTotalCost().toString()),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -460,198 +463,3 @@ private fun InfoRow(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun InvoiceDetailScreenPreview() {
-    // Sample invoice data for preview
-    val sampleProducts = listOf(
-        ProductWithQuantity(
-            product = Product(
-                id = 1L,
-                name = "Sample Product 1",
-                price = 50000L,
-                stock = 10,
-                barcode = "123456789",
-                image = null,
-                subCategoryId = 1,
-                date = System.currentTimeMillis(),
-                costPrice = null,
-                description = null,
-                supplierId = null,
-                unit = null,
-                minStockLevel = null,
-                maxStockLevel = null,
-                isActive = true,
-                tags = null,
-                lastSoldDate = null
-            ),
-            quantity = 2
-        ),
-        ProductWithQuantity(
-            product = Product(
-                id = 2L,
-                name = "Sample Product 2",
-                price = 75000L,
-                stock = 5,
-                barcode = "223456789",
-                image = null,
-                subCategoryId = 2,
-                date = System.currentTimeMillis(),
-                costPrice = null,
-                description = null,
-                supplierId = null,
-                unit = null,
-                minStockLevel = null,
-                maxStockLevel = null,
-                isActive = true,
-                tags = null,
-                lastSoldDate = null
-            ),
-            quantity = 1
-        ),
-        ProductWithQuantity(
-            product = Product(
-                id = 3L,
-                name = "Sample Product 3",
-                price = 120000L,
-                stock = 3,
-                barcode = "323456789",
-                image = null,
-                subCategoryId = 1,
-                date = System.currentTimeMillis(),
-                costPrice = null,
-                description = null,
-                supplierId = null,
-                unit = null,
-                minStockLevel = null,
-                maxStockLevel = null,
-                isActive = true,
-                tags = null,
-                lastSoldDate = null
-            ),
-            quantity = 3
-        )
-    )
-
-    val sampleInvoice = Invoice(
-        id = 1L,
-        prefix = "INV",
-        invoiceNumber = 1001L,
-        invoiceDate = "1402/12/15",
-        products = sampleProducts,
-        totalPrice = 410000L
-    )
-
-    InvoiceDetailContent(invoice = sampleInvoice)
-}
-
-@Preview(showBackground = true)
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun InvoiceDetailScreenFullPreview() {
-    val sampleProducts = listOf(
-        ProductWithQuantity(
-            product = Product(
-                id = 1L,
-                name = "Sample Product 1",
-                price = 50000L,
-                stock = 10,
-                barcode = "123456789",
-                image = null,
-                subCategoryId = 1,
-                date = System.currentTimeMillis(),
-                costPrice = null,
-                description = null,
-                supplierId = null,
-                unit = null,
-                minStockLevel = null,
-                maxStockLevel = null,
-                isActive = true,
-                tags = null,
-                lastSoldDate = null
-            ),
-            quantity = 2
-        ),
-        ProductWithQuantity(
-            product = Product(
-                id = 2L,
-                name = "Sample Product 2",
-                price = 75000L,
-                stock = 5,
-                barcode = "223456789",
-                image = null,
-                subCategoryId = 2,
-                date = System.currentTimeMillis(),
-                costPrice = null,
-                description = null,
-                supplierId = null,
-                unit = null,
-                minStockLevel = null,
-                maxStockLevel = null,
-                isActive = true,
-                tags = null,
-                lastSoldDate = null
-            ),
-            quantity = 1
-        )
-    )
-
-    val sampleInvoice = Invoice(
-        id = 1L,
-        prefix = "INV",
-        invoiceNumber = 1001L,
-        invoiceDate = "1402/12/15",
-        products = sampleProducts,
-        totalPrice = 175000L
-    )
-
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-        val invoices = remember { mutableStateOf(listOf(sampleInvoice)) }
-        val isLoading = remember { mutableStateOf(false) }
-        val errorMessage = remember { mutableStateOf<String?>(null) }
-
-        MaterialTheme {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = { Text(str(R.string.invoice_details), fontFamily = BHoma) },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        ),
-                        navigationIcon = {
-                            IconButton(onClick = { }) {
-                                Icon(
-                                    Icons.Default.ArrowBack,
-                                    contentDescription = str(R.string.back)
-                                )
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = { }) {
-                                Icon(Icons.Default.Edit, contentDescription = str(R.string.save))
-                            }
-                            IconButton(onClick = { }) {
-                                Icon(
-                                    Icons.Default.Delete,
-                                    contentDescription = str(R.string.delete)
-                                )
-                            }
-                        }
-                    )
-                }
-            ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                ) {
-                    InvoiceDetailContent(
-                        invoice = sampleInvoice,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-        }
-    }
-}

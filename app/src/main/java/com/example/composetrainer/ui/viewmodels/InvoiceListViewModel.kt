@@ -3,10 +3,12 @@ package com.example.composetrainer.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composetrainer.domain.model.Invoice
+import com.example.composetrainer.domain.model.InvoiceWithProducts
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.repository.InvoiceRepository
 import com.example.composetrainer.domain.repository.ProductRepository
 import com.example.composetrainer.domain.usecase.invoice.DeleteInvoiceUseCase
+import com.example.composetrainer.domain.usecase.invoice.GetAllInvoiceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,16 +19,16 @@ import javax.inject.Inject
 @HiltViewModel
 class InvoiceListViewModel @Inject constructor(
     private val invoiceRepository: InvoiceRepository,
-    private val productRepository: ProductRepository,
-    private val deleteInvoiceUseCase: DeleteInvoiceUseCase
+    private val deleteInvoiceUseCase: DeleteInvoiceUseCase,
+    private val getAllInvoiceUseCase: GetAllInvoiceUseCase
 ) : ViewModel() {
 
 
     private val _selectedProducts = MutableStateFlow<List<Product>>(emptyList())
     val selectedProducts: StateFlow<List<Product>> get() = _selectedProducts
 
-    private val _invoices = MutableStateFlow<List<Invoice>>(emptyList())
-    val invoices: StateFlow<List<Invoice>> get() = _invoices
+    private val _invoices = MutableStateFlow<List<InvoiceWithProducts>>(emptyList())
+    val invoices: StateFlow<List<InvoiceWithProducts>> get() = _invoices
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
@@ -34,14 +36,6 @@ class InvoiceListViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> get() = _errorMessage
 
-    private val _products = MutableStateFlow<List<Product>>(emptyList())
-    val products: StateFlow<List<Product>> get() = _products
-
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> get() = _searchQuery
-
-    private val _filteredProducts = MutableStateFlow<List<Product>>(emptyList())
-    val filteredProducts: StateFlow<List<Product>> get() = _filteredProducts
 
     private val _sortNewestFirst = MutableStateFlow(true)
     val sortNewestFirst: StateFlow<Boolean> get() = _sortNewestFirst
@@ -57,7 +51,6 @@ class InvoiceListViewModel @Inject constructor(
 
     init {
         loadInvoices()
-        loadProducts()
     }
 
     fun toggleSortOrder() {
@@ -70,13 +63,13 @@ class InvoiceListViewModel @Inject constructor(
             _isLoading.value = true
             try {
                 if (_sortNewestFirst.value) {
-                    invoiceRepository.getAllInvoices().collectLatest { invoices ->
-                        _invoices.value = invoices.map { it.invoice }
+                    getAllInvoiceUseCase.invoke().collectLatest { invoices ->
+                        _invoices.value = invoices
                         _isLoading.value = false
                     }
                 } else {
                     invoiceRepository.getAllInvoicesOldestFirst().collectLatest { invoices ->
-                        _invoices.value = invoices.map { it.invoice }
+                        _invoices.value = invoices
                         _isLoading.value = false
                     }
                 }
@@ -87,26 +80,6 @@ class InvoiceListViewModel @Inject constructor(
         }
     }
 
-    private fun loadProducts() {
-        viewModelScope.launch {
-            try {
-                val query = _searchQuery.value
-                if (query.isBlank()) {
-                    productRepository.getAllProducts().collectLatest { productList ->
-                        _products.value = productList
-                        _filteredProducts.value = productList
-                    }
-                } else {
-                    productRepository.searchProducts(query).collectLatest { productList ->
-                        _products.value = productList
-                        _filteredProducts.value = productList
-                    }
-                }
-            } catch (e: Exception) {
-                _errorMessage.value = "Failed to load products: ${e.message}"
-            }
-        }
-    }
 
     fun deleteInvoice(invoiceId: Long) {
         viewModelScope.launch {
@@ -138,11 +111,6 @@ class InvoiceListViewModel @Inject constructor(
                 _isLoading.value = false
             }
         }
-    }
-
-    fun updateSearchQuery(query: String) {
-        _searchQuery.value = query
-        loadProducts()
     }
 
     // Selection Mode Functions

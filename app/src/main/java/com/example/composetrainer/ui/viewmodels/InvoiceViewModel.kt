@@ -15,6 +15,7 @@ import com.example.composetrainer.domain.usecase.invoice.InsertInvoiceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +29,6 @@ class InvoiceViewModel @Inject constructor(
 
     private val _currentInvoice = MutableStateFlow(InvoiceWithProducts.empty())
     val currentInvoice: StateFlow<InvoiceWithProducts> get() = _currentInvoice
-
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
@@ -45,6 +45,7 @@ class InvoiceViewModel @Inject constructor(
         val invoiceWithProductsDraft = InvoiceWithProducts.createDefault()
         _currentInvoice.value = invoiceWithProductsDraft
     }
+
 
     fun addToCurrentInvoice(product: Product, quantity: Int) {
         // Find the existing item in the current invoice

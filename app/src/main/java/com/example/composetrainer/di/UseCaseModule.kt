@@ -6,7 +6,7 @@ import com.example.composetrainer.domain.repository.ProductSalesSummaryRepositor
 import com.example.composetrainer.domain.usecase.product.AddProductUseCase
 import com.example.composetrainer.domain.usecase.analytics.GetAnalyticsDataUseCase
 import com.example.composetrainer.domain.usecase.invoice.GetInvoiceNumberUseCase
-import com.example.composetrainer.domain.usecase.product.GetProductUseCase
+import com.example.composetrainer.domain.usecase.product.GetProductByQueryUseCase
 import com.example.composetrainer.domain.usecase.sales.GetProductSalesSummaryUseCase
 import dagger.Module
 import dagger.Provides
@@ -28,7 +28,7 @@ object UseCaseModule {
     @Singleton
     fun provideGetProductsUseCase(
         repository: ProductRepository
-    ): GetProductUseCase = GetProductUseCase(repository)
+    ): GetProductByQueryUseCase = GetProductByQueryUseCase(repository)
 
     @Provides
     @Singleton

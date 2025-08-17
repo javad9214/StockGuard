@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class GetProductUseCase @Inject constructor(
+class GetAllProductUseCase @Inject constructor(
     private val repository: ProductRepository
-) {
-    operator fun invoke(sortOrder: SortOrder,searchQuery: String): Flow<List<Product>>{
-        return repository.searchProducts(searchQuery).map { products ->
+)  {
+    operator fun invoke(sortOrder: SortOrder): Flow<List<Product>> {
+        return repository.getAllProducts().map { products ->
             when (sortOrder) {
                 SortOrder.ASCENDING -> products.sortedBy { it.date }
                 SortOrder.DESCENDING -> products.sortedByDescending { it.date }

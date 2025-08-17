@@ -16,7 +16,7 @@ import com.example.composetrainer.domain.usecase.invoice.InitInvoiceWithProducts
 import com.example.composetrainer.domain.usecase.invoice.InsertInvoiceUseCase
 import com.example.composetrainer.domain.usecase.product.AddProductUseCase
 import com.example.composetrainer.domain.usecase.product.EditProductUseCase
-import com.example.composetrainer.domain.usecase.product.GetProductUseCase
+import com.example.composetrainer.domain.usecase.product.GetProductByQueryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val insertInvoiceUseCase: InsertInvoiceUseCase,
-    private val getProductsUseCase: GetProductUseCase,
+    private val getProductsUseCase: GetProductByQueryUseCase,
     private val addProductUseCase: AddProductUseCase,
     private val initInvoiceWithProductsUseCase: InitInvoiceWithProductsUseCase,
     private val editProductUseCase: EditProductUseCase
