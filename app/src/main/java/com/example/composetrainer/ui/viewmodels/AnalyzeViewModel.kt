@@ -111,7 +111,7 @@ class AnalyzeViewModel @Inject constructor(
 
 data class AnalyzeUiState(
     val analyticsData: AnalyticsData? = null,
-    val productSalesSummary: ProductSalesSummary? = null,
+    val productSalesSummary: List<ProductSalesSummary> = emptyList(),
     val selectedTimeRange: TimeRange = TimeRange.THIS_MONTH,
     val isLoading: Boolean = false,
     val error: String? = null,
