@@ -42,13 +42,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.composetrainer.R
+import com.example.composetrainer.domain.model.Barcode
 import com.example.composetrainer.domain.model.Product
+import com.example.composetrainer.domain.model.ProductDescription
+import com.example.composetrainer.domain.model.ProductId
+import com.example.composetrainer.domain.model.ProductName
+import com.example.composetrainer.domain.model.StockQuantity
+import com.example.composetrainer.domain.model.SubcategoryId
+import com.example.composetrainer.domain.model.SupplierId
+import com.example.composetrainer.domain.model.type.Money
+import com.example.composetrainer.domain.model.ProductUnit
 import com.example.composetrainer.ui.theme.BHoma
 import com.example.composetrainer.ui.theme.BMitra
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.utils.PriceValidator
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
+import java.time.LocalDateTime
 
 @Composable
 fun ProductItem(
@@ -133,7 +143,7 @@ fun ProductItem(
                     // Category ID
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "${product.subcategoryId ?: "N/A"}",
+                            text = product.subcategoryId?.value.toString(),
                             fontSize = dimenTextSize(R.dimen.text_size_md),
                             fontFamily = BHoma
                         )
@@ -179,7 +189,7 @@ fun ProductItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Stock: ${product.stock}",
+                        text = product.stock.value.toString(),
                         fontSize = dimenTextSize(R.dimen.text_size_md),
                         fontFamily = BHoma
                     )
@@ -225,7 +235,7 @@ fun ProductItem(
                     Text(
                         modifier = Modifier.weight(4f),
                         textAlign = TextAlign.Start,
-                        text = PriceValidator.formatPrice(product.price?.toString() ?: "0"),
+                        text = PriceValidator.formatPrice(product.price.amount.toString()),
                         fontSize = dimenTextSize(R.dimen.text_size_md),
                         fontFamily = BHoma
                     )
@@ -243,5 +253,85 @@ fun ProductItem(
 
             }
         }
+    }
+}
+
+// Add this Preview function at the bottom of your ProductItem.kt file
+// or in a separate preview file.
+
+@Preview(showBackground = true, name = "Product Item Preview")
+@Composable
+fun ProductItemPreview() {
+    // All required fields filled with sample/mock values for preview
+    val mockProduct = Product(
+        id = ProductId(1),
+        name = ProductName("Sample Product Name"),
+        barcode = Barcode("1234567890123"),
+        price = Money(129990L),
+        costPrice = Money(120000L),
+        description = ProductDescription("This is a great sample product for preview."),
+        image = null,
+        subcategoryId = SubcategoryId(4),
+        supplierId = SupplierId(2),
+        unit = ProductUnit("pcs"),
+        stock = StockQuantity(30),
+        minStockLevel = StockQuantity(5),
+        maxStockLevel = StockQuantity(100),
+        isActive = true,
+        tags = null,
+        lastSoldDate = null,
+        date = LocalDateTime.now(),
+        synced = true,
+        createdAt = LocalDateTime.now().minusDays(20),
+        updatedAt = LocalDateTime.now()
+    )
+    ComposeTrainerTheme {
+        ProductItem(
+            product = mockProduct,
+            onEdit = { /* Preview: Edit clicked */ },
+            onDelete = { /* Preview: Delete clicked */ },
+            onIncreaseStock = { /* Preview: Increase stock clicked */ },
+            onDecreaseStock = { /* Preview: Decrease stock clicked */ },
+            onProductClick = { /* Preview: Product clicked */ }
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Product Item Without Barcode Preview")
+@Composable
+fun ProductItemWithoutBarcodePreview() {
+    // All required Product fields filled with valid dummy data for preview
+    val mockProductNoBarcode = Product(
+        id = ProductId(2),
+        name = ProductName("Another Product (No Barcode)"),
+        barcode = null, // Explicitly no barcode
+        price = Money(75000L), // e.g., 750.00
+        costPrice = Money(50000L), // dummy cost
+        description = ProductDescription("This product doesn't have a barcode."),
+        image = null,
+        subcategoryId = SubcategoryId(3), // sample subcategory
+        supplierId = SupplierId(1),
+        unit = ProductUnit("pcs"),
+        stock = StockQuantity(5),
+        minStockLevel = StockQuantity(1),
+        maxStockLevel = StockQuantity(20),
+        isActive = true,
+        tags = null,
+        lastSoldDate = null,
+        date = LocalDateTime.now(),
+        synced = true,
+        createdAt = LocalDateTime.now().minusDays(10),
+        updatedAt = LocalDateTime.now()
+    )
+
+    ComposeTrainerTheme {
+        ProductItem(
+            product = mockProductNoBarcode,
+            onEdit = { },
+            onDelete = { },
+            onIncreaseStock = { },
+            onDecreaseStock = { },
+            onProductClick = { }
+        )
     }
 }

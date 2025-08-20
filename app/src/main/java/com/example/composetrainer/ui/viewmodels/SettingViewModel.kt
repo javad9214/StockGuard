@@ -161,7 +161,7 @@ class SettingViewModel @Inject constructor(
 
                 // Update each product with a random cost price between 1000 and 500000
                 allProducts.forEach { product ->
-                    val randomCostPrice = (product.price.amount ?: 0L) - (10..1000).random()
+                    val randomCostPrice = product.price.amount - (10..1000).random()
                     val updatedProduct = product.copy(costPrice = Money(randomCostPrice))
                     editProductUseCase(updatedProduct)
                     Log.d(TAG, "Updated product ${product.name} with cost price $randomCostPrice")
