@@ -34,6 +34,7 @@ import com.example.composetrainer.domain.model.InvoiceWithProducts
 import com.example.composetrainer.ui.theme.BNazanin
 import com.example.composetrainer.ui.theme.BRoya
 import com.example.composetrainer.utils.PriceValidator
+import com.example.composetrainer.utils.dateandtime.FarsiDateUtil.getFormattedPersianDate
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
@@ -49,7 +50,7 @@ fun InvoiceItem(
     isSelectionMode: Boolean = false,
 ) {
     val invoice = invoiceWithProducts.invoice
-    val formattedDate: String = invoice.invoiceDate.toString()
+    val formattedDate: String = getFormattedPersianDate(invoice.invoiceDate)
 
     Box(
         modifier = Modifier
@@ -112,14 +113,16 @@ fun InvoiceItem(
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontFamily = BNazanin,
+                                fontWeight = FontWeight.Bold,
                                 fontSize = dimenTextSize(R.dimen.text_size_md)
                             )
                         }
-
+                        val invoiceNumber = invoice.invoiceNumber.value.toString()
                         Text(
-                            text = "#${invoice.invoiceNumber} :  ${str(R.string.invoice_number)}",
+                            text = "#$invoiceNumber :  ${str(R.string.invoice_number)}",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
+                            fontFamily = BNazanin,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -141,7 +144,7 @@ fun InvoiceItem(
                             )
 
                             Text(
-                                text = PriceValidator.formatPrice(invoice.totalAmount.toString()),
+                                text = PriceValidator.formatPrice(invoice.totalAmount?.amount.toString()),
                                 style = MaterialTheme.typography.bodyLarge,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.primary

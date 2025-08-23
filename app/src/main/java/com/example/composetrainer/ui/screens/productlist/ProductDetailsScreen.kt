@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Product
+import com.example.composetrainer.domain.model.getBusinessInsight
 import com.example.composetrainer.ui.theme.BMitra
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
 import com.example.composetrainer.utils.PriceValidator
@@ -138,8 +139,8 @@ fun ProductDetailsContent(
     val scrollState = rememberScrollState()
 
     // Local state for price and stock edits
-    var stockValue by remember(product.stock) { mutableStateOf(product.stock.toString()) }
-    var priceValue by remember(product.price) { mutableStateOf(product.price?.toString() ?: "") }
+    var stockValue by remember(product.stock) { mutableStateOf(product.stock.value.toString()) }
+    var priceValue by remember(product.price) { mutableStateOf(product.price.amount.toString()) }
 
     // Price validation
     val isPriceValid = remember(priceValue) {
@@ -308,7 +309,7 @@ fun ProductDetailsContent(
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "Category ${product.subcategoryId ?: "N/A"}",
+                    text = product.getBusinessInsight(),
                     fontSize = 18.sp,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
@@ -323,7 +324,7 @@ fun ProductDetailsContent(
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "Subcategory ${product.subcategoryId ?: "N/A"}",
+                    text = product.subcategoryId.toString(),
                     fontSize = 18.sp,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )

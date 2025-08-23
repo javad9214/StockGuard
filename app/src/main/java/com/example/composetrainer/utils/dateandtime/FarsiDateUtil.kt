@@ -3,6 +3,7 @@ package com.example.composetrainer.utils.dateandtime
 
 import saman.zamani.persiandate.PersianDate
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.Date
 import java.util.Locale
 
@@ -78,4 +79,27 @@ object FarsiDateUtil {
         return formatter.format(Date())
     }
 
+    fun extractDateComponents(dateTime: LocalDateTime): Triple<Int, Int, Int> {
+        return Triple(
+            dateTime.year,
+            dateTime.monthValue, // Note: monthValue gives 1-12, not 0-11
+            dateTime.dayOfMonth
+        )
+    }
+
+    // Alternative version that returns individual values via destructuring
+    fun LocalDateTime.toDateTriple(): Triple<Int, Int, Int> {
+        return Triple(this.year, this.monthValue, this.dayOfMonth)
+    }
+
+    fun getFormattedPersianDate(dateTime: LocalDateTime): String {
+        // Step 1: Extract date components
+        val (year, month, day) = dateTime.toDateTriple()
+
+        // Step 2: Get day of week
+        val dayOfWeek = getDayOfWeek(year, month, day)
+
+        // Step 3: Format the final string
+        return getFormattedDate(dayOfWeek, day, month, year)
+    }
 }

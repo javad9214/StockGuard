@@ -181,7 +181,7 @@ data class StockMovement(
 @JvmInline
 value class StockMovementId(val value: Long) {
     init {
-        require(value > 0) { "StockMovement ID must be positive" }
+        require(value >= 0) { "StockMovement ID must be positive" }
     }
 }
 

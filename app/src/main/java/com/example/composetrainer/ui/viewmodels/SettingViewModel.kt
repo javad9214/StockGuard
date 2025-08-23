@@ -125,6 +125,7 @@ class SettingViewModel @Inject constructor(
 
                     // Create the invoice
                     if (invoiceWithProducts.isValid()) {
+                        Log.i(TAG, "createRandomInvoices: ${invoiceWithProducts.invoiceId}")
                         insertInvoiceUseCase.invoke(invoiceWithProducts)
                         Log.d(
                             TAG,
