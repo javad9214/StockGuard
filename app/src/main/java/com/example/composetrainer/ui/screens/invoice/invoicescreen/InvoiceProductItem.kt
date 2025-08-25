@@ -117,7 +117,7 @@ fun InvoiceProductItem(
                     )
                     
                     Text(
-                        text = product.price.toString(),
+                        text = PriceValidator.formatPrice(product.price.amount.toString()),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurface
@@ -128,7 +128,7 @@ fun InvoiceProductItem(
 
                     // Available stock indicator
                     Text(
-                        text = "موجودی: ${product.stock}",
+                        text = "موجودی: ${product.stock.value}",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = if ((productWithQuantity.quantity.value) >= product.stock.value)
                                 MaterialTheme.colorScheme.error
@@ -189,7 +189,7 @@ fun InvoiceProductItem(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "${productWithQuantity.quantity}",
+                                    text = "${productWithQuantity.quantity.value}",
                                     style = MaterialTheme.typography.bodyLarge.copy(
                                         fontWeight = FontWeight.Bold,
                                         textAlign = TextAlign.Center,
@@ -242,7 +242,7 @@ fun InvoiceProductItem(
                         ) {
                             val itemTotal = productWithQuantity.calculateTotal()
                             Text(
-                                text = PriceValidator.formatPrice(itemTotal.toString()),
+                                text = PriceValidator.formatPrice(itemTotal.amount.toString()),
                                 modifier = Modifier
                                     .align(Alignment.Bottom)
                                     .padding(end = dimen(R.dimen.space_1)),
