@@ -63,14 +63,25 @@ object FarsiDateUtil {
         return "$year/$formattedMonth/$formattedDay"
     }
 
-    fun getFormattedDate(dayOfWeek: String, day: Int, month: Int, year: Int): String {
+    fun getTodayFormatted(): String {
+        val todayTriple = getTodayPersianDateTriple()
+        val year = todayTriple.first
+        val month = todayTriple.second
+        val day = todayTriple.third
+
+        val dayOfWeek = getDayOfWeek(year, month, day)
+        val todayDate = getFormattedDate(dayOfWeek, year, month, day)
+        return todayDate
+    }
+
+    private fun getFormattedDate(dayOfWeek: String, day: Int, month: Int, year: Int): String {
         return String.format(
             Locale("fa", "IR"),
-            "%s  %02d  %s  %d",
+            "%s  %d  %s  %02d",
             dayOfWeek,
-            day,
+            year,
             persianMonths[month - 1], // Month is 1-indexed
-            year
+            day
         )
     }
 

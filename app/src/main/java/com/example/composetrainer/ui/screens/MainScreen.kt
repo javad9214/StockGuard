@@ -109,6 +109,9 @@ fun MainScreen(
                     onButtonClick = {
                         navController.navigate(Routes.INVOICES_LIST)
                     },
+                    onAlertClick = {
+                        //TODO implement Notifications
+                    },
                     isDarkTheme = isDarkTheme,
                     onToggleTheme = onToggleTheme,
                     navController = navController,
