@@ -82,6 +82,14 @@ class InvoiceRepoImpl @Inject constructor(
         }
     }
 
+    override suspend fun getTotalProfitBetweenDates(start: Long, end: Long): Long {
+       return invoiceDao.getTotalProfitBetweenDates(start, end)
+    }
+
+    override suspend fun getTotalSalesBetweenDates(start: Long, end: Long): Long {
+        return invoiceDao.getTotalSalesBetweenDates(start, end)
+    }
+
     override suspend fun getTotalInvoicesBetweenDates(start: Long, end: Long): Int {
         return invoiceDao.getTotalInvoicesBetweenDates(start, end)
     }

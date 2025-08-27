@@ -85,6 +85,29 @@ interface InvoiceDao {
     )
     suspend fun getTopSellingProductsForMonth(yearMonth: String): List<TopSellingProduct>
 
+
+    @Query(
+        """
+    SELECT COALESCE(SUM((p.price - p.costPrice) * ip.quantity), 0) AS totalProfit
+    FROM invoices AS i
+    INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
+    INNER JOIN products AS p ON ip.productId = p.id
+    WHERE i.invoiceDate BETWEEN :startDate AND :endDate
+    """
+    )
+    suspend fun getTotalProfitBetweenDates(startDate: Long, endDate: Long): Long
+
+    @Query(
+        """
+    SELECT COALESCE(SUM(p.price * ip.quantity), 0) as totalSales
+    FROM invoices AS i
+    INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
+    INNER JOIN products AS p ON ip.productId = p.id
+    WHERE i.invoiceDate BETWEEN :startDate AND :endDate
+    """
+    )
+    suspend fun getTotalSalesBetweenDates(startDate: Long, endDate: Long): Long
+
     @Query(
         """
     SELECT COUNT(*) FROM invoices
