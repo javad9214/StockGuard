@@ -6,6 +6,8 @@
     <string name="Hello">سـلام !</string>
     <string name="daily_message">روزت بخیر</string>
     <string name="today">امـروز</string>
+    <string name="total_profit">مجموع سود</string>
+    <string name="total_invoice_registered">تعداد کل فاکتورهای ثبت شده</string>
     <!-- Invoice -->
     <string name="sale_invoice">فاکتور فروش</string>
     <string name="total">مجموع</string>

@@ -22,6 +22,7 @@ import androidx.navigation.navArgument
 import com.example.composetrainer.ui.components.CustomNavigationBar
 import com.example.composetrainer.ui.navigation.BottomNavItem
 import com.example.composetrainer.ui.navigation.Routes
+import com.example.composetrainer.ui.screens.home.HomeScreen
 import com.example.composetrainer.ui.screens.invoice.invoicescreen.InvoiceScreen
 import com.example.composetrainer.ui.screens.invoicelist.InvoiceDetailScreen
 import com.example.composetrainer.ui.screens.invoicelist.InvoicesListScreen

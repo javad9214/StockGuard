@@ -6,6 +6,8 @@
     <string name="Hello">HI</string>
     <string name="daily_message">Good Morning</string>
     <string name="today">TODAY</string>
+    <string name="total_profit">total profit</string>
+    <string name="total_invoice_registered">total invoice registered</string>
 
     <!-- Invoice -->
     <string name="sale_invoice">Sales Invoice</string>
