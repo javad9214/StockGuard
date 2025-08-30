@@ -147,15 +147,11 @@ fun InvoiceScreen(
         }
 
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-            Log.i(
-                TAG,
-                "InvoiceScreen: is Loading $isLoading , hasItem ${currentInvoice.products.size}"
-            )
             // Bottom total section
             BottomTotalSection(
                 totalPrice = totalPrice.amount,
                 isLoading = isLoading,
-                hasItems = currentInvoice.products.isEmpty(),
+                hasItems = currentInvoice.products.isNotEmpty(),
                 onSubmit = {
                     if (currentInvoice.isValid()) {
                         invoiceViewModel.saveInvoice()
