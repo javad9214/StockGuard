@@ -5,7 +5,8 @@ import com.example.composetrainer.data.local.entity.ProductSalesSummaryEntity
 import com.example.composetrainer.domain.model.ProductSalesSummary
 import com.example.composetrainer.domain.model.toDomain
 import com.example.composetrainer.domain.repository.ProductSalesSummaryRepository
-import com.example.composetrainer.utils.dateandtime.getStartOfCurrentHour
+import com.example.composetrainer.utils.dateandtime.TimeStampUtil.getStartOfCurrentHour
+
 import javax.inject.Inject
 
 class ProductSalesSummaryRepoImpl @Inject constructor(

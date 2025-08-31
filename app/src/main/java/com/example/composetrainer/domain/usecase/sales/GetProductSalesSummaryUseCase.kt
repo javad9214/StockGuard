@@ -1,17 +1,20 @@
 package com.example.composetrainer.domain.usecase.sales
 
+import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.ProductSalesSummary
 import com.example.composetrainer.domain.model.SalesQuantity
-import com.example.composetrainer.utils.dateandtime.TimeRange
 import com.example.composetrainer.domain.model.type.Money
 import com.example.composetrainer.domain.repository.ProductSalesSummaryRepository
+import com.example.composetrainer.domain.usecase.product.GetProductsByIDsUseCase
+import com.example.composetrainer.utils.dateandtime.TimeRange
 import javax.inject.Inject
 
 class GetProductSalesSummaryUseCase @Inject constructor(
-    private val productSalesSummaryRepository: ProductSalesSummaryRepository
+    private val productSalesSummaryRepository: ProductSalesSummaryRepository,
+    private val getProductsByIDsUseCase: GetProductsByIDsUseCase
 ) {
 
-    suspend operator fun invoke(timeRange: TimeRange): List<ProductSalesSummary> {
+    suspend operator fun invoke(timeRange: TimeRange): Pair<List<ProductSalesSummary> , List<Product>> {
         val (startTime, endTime) = timeRange.getStartAndEndTimes()
         val summaries = productSalesSummaryRepository.getTopSellingProductsBetween(startTime, endTime)
 
@@ -51,7 +54,9 @@ class GetProductSalesSummaryUseCase @Inject constructor(
             // Order by total revenue in descending order (you can change this criteria)
             .sortedByDescending { it.totalSold.value }
 
-        return aggregatedSummaries
+        val productIds = getProductsByIDsUseCase.invoke(aggregatedSummaries.map { it.productId.value })
+
+        return aggregatedSummaries to productIds
     }
 
 

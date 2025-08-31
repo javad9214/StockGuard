@@ -49,4 +49,8 @@ class ProductRepoImpl @Inject constructor(
         return entity?.toDomain()
     }
 
+    override suspend fun getProductsByIds(ids: List<Long>): List<Product> {
+        return productDao.getProductsByIds(productIds = ids).map { it.toDomain() }
+    }
+
 }

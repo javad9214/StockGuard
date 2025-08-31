@@ -2,6 +2,7 @@ package com.example.composetrainer.ui.viewmodels.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.ProductSalesSummary
 import com.example.composetrainer.domain.model.type.Money
 import com.example.composetrainer.domain.usecase.analytics.GetInvoiceReportCountUseCase
@@ -35,6 +36,9 @@ class HomeTotalItemsViewModel @Inject constructor(
     private val _productSalesSummaryList = MutableStateFlow<List<ProductSalesSummary>>(emptyList())
     val productSalesSummaryList: StateFlow<List<ProductSalesSummary>> get() = _productSalesSummaryList
 
+    private val _products = MutableStateFlow<List<Product>>(emptyList())
+    val products: StateFlow<List<Product>> get() = _products
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
 
@@ -43,6 +47,7 @@ class HomeTotalItemsViewModel @Inject constructor(
 
     init {
         loadAnalyticsData()
+        loadProductSalesSummary()
     }
 
     private fun loadAnalyticsData(){
@@ -65,7 +70,9 @@ class HomeTotalItemsViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                _productSalesSummaryList.value = getProductSalesSummaryUseCase.invoke(TimeRange.TODAY)
+                val (productsSaleSummeryList, products) = getProductSalesSummaryUseCase.invoke(TimeRange.TODAY)
+                _productSalesSummaryList.value = productsSaleSummeryList
+                _products.value = products
                 _isLoading.value = false
 
             } catch (e: Exception) {

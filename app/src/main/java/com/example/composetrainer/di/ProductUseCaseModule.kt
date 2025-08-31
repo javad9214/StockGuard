@@ -9,6 +9,7 @@ import com.example.composetrainer.domain.usecase.product.EditProductUseCase
 import com.example.composetrainer.domain.usecase.product.GetAllProductUseCase
 import com.example.composetrainer.domain.usecase.product.GetProductByBarcodeUseCase
 import com.example.composetrainer.domain.usecase.product.GetProductByQueryUseCase
+import com.example.composetrainer.domain.usecase.product.GetProductsByIDsUseCase
 import com.example.composetrainer.domain.usecase.product.IncreaseStockUseCase
 import dagger.Module
 import dagger.Provides
@@ -73,4 +74,10 @@ object ProductUseCaseModule {
     fun provideGetProductByBarcodeUseCase(
         repository: ProductRepository
     ): GetProductByBarcodeUseCase = GetProductByBarcodeUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideGetProductsByIDsUseCase(
+        repository: ProductRepository
+    ): GetProductsByIDsUseCase = GetProductsByIDsUseCase(repository)
 }
