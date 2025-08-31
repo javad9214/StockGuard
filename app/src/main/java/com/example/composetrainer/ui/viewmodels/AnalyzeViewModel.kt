@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composetrainer.domain.model.AnalyticsData
 import com.example.composetrainer.domain.model.ProductSalesSummary
-import com.example.composetrainer.domain.model.TimeRange
+import com.example.composetrainer.utils.dateandtime.TimeRange
 import com.example.composetrainer.domain.usecase.analytics.GetAnalyticsDataUseCase
 import com.example.composetrainer.domain.usecase.analytics.GetInvoiceReportCountUseCase
 import com.example.composetrainer.domain.usecase.sales.GetProductSalesSummaryUseCase

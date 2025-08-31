@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.ProductSalesSummary
-import com.example.composetrainer.domain.model.TimeRange
+import com.example.composetrainer.utils.dateandtime.TimeRange
 import com.example.composetrainer.domain.model.TopSellingProductInfo
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.viewmodels.AnalyzeViewModel

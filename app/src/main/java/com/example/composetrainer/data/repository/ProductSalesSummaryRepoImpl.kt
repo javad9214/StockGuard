@@ -2,6 +2,8 @@ package com.example.composetrainer.data.repository
 
 import com.example.composetrainer.data.local.dao.ProductSalesSummaryDao
 import com.example.composetrainer.data.local.entity.ProductSalesSummaryEntity
+import com.example.composetrainer.domain.model.ProductSalesSummary
+import com.example.composetrainer.domain.model.toDomain
 import com.example.composetrainer.domain.repository.ProductSalesSummaryRepository
 import com.example.composetrainer.utils.dateandtime.getStartOfCurrentHour
 import javax.inject.Inject
@@ -32,8 +34,8 @@ class ProductSalesSummaryRepoImpl @Inject constructor(
     override suspend fun getTopSellingProductsBetween(
         start: Long,
         end: Long
-    ): List<ProductSalesSummaryEntity> {
-        return productSalesSummaryDao.getTopSellingProductsBetween(start, end)
+    ): List<ProductSalesSummary> {
+        return productSalesSummaryDao.getTopSellingProductsBetween(start, end).map { it.toDomain() }
     }
 
     override suspend fun getByProductAndDate(

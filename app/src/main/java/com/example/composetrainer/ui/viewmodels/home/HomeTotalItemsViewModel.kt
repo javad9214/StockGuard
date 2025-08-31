@@ -2,17 +2,16 @@ package com.example.composetrainer.ui.viewmodels.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.composetrainer.domain.model.ProductSalesSummary
 import com.example.composetrainer.domain.model.type.Money
 import com.example.composetrainer.domain.usecase.analytics.GetInvoiceReportCountUseCase
 import com.example.composetrainer.domain.usecase.analytics.GetTotalProfitPriceUseCase
 import com.example.composetrainer.domain.usecase.analytics.GetTotalSoldPriceUseCase
-import com.example.composetrainer.domain.usecase.product.GetProductByBarcodeUseCase
-import com.example.composetrainer.utils.ProductImporter
+import com.example.composetrainer.domain.usecase.sales.GetProductSalesSummaryUseCase
+import com.example.composetrainer.utils.dateandtime.TimeRange
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,7 +19,8 @@ import javax.inject.Inject
 class HomeTotalItemsViewModel @Inject constructor(
     private val getInvoiceReportCountUseCase: GetInvoiceReportCountUseCase,
     private val getTotalSoldPriceUseCase: GetTotalSoldPriceUseCase,
-    private val getTotalProfitPriceUseCase: GetTotalProfitPriceUseCase
+    private val getTotalProfitPriceUseCase: GetTotalProfitPriceUseCase,
+    private val getProductSalesSummaryUseCase: GetProductSalesSummaryUseCase
 ) : ViewModel() {
 
     private val _totalInvoiceCount = MutableStateFlow(0)
@@ -31,6 +31,9 @@ class HomeTotalItemsViewModel @Inject constructor(
 
     private val _totalProfitPrice = MutableStateFlow(Money(0))
     val totalProfitPrice: StateFlow<Money> get() = _totalProfitPrice
+
+    private val _productSalesSummaryList = MutableStateFlow<List<ProductSalesSummary>>(emptyList())
+    val productSalesSummaryList: StateFlow<List<ProductSalesSummary>> get() = _productSalesSummaryList
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
@@ -49,6 +52,20 @@ class HomeTotalItemsViewModel @Inject constructor(
                 _totalInvoiceCount.value = getInvoiceReportCountUseCase.getTodayInvoiceCount()
                 _totalSoldPrice.value = getTotalSoldPriceUseCase.getTodayTotalSold()
                 _totalProfitPrice.value = getTotalProfitPriceUseCase.getTodayTotalProfit()
+                _isLoading.value = false
+
+            } catch (e: Exception) {
+                _errorMessage.value = e.message
+                _isLoading.value = false
+            }
+        }
+    }
+
+    private fun loadProductSalesSummary(){
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                _productSalesSummaryList.value = getProductSalesSummaryUseCase.invoke(TimeRange.TODAY)
                 _isLoading.value = false
 
             } catch (e: Exception) {

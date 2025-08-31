@@ -6,6 +6,15 @@ import java.util.Calendar
 
 object TimeStampUtil {
 
+    fun getStartOfCurrentHour(): Long {
+        val cal = Calendar.getInstance().apply {
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        return cal.timeInMillis
+    }
+
     // General
     fun getTodayAsTimestamp(): Long {
         return System.currentTimeMillis()
