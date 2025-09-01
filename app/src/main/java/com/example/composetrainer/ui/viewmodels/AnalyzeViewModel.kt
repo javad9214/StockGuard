@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composetrainer.domain.model.AnalyticsData
+import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.ProductSalesSummary
 import com.example.composetrainer.utils.dateandtime.TimeRange
 import com.example.composetrainer.domain.usecase.analytics.GetAnalyticsDataUseCase
@@ -67,7 +68,8 @@ class AnalyzeViewModel @Inject constructor(
                 val productSalesSummary = getProductSalesSummaryUseCase(timeRange)
                 _uiState.update {
                     it.copy(
-                        productSalesSummary = productSalesSummary,
+                        productSalesSummary = productSalesSummary.first,
+                        products = productSalesSummary.second,
                         isLoading = false,
                         error = null
                     )
@@ -112,6 +114,7 @@ class AnalyzeViewModel @Inject constructor(
 data class AnalyzeUiState(
     val analyticsData: AnalyticsData? = null,
     val productSalesSummary: List<ProductSalesSummary> = emptyList(),
+    val products : List<Product> = emptyList(),
     val selectedTimeRange: TimeRange = TimeRange.THIS_MONTH,
     val isLoading: Boolean = false,
     val error: String? = null,
