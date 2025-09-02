@@ -1,6 +1,10 @@
 package com.example.composetrainer.utils.dateandtime
 
 import saman.zamani.persiandate.PersianDate
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.Calendar
 
 
@@ -14,6 +18,17 @@ object TimeStampUtil {
         }
         return cal.timeInMillis
     }
+
+    fun toDateTime(timestamp: Long): LocalDate {
+         return  Instant.ofEpochMilli(timestamp)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+    }
+
+    fun getStartOfCurrentHourDateTime(): LocalDateTime {
+        return LocalDateTime.now(ZoneId.systemDefault()).withMinute(0).withSecond(0).withNano(0)
+    }
+
 
     // General
     fun getTodayAsTimestamp(): Long {

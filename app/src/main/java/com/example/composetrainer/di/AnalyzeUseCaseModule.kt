@@ -8,6 +8,7 @@ import com.example.composetrainer.domain.usecase.analytics.GetTotalProfitPriceUs
 import com.example.composetrainer.domain.usecase.analytics.GetTotalSoldPriceUseCase
 import com.example.composetrainer.domain.usecase.product.GetProductsByIDsUseCase
 import com.example.composetrainer.domain.usecase.sales.GetProductSalesSummaryUseCase
+import com.example.composetrainer.domain.usecase.sales.SaveProductSaleSummeryUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,6 +40,12 @@ object AnalyzeUseCaseModule {
         getProductsByIDsUseCase: GetProductsByIDsUseCase
     ): GetProductSalesSummaryUseCase =
         GetProductSalesSummaryUseCase(productSalesSummaryRepository, getProductsByIDsUseCase)
+
+    @Provides
+    @Singleton
+    fun provideSaveProductSalesSummaryUseCase(
+        productSalesSummaryRepository: ProductSalesSummaryRepository
+    ): SaveProductSaleSummeryUseCase = SaveProductSaleSummeryUseCase(productSalesSummaryRepository)
 
 
     @Provides

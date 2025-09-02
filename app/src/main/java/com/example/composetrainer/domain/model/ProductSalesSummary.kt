@@ -173,11 +173,7 @@ data class ProductSalesSummary(
 
 // Value Objects
 @JvmInline
-value class ProductSalesSummaryId(val value: Long) {
-    init {
-        require(value > 0) { "ProductSalesSummary ID must be positive" }
-    }
-}
+value class ProductSalesSummaryId(val value: Long)
 
 @JvmInline
 value class SalesQuantity(val value: Int) {

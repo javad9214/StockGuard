@@ -10,6 +10,7 @@ import com.example.composetrainer.domain.usecase.invoice.GetInvoiceNumberUseCase
 import com.example.composetrainer.domain.usecase.invoice.GetInvoiceWithDetailsUseCase
 import com.example.composetrainer.domain.usecase.invoice.InitInvoiceWithProductsUseCase
 import com.example.composetrainer.domain.usecase.invoice.InsertInvoiceUseCase
+import com.example.composetrainer.domain.usecase.sales.SaveProductSaleSummeryUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -51,14 +52,14 @@ object InvoiceUseCaseModule {
     @Singleton
     fun provideInsertInvoiceUseCase(
         invoiceRepository: InvoiceRepository,
-        productSalesSummaryRepository: ProductSalesSummaryRepository,
         stockMovementRepository: StockMovementRepository,
-        invoiceProductRepository: InvoiceProductRepository
+        invoiceProductRepository: InvoiceProductRepository,
+        saveProductSaleSummeryUseCase: SaveProductSaleSummeryUseCase
     ): InsertInvoiceUseCase = InsertInvoiceUseCase(
         invoiceRepository,
-        productSalesSummaryRepository,
         stockMovementRepository,
-        invoiceProductRepository
+        invoiceProductRepository,
+        saveProductSaleSummeryUseCase
     )
 
     @Provides

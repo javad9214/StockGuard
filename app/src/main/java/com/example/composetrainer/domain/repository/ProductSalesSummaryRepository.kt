@@ -4,7 +4,9 @@ import com.example.composetrainer.data.local.entity.ProductSalesSummaryEntity
 import com.example.composetrainer.domain.model.ProductSalesSummary
 
 interface ProductSalesSummaryRepository {
-    suspend fun addProductSale(productSalesSummary: ProductSalesSummary)
+    suspend fun insertProductSale(productSalesSummary: ProductSalesSummary)
+    suspend fun updateProductSale(productSalesSummary: ProductSalesSummary)
+    suspend fun upsertProductSale(productSalesSummary: ProductSalesSummary)
     suspend fun getTopSellingProductsBetween(
         start: Long,
         end: Long

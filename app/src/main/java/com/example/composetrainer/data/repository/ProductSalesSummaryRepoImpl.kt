@@ -1,38 +1,33 @@
 package com.example.composetrainer.data.repository
 
+import android.util.Log
 import com.example.composetrainer.data.local.dao.ProductSalesSummaryDao
 import com.example.composetrainer.data.local.entity.ProductSalesSummaryEntity
 import com.example.composetrainer.domain.model.ProductSalesSummary
 import com.example.composetrainer.domain.model.toDomain
+import com.example.composetrainer.domain.model.toEntity
 import com.example.composetrainer.domain.repository.ProductSalesSummaryRepository
-import com.example.composetrainer.utils.dateandtime.TimeStampUtil.getStartOfCurrentHour
-
 import javax.inject.Inject
 
 class ProductSalesSummaryRepoImpl @Inject constructor(
     private val productSalesSummaryDao: ProductSalesSummaryDao
 ) : ProductSalesSummaryRepository {
 
-    override suspend fun addProductSale(productSalesSummary: ProductSalesSummary) {
-        val productId = productSalesSummary.productId.value
-        val quantity = productSalesSummary.totalSold.value
-        val currentDate = getStartOfCurrentHour()
-        val existingSummary = productSalesSummaryDao.getByProductAndDate(productId, currentDate)
+    val TAG = "ProductSalesSummaryRepoImpl"
 
-        if (existingSummary != null) {
-            val updatedSummary = existingSummary.copy(
-                totalSold = existingSummary.totalSold + quantity,
-                totalCost = existingSummary.totalCost + productSalesSummary.totalCost
-            )
-            productSalesSummaryDao.update(updatedSummary)
-        } else {
-            val newSummary = ProductSalesSummaryEntity(
-                productId = productId,
-                date = currentDate,
-                totalSold = quantity
-            )
-            productSalesSummaryDao.insert(newSummary)
-        }
+    override suspend fun insertProductSale(productSalesSummary: ProductSalesSummary) {
+            productSalesSummaryDao.insert(productSalesSummary.toEntity())
+        Log.i(TAG, "insertProductSale: ${productSalesSummary.totalCost}")
+    }
+
+    override suspend fun updateProductSale(productSalesSummary: ProductSalesSummary) {
+        productSalesSummaryDao.update(productSalesSummary.toEntity())
+        Log.i(TAG, "updateProductSale: ${productSalesSummary.totalCost}")
+    }
+
+    override suspend fun upsertProductSale(productSalesSummary: ProductSalesSummary) {
+        productSalesSummaryDao.insertOrUpdate(productSalesSummary.toEntity())
+        Log.i(TAG, "upsertProductSale: ${productSalesSummary.totalCost}")
     }
 
     override suspend fun getTopSellingProductsBetween(
