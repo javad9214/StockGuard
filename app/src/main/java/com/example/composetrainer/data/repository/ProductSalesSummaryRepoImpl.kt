@@ -25,11 +25,6 @@ class ProductSalesSummaryRepoImpl @Inject constructor(
         Log.i(TAG, "updateProductSale: ${productSalesSummary.totalCost}")
     }
 
-    override suspend fun upsertProductSale(productSalesSummary: ProductSalesSummary) {
-        productSalesSummaryDao.insertOrUpdate(productSalesSummary.toEntity())
-        Log.i(TAG, "upsertProductSale: ${productSalesSummary.totalCost}")
-    }
-
     override suspend fun getTopSellingProductsBetween(
         start: Long,
         end: Long

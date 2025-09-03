@@ -6,7 +6,6 @@ import com.example.composetrainer.domain.model.ProductSalesSummary
 interface ProductSalesSummaryRepository {
     suspend fun insertProductSale(productSalesSummary: ProductSalesSummary)
     suspend fun updateProductSale(productSalesSummary: ProductSalesSummary)
-    suspend fun upsertProductSale(productSalesSummary: ProductSalesSummary)
     suspend fun getTopSellingProductsBetween(
         start: Long,
         end: Long

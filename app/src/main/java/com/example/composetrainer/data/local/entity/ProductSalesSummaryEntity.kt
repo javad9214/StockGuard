@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "product_sales_summary",
-    indices = [Index(value = ["productId", "date"], unique = true)]
+    indices = [Index(value = ["productId", "date"], unique = false)]
 )
 data class ProductSalesSummaryEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,

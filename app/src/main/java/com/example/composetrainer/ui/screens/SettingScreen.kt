@@ -82,12 +82,18 @@ fun SettingScreen(
     val scannedProduct by homeViewModel.scannedProduct.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
     val errorMessage by homeViewModel.errorMessage.collectAsState()
-
+    
+    
     // Observe price update completion
     val priceUpdateMessage by settingViewModel.priceUpdateComplete.collectAsState()
     val priceUpdateProgress by settingViewModel.priceUpdateProgress.collectAsState()
     val productsLoading by settingViewModel.isLoading.collectAsState()
 
+    // Observe cost price update completion
+    val costPriceUpdateMessage by settingViewModel.costPriceUpdateComplete.collectAsState()
+    val costPriceUpdateProgress by settingViewModel.costPriceUpdateProgress.collectAsState()
+
+    
     // Observe stock update completion
     val stockUpdateMessage by settingViewModel.stockUpdateComplete.collectAsState()
     val stockUpdateProgress by settingViewModel.stockUpdateProgress.collectAsState()

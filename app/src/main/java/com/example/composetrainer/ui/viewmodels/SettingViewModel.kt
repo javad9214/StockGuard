@@ -36,6 +36,12 @@ class SettingViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
 
+    private val _costPriceUpdateComplete = MutableStateFlow<String?>(null)
+    val costPriceUpdateComplete: StateFlow<String?> get() = _costPriceUpdateComplete
+
+    private val _costPriceUpdateProgress = MutableStateFlow(0)
+    val costPriceUpdateProgress: StateFlow<Int> get() = _costPriceUpdateProgress
+    
     private val _priceUpdateComplete = MutableStateFlow<String?>(null)
     val priceUpdateComplete: StateFlow<String?> get() = _priceUpdateComplete
 
@@ -158,24 +164,43 @@ class SettingViewModel @Inject constructor(
     fun setRandomCostPrice() {
         viewModelScope.launch {
             _isLoading.value = true
+            _costPriceUpdateProgress.value = 0
             try {
                 // Get all products
                 val allProducts = getProductsUseCase(SortOrder.DESCENDING, "").first()
 
-                // Update each product with a random cost price between 1000 and 500000
-                allProducts.forEach { product ->
+                if (allProducts.isEmpty()) {
+                    _costPriceUpdateComplete.value = "No products available to update cost prices"
+                    return@launch
+                }
+
+                // Update each product with a random cost price
+                allProducts.forEachIndexed { index, product ->
                     val randomCostPrice = product.price.amount - (10..1000).random()
                     val updatedProduct = product.copy(costPrice = Money(randomCostPrice))
                     editProductUseCase(updatedProduct)
                     Log.d(TAG, "Updated product ${product.name} with cost price $randomCostPrice")
+
+                    // Update progress
+                    val progress = ((index + 1) * 100) / allProducts.size
+                    _costPriceUpdateProgress.value = progress
+
+                    // Small delay to make progress visible for small datasets
+                    if (allProducts.size < 50) {
+                        kotlinx.coroutines.delay(50)
+                    }
                 }
 
-
                 Log.d(TAG, "Finished updating cost prices for ${allProducts.size} products")
+                
+                // Notify completion
+                _costPriceUpdateComplete.value = "Updated cost prices for ${allProducts.size} products"
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating cost prices", e)
+                _costPriceUpdateComplete.value = "Error updating cost prices: ${e.message}"
             } finally {
                 _isLoading.value = false
+                _costPriceUpdateProgress.value = 0
             }
         }
     }

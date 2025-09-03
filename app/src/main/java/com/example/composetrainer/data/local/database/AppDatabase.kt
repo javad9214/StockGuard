@@ -36,7 +36,7 @@ import com.example.composetrainer.data.local.entity.SupplierEntity
         CustomerInvoiceSummaryEntity::class,
         StockMovementEntity::class,
         SupplierEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
