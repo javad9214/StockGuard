@@ -138,6 +138,14 @@ fun HomeScreen(
                         contentDescription = "Notifications"
                     )
                 }
+
+                IconButton(onClick = onAlertClick) {
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.account_circle_24px),
+                        contentDescription = "Notifications"
+                    )
+                }
             }
 
         }
