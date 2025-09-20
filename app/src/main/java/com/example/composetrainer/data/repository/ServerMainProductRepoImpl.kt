@@ -8,6 +8,7 @@ import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.toDomain
 import com.example.composetrainer.domain.repository.ServerMainProductRepository
 import com.example.composetrainer.domain.util.Resource
+import kotlinx.coroutines.flow.Flow
 
 class ServerMainProductRepoImpl(private val apiServiceMainProduct: ApiServiceMainProduct) :
     ServerMainProductRepository {
@@ -25,8 +26,8 @@ class ServerMainProductRepoImpl(private val apiServiceMainProduct: ApiServiceMai
     }
 
 
-    override suspend fun getAllProducts(page: Int, size: Int): Resource<PagedResponseDto<Product>> {
-        return ApiResponseHandler.handleApiResponseSuspend(
+    override  fun getAllProducts(page: Int, size: Int): Flow<Resource<PagedResponseDto<Product>>> {
+        return ApiResponseHandler.handleApiResponse(
             apiCall = { apiServiceMainProduct.getAllProducts(page, size) },
             mapper = { pagedResponseDto ->
                 PagedResponseDto(
@@ -41,12 +42,12 @@ class ServerMainProductRepoImpl(private val apiServiceMainProduct: ApiServiceMai
         )
     }
 
-    override suspend fun searchProducts(
+    override fun searchProducts(
         query: String,
         page: Int,
         size: Int
-    ): Resource<PagedResponseDto<Product>> {
-        return ApiResponseHandler.handleApiResponseSuspend(
+    ): Flow<Resource<PagedResponseDto<Product>>> {
+        return ApiResponseHandler.handleApiResponse(
             apiCall = { apiServiceMainProduct.searchProducts(query, page, size) },
             mapper = { pagedResponseDto ->
                 PagedResponseDto(
