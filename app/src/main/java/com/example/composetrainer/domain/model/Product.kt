@@ -1,6 +1,7 @@
 package com.example.composetrainer.domain.model
 
 import com.example.composetrainer.data.local.entity.ProductEntity
+import com.example.composetrainer.data.remote.dto.ProductDto
 import com.example.composetrainer.domain.model.type.Money
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -364,6 +365,74 @@ fun Product.toEntity(): ProductEntity {
         createdAt = createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
         updatedAt = updatedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
         isDeleted = false
+    )
+}
+
+// DTO to Domain Mapping
+fun ProductDto.toDomain(): Product {
+    return Product(
+        id = ProductId(id),
+        name = ProductName(name),
+        barcode = barcode?.let { Barcode(it) },
+        price = price?.let { Money(it) } ?: Money(0),
+        costPrice = costPrice?.let { Money(it) } ?: Money(0),
+        description = description?.let { ProductDescription(it) },
+        image = image?.let { ProductImage(it) },
+        subcategoryId = subcategoryId?.let { SubcategoryId(it) },
+        supplierId = supplierId?.let { SupplierId(it) },
+        unit = unit?.let { ProductUnit(it) },
+        stock = StockQuantity(stock),
+        minStockLevel = minStockLevel?.let { StockQuantity(it) },
+        maxStockLevel = maxStockLevel?.let { StockQuantity(it) },
+        isActive = isActive,
+        tags = tags?.let { ProductTags(it) },
+        lastSoldDate = lastSoldDate?.let {
+            LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(it),
+                ZoneId.systemDefault()
+            )
+        },
+        date = LocalDateTime.ofInstant(
+            Instant.ofEpochMilli(date),
+            ZoneId.systemDefault()
+        ),
+        synced = true, // Assuming DTOs from API are synced
+        createdAt = LocalDateTime.ofInstant(
+            Instant.ofEpochMilli(createdAt),
+            ZoneId.systemDefault()
+        ),
+        updatedAt = LocalDateTime.ofInstant(
+            Instant.ofEpochMilli(updatedAt),
+            ZoneId.systemDefault()
+        )
+    )
+}
+
+// Domain to DTO Mapping
+fun Product.toDto(): ProductDto {
+    return ProductDto(
+        id = id.value,
+        name = name.value,
+        barcode = barcode?.value,
+        price = price.amount,
+        costPrice = costPrice.amount,
+        description = description?.value,
+        image = image?.value,
+        subcategoryId = subcategoryId?.value,
+        supplierId = supplierId?.value,
+        unit = unit?.value,
+        stock = stock.value,
+        minStockLevel = minStockLevel?.value,
+        maxStockLevel = maxStockLevel?.value,
+        isActive = isActive,
+        tags = tags?.value,
+        lastSoldDate = lastSoldDate?.let {
+            it.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        },
+        date = date.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+        createdAt = createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+        updatedAt = updatedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+        isDeleted = false // Assuming active products are not deleted
     )
 }
 
