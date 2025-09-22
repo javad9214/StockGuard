@@ -108,7 +108,7 @@ fun ServerProductListScreen(
         ) {
 
             Text(
-                str(R.string.products),
+                str(R.string.total_products_list),
                 fontFamily = Beirut_Medium,
                 fontSize = dimenTextSize(R.dimen.text_size_xl)
             )
@@ -186,7 +186,7 @@ fun ServerProductListScreen(
                 uiState.products.isEmpty() && !uiState.isLoading -> {
                     // Empty state
                     EmptyState(
-                        message = "No products found",
+                        message = str(R.string.no_product_found),
                         onRetry = { mainProductsViewModel.retry() }
                     )
                 }
@@ -201,7 +201,7 @@ fun ServerProductListScreen(
                     ) {
                         items(
                             items = uiState.products,
-                            key = { product -> product.id }
+                            key = { product -> product.id.value }
                         ) { product ->
                             ServerProductItem(
                                 product = product,

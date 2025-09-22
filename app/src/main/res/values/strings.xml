@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Stock Guard</string>
 
+    <!-- General -->
+    <string name="retry">تلاش مجدد</string>
+
     <!-- Home -->
     <string name="welcomeToHomeScreen">Welcome to Yaranbar!</string>
     <string name="Hello">HI</string>
@@ -92,9 +95,11 @@
     <string name="Barcode">Barcode</string>
 
     <!-- Server Main Products  -->
+    <string name="total_products_list">Total Products List</string>
     <string name="add_to_my_products">Add To My Products</string>
     <string name="suggestion_price">Suggestion Price</string>
-    
+    <string name="no_product_found">No Products Found!</string>
+
     
     <!-- Analyze Screen -->
     <string name="sales_analyse">Sales Analysis</string>

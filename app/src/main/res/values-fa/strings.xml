@@ -1,5 +1,9 @@
 <resources>
-    <string name="app_name">ComposeTrainer</string>
+    <string name="app_name">یارانبار</string>
+
+
+    <!-- General -->
+    <string name="retry">تلاش مجدد</string>
 
     <!-- Home -->
     <string name="welcomeToHomeScreen">Welcome To Yar Anbar</string>
@@ -97,8 +101,10 @@
     <string name="Barcode">بارکد</string>
 
     <!-- Server Main Products  -->
+    <string name="total_products_list">لیست تمامی محصولات</string>
     <string name="add_to_my_products">افزودن به محصولات من</string>
     <string name="suggestion_price">قیمت پیشنهادی</string>
+    <string name="no_product_found">هیچ محصولی یافت نگردید!</string>
 
     <!-- Analyze Screen -->
     <string name="sales_analyse">تحلیل فروش</string>

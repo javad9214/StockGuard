@@ -52,7 +52,6 @@ import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onAlertClick: () -> Unit,

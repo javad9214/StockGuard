@@ -44,7 +44,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Barcode
 import com.example.composetrainer.domain.model.Product
@@ -65,7 +64,7 @@ import com.example.composetrainer.utils.str
 @Composable
 fun ProductScreen(
     viewModel: ProductsViewModel = hiltViewModel(),
-    navController: NavController? = null
+    navController: NavController
 ) {
     val products by viewModel.products.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -153,7 +152,8 @@ fun ProductScreen(
             onDeleteProduct = { viewModel.deleteProduct(it) },
             onIncreaseStock = { viewModel.increaseStock(it) },
             onDecreaseStock = { viewModel.decreaseStock(it) },
-            onScanBarcode = { showBarcodeScannerView = true }
+            onScanBarcode = { showBarcodeScannerView = true },
+            navController = navController
         )
     }
 }
@@ -171,7 +171,7 @@ fun ProductScreenContent(
     onDeleteProduct: (Product) -> Unit,
     onIncreaseStock: (Product) -> Unit,
     onDecreaseStock: (Product) -> Unit,
-    navController: NavController = rememberNavController(),
+    navController: NavController,
     onScanBarcode: () -> Unit = {}
 ) {
 
@@ -195,7 +195,7 @@ fun ProductScreenContent(
 
                 Row{
 
-                    IconButton(onClick = { navController.navigate(Screen.Settings.route) }) {
+                    IconButton(onClick = { navController.navigate(Screen.MainServerProductLiat.route) }) {
                         Icon(
                             painter = painterResource(id = R.drawable.receive_square_01),
                             contentDescription = "Navigate to Main Server Products "

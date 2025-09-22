@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.example.composetrainer.R
 import com.example.composetrainer.utils.dimen
+import com.example.composetrainer.utils.str
 
 
 @Composable
@@ -36,7 +37,7 @@ fun EmptyState(
         Spacer(modifier = Modifier.height(dimen(R.dimen.size_lg)))
 
         Button(onClick = onRetry) {
-            Text("Retry")
+            Text(str(R.string.retry))
         }
     }
 }

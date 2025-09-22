@@ -11,7 +11,7 @@ sealed class Screen(val route: String) {
     object ProductDetails : Screen(Routes.PRODUCT_DETAILS) {
         fun createRoute(productId: Long): String = "product_details/$productId"
     }
-
+    object MainServerProductLiat: Screen(Routes.MAIN_PRODUCTS_LIST)
     object Analyze : Screen(Routes.ANALYZE)
     object Settings : Screen(Routes.SETTINGS)
 }
