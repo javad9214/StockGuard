@@ -14,7 +14,7 @@ import retrofit2.http.Query
 
 interface ApiServiceMainProduct {
 
-    @GET("products")
+    @GET(ApiConstants.API + "products")
     suspend fun getAllProducts(
         @Query("page") page: Int,
         @Query("size") size: Int
