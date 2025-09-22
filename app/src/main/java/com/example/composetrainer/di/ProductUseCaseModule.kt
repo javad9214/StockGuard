@@ -12,6 +12,7 @@ import com.example.composetrainer.domain.usecase.product.GetProductByBarcodeUseC
 import com.example.composetrainer.domain.usecase.product.GetProductByQueryUseCase
 import com.example.composetrainer.domain.usecase.product.GetProductsByIDsUseCase
 import com.example.composetrainer.domain.usecase.product.IncreaseStockUseCase
+import com.example.composetrainer.domain.usecase.servermainproduct.AddNewProductToMainServerUseCase
 import com.example.composetrainer.domain.usecase.servermainproduct.GetAllMainProductsUseCase
 import com.example.composetrainer.domain.usecase.servermainproduct.GetSearchedMainProductsUseCase
 import com.example.composetrainer.ui.viewmodels.MainProductsViewModel
@@ -99,4 +100,9 @@ object ProductUseCaseModule {
         repository: ServerMainProductRepository
     ): GetSearchedMainProductsUseCase = GetSearchedMainProductsUseCase(repository)
 
+    @Provides
+    @Singleton
+    fun provideAddNewProductToMainServerUseCase(
+        repository: ServerMainProductRepository
+    ): AddNewProductToMainServerUseCase = AddNewProductToMainServerUseCase(repository)
 }

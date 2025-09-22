@@ -8,5 +8,8 @@ class AddNewProductToMainServerUseCase @Inject constructor(
     private val repository: ServerMainProductRepository
 ) {
 
+    suspend operator fun invoke(product: Product) {
+        repository.createProduct(product)
+    }
   
 }

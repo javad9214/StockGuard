@@ -54,6 +54,7 @@ import com.example.composetrainer.ui.components.barcodescanner.ReusableBarcodeSc
 import com.example.composetrainer.ui.navigation.Screen
 import com.example.composetrainer.ui.theme.BMitra
 import com.example.composetrainer.ui.theme.Beirut_Medium
+import com.example.composetrainer.ui.viewmodels.MainProductsViewModel
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
 import com.example.composetrainer.ui.viewmodels.SortOrder
 import com.example.composetrainer.utils.dimen
@@ -64,6 +65,7 @@ import com.example.composetrainer.utils.str
 @Composable
 fun ProductScreen(
     viewModel: ProductsViewModel = hiltViewModel(),
+    mainProductsViewModel: MainProductsViewModel = hiltViewModel(),
     navController: NavController
 ) {
     val products by viewModel.products.collectAsState()
@@ -104,6 +106,7 @@ fun ProductScreen(
                 onSave = { product ->
                     if (selectedProductForEdit.value == null) {
                         viewModel.addProduct(product)
+                        mainProductsViewModel.addNewProductToRemote(product)
                     } else {
                         viewModel.editProduct(product)
                     }
@@ -130,13 +133,14 @@ fun ProductScreen(
                     is BarcodeScanAction.ProductFound -> {
                         viewModel.updateSearchQuery(action.barcode)
                     }
+
                     is BarcodeScanAction.ProductNotFound -> {
                         isAddProductSheetOpen.value = true
                         // You can access the barcode via action.barcode if needed
                     }
                 }
             },
-            onClose = {showBarcodeScannerView = false}
+            onClose = { showBarcodeScannerView = false }
         )
     } else {
 
@@ -193,7 +197,7 @@ fun ProductScreenContent(
                     fontSize = dimenTextSize(R.dimen.text_size_xl)
                 )
 
-                Row{
+                Row {
 
                     IconButton(onClick = { navController.navigate(Screen.MainServerProductLiat.route) }) {
                         Icon(

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.composetrainer.data.remote.dto.PagedResponseDto
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.usecase.product.AddProductUseCase
+import com.example.composetrainer.domain.usecase.servermainproduct.AddNewProductToMainServerUseCase
 import com.example.composetrainer.domain.usecase.servermainproduct.GetAllMainProductsUseCase
 import com.example.composetrainer.domain.usecase.servermainproduct.GetSearchedMainProductsUseCase
 import com.example.composetrainer.domain.util.Resource
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class MainProductsViewModel @Inject constructor(
     private val getAllMainProductsUseCase: GetAllMainProductsUseCase,
     private val getSearchedMainProductsUseCase: GetSearchedMainProductsUseCase,
+    private val addNewProductToMainServerUseCase: AddNewProductToMainServerUseCase,
     private val addProductUseCase: AddProductUseCase
 ) : ViewModel() {
 
@@ -132,6 +134,12 @@ class MainProductsViewModel @Inject constructor(
     fun addProductToLocalDatabase(product: Product) {
         viewModelScope.launch {
             addProductUseCase.invoke(product)
+        }
+    }
+
+    fun addNewProductToRemote(product: Product) {
+        viewModelScope.launch {
+            addNewProductToMainServerUseCase.invoke(product)
         }
     }
 }
