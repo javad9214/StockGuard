@@ -2,7 +2,10 @@ package com.example.composetrainer.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.composetrainer.data.remote.dto.PagedResponseDto
+import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.usecase.servermainproduct.GetAllMainProductsUseCase
+import com.example.composetrainer.domain.usecase.servermainproduct.GetSearchedMainProductsUseCase
 import com.example.composetrainer.domain.util.Resource
 import com.example.composetrainer.ui.screens.productlist.ProductsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,11 +18,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainProductsViewModel @Inject constructor(
-    private val getAllMainProductsUseCase: GetAllMainProductsUseCase
-): ViewModel() {
+    private val getAllMainProductsUseCase: GetAllMainProductsUseCase,
+    private val getSearchedMainProductsUseCase: GetSearchedMainProductsUseCase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProductsUiState())
     val uiState: StateFlow<ProductsUiState> = _uiState.asStateFlow()
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> get() = _searchQuery
 
     init {
         loadProducts(reset = true)
@@ -29,6 +36,7 @@ class MainProductsViewModel @Inject constructor(
         viewModelScope.launch {
             val currentState = _uiState.value
             val page = if (reset) 0 else currentState.currentPage
+            val query = _searchQuery.value
 
             // Update loading state
             _uiState.update { state ->
@@ -39,46 +47,60 @@ class MainProductsViewModel @Inject constructor(
                 )
             }
 
-            getAllMainProductsUseCase(page).collect { resource ->
+            // Choose the appropriate use case based on query
+            val resourceFlow = if (query.isBlank()) {
+                getAllMainProductsUseCase(page)
+            } else {
+                getSearchedMainProductsUseCase(query, page)
+            }
+
+            // Handle the resource response
+            resourceFlow.collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
                         // Loading state already set above
                     }
 
                     is Resource.Success -> {
-                        val pagedResponse = resource.data
-
-                        _uiState.update { state ->
-                            state.copy(
-                                products = if (reset) {
-                                    pagedResponse.content
-                                } else {
-                                    state.products + pagedResponse.content
-                                },
-                                isLoading = false,
-                                isLoadingMore = false,
-                                error = null,
-                                hasMorePages = !pagedResponse.last,
-                                currentPage = if (pagedResponse.content.isNotEmpty()) {
-                                    page + 1
-                                } else {
-                                    state.currentPage
-                                }
-                            )
-                        }
+                        handleSuccessResponse(resource.data, reset, page)
                     }
 
                     is Resource.Error -> {
-                        _uiState.update { state ->
-                            state.copy(
-                                isLoading = false,
-                                isLoadingMore = false,
-                                error = resource.message
-                            )
-                        }
+                        handleErrorResponse(resource.message)
                     }
                 }
             }
+        }
+    }
+
+    private fun handleSuccessResponse(pagedResponse: PagedResponseDto<Product>, reset: Boolean, page: Int) {
+        _uiState.update { state ->
+            state.copy(
+                products = if (reset) {
+                    pagedResponse.content
+                } else {
+                    state.products + pagedResponse.content
+                },
+                isLoading = false,
+                isLoadingMore = false,
+                error = null,
+                hasMorePages = !pagedResponse.last,
+                currentPage = if (pagedResponse.content.isNotEmpty()) {
+                    page + 1
+                } else {
+                    state.currentPage
+                }
+            )
+        }
+    }
+
+    private fun handleErrorResponse(errorMessage: String?) {
+        _uiState.update { state ->
+            state.copy(
+                isLoading = false,
+                isLoadingMore = false,
+                error = errorMessage
+            )
         }
     }
 
@@ -86,9 +108,15 @@ class MainProductsViewModel @Inject constructor(
         val currentState = _uiState.value
         if (!currentState.isLoading &&
             !currentState.isLoadingMore &&
-            currentState.hasMorePages) {
+            currentState.hasMorePages
+        ) {
             loadProducts(reset = false)
         }
+    }
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+        loadProducts()
     }
 
     fun retry() {

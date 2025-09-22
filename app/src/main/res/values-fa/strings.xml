@@ -119,8 +119,8 @@
     <string name="save_invoice">ذخیره فاکتور</string>
 
     <!-- Barcode Scanner View -->
-    <string name="barcode_position">Position barcode within frame</string>
-
+    <string name="barcode_position">موقعیت بارکد در داخل قاب</string>
+    <string name="no_product_found_with_barcode">محصولی با بارکد مورد نظر یافت نشد </string>
     <!-- Add Product Bottom Sheet -->
     <string name="add_product_title">افزودن محصول</string>
     <string name="edit_product_title">ویرایش محصول</string>

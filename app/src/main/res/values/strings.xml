@@ -71,6 +71,7 @@
     <string name="save">Save</string>
     <string name="search">Search</string>
     <string name="ok">OK</string>
+    <string name="no_product_found_with_barcode">No product found with barcode: </string>
 
     <!-- Product Selection -->
     <string name="search_product">Search Product…</string>

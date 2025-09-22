@@ -10,4 +10,5 @@ object Routes {
     const val ANALYZE = "analyze"
     const val PRODUCT_DETAILS = "product_details/{productId}"
     const val SETTINGS = "settings"
+    const val MAIN_PRODUCTS_LIST = "main_products_list"
 }

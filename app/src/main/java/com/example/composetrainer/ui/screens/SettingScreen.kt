@@ -49,7 +49,7 @@ import com.example.composetrainer.ui.theme.Kamran
 import com.example.composetrainer.ui.viewmodels.InvoiceListViewModel
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
 import com.example.composetrainer.ui.viewmodels.home.HomeViewModel
-import com.example.composetrainer.ui.components.BarcodeScannerView
+import com.example.composetrainer.ui.components.barcodescanner.BarcodeScannerView
 import com.example.composetrainer.ui.navigation.Screen
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
 import com.example.composetrainer.ui.viewmodels.SettingViewModel

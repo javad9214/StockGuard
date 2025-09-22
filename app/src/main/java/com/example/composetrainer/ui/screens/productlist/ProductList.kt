@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,23 +18,17 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -48,27 +41,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Barcode
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.ProductFactory
 import com.example.composetrainer.domain.model.ProductName
-import com.example.composetrainer.domain.model.type.Money
-import com.example.composetrainer.ui.components.BarcodeScannerView
+import com.example.composetrainer.ui.components.barcodescanner.BarcodeScanAction
+import com.example.composetrainer.ui.components.barcodescanner.ReusableBarcodeScannerView
 import com.example.composetrainer.ui.navigation.Screen
 import com.example.composetrainer.ui.theme.BMitra
 import com.example.composetrainer.ui.theme.Beirut_Medium
-import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
 import com.example.composetrainer.ui.viewmodels.SortOrder
-import com.example.composetrainer.utils.str
-import com.example.composetrainer.utils.BarcodeSoundPlayer
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
+import com.example.composetrainer.utils.str
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -132,37 +123,21 @@ fun ProductScreen(
 
     // Show barcode scanner when activated - moved outside to fix layering
     if (showBarcodeScannerView) {
-        BarcodeScannerView(
-            onBarcodeDetected = { barcode ->
+        ReusableBarcodeScannerView(
+            products = products,
+            onScanResult = { action ->
                 showBarcodeScannerView = false
-                // Store the scanned barcode
-                lastScannedBarcode = barcode
-
-                // Check if a product with this barcode exists
-                val productExists = products.any { it.barcode?.value == barcode }
-
-                if (productExists) {
-                    // Set the search query to the scanned barcode
-                    viewModel.updateSearchQuery(barcode)
-                    // Play barcode success sound
-                    BarcodeSoundPlayer.playBarcodeSuccessSound(context)
-                } else {
-                    // No product found with this barcode
-                    android.widget.Toast.makeText(
-                        context,
-                        "No product found with barcode: $barcode",
-                        android.widget.Toast.LENGTH_SHORT
-                    ).show()
-
-                    // Open the AddProductBottomSheet with the barcode pre-filled
-                    isAddProductSheetOpen.value = true
-                    // Play barcode success sound anyway to indicate successful scan
-                    BarcodeSoundPlayer.playBarcodeSuccessSound(context)
+                when (action) {
+                    is BarcodeScanAction.ProductFound -> {
+                        viewModel.updateSearchQuery(action.barcode)
+                    }
+                    is BarcodeScanAction.ProductNotFound -> {
+                        isAddProductSheetOpen.value = true
+                        // You can access the barcode via action.barcode if needed
+                    }
                 }
             },
-            onClose = {
-                showBarcodeScannerView = false
-            }
+            onClose = {showBarcodeScannerView = false}
         )
     } else {
 
@@ -178,13 +153,11 @@ fun ProductScreen(
             onDeleteProduct = { viewModel.deleteProduct(it) },
             onIncreaseStock = { viewModel.increaseStock(it) },
             onDecreaseStock = { viewModel.decreaseStock(it) },
-            navController = navController,
             onScanBarcode = { showBarcodeScannerView = true }
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductScreenContent(
     products: List<Product>,
@@ -198,7 +171,7 @@ fun ProductScreenContent(
     onDeleteProduct: (Product) -> Unit,
     onIncreaseStock: (Product) -> Unit,
     onDecreaseStock: (Product) -> Unit,
-    navController: NavController? = null,
+    navController: NavController = rememberNavController(),
     onScanBarcode: () -> Unit = {}
 ) {
 
@@ -221,6 +194,13 @@ fun ProductScreenContent(
                 )
 
                 Row{
+
+                    IconButton(onClick = { navController.navigate(Screen.Settings.route) }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.receive_square_01),
+                            contentDescription = "Navigate to Main Server Products "
+                        )
+                    }
 
                     IconButton(onClick = onAddProduct) {
                         Icon(Icons.Default.Add, contentDescription = "Add Product")

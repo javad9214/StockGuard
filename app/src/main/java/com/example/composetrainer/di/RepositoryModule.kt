@@ -1,5 +1,6 @@
 package com.example.composetrainer.di
 
+import com.example.composetrainer.data.remote.api.ApiServiceMainProduct
 import com.example.composetrainer.data.repository.InvoiceProductRepoImpl
 import com.example.composetrainer.data.repository.InvoiceRepoImpl
 import com.example.composetrainer.data.repository.ProductRepoImpl
@@ -50,11 +51,13 @@ object RepositoryModule {
     @Singleton
     fun provideStockMovementRepository(
         repoImpl: StockMovementRepoImpl
-    ) : StockMovementRepository = repoImpl
+    ): StockMovementRepository = repoImpl
 
     @Provides
     @Singleton
     fun provideServerMainProductRepository(
-        repoImpl: ServerMainProductRepoImpl
-    ): ServerMainProductRepository = repoImpl
+        apiServiceMainProduct: ApiServiceMainProduct
+    ): ServerMainProductRepository {
+        return ServerMainProductRepoImpl(apiServiceMainProduct = apiServiceMainProduct)
+    }
 }

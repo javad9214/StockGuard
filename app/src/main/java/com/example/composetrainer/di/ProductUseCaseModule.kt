@@ -1,6 +1,7 @@
 package com.example.composetrainer.di
 
 import com.example.composetrainer.domain.repository.ProductRepository
+import com.example.composetrainer.domain.repository.ServerMainProductRepository
 import com.example.composetrainer.domain.usecase.product.AddProductUseCase
 import com.example.composetrainer.domain.usecase.product.CheckProductStockUseCase
 import com.example.composetrainer.domain.usecase.product.DecreaseStockUseCase
@@ -11,6 +12,9 @@ import com.example.composetrainer.domain.usecase.product.GetProductByBarcodeUseC
 import com.example.composetrainer.domain.usecase.product.GetProductByQueryUseCase
 import com.example.composetrainer.domain.usecase.product.GetProductsByIDsUseCase
 import com.example.composetrainer.domain.usecase.product.IncreaseStockUseCase
+import com.example.composetrainer.domain.usecase.servermainproduct.GetAllMainProductsUseCase
+import com.example.composetrainer.domain.usecase.servermainproduct.GetSearchedMainProductsUseCase
+import com.example.composetrainer.ui.viewmodels.MainProductsViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -80,4 +84,19 @@ object ProductUseCaseModule {
     fun provideGetProductsByIDsUseCase(
         repository: ProductRepository
     ): GetProductsByIDsUseCase = GetProductsByIDsUseCase(repository)
+
+
+    @Provides
+    @Singleton
+    fun provideGetAllMainProductsUseCase(
+        repository: ServerMainProductRepository
+    ): GetAllMainProductsUseCase = GetAllMainProductsUseCase(repository)
+
+
+    @Provides
+    @Singleton
+    fun provideGetSearchedMainProductsUseCase(
+        repository: ServerMainProductRepository
+    ): GetSearchedMainProductsUseCase = GetSearchedMainProductsUseCase(repository)
+
 }
