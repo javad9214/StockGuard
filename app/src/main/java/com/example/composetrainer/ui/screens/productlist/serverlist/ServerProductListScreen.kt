@@ -95,143 +95,148 @@ fun ServerProductListScreen(
                 showBarcodeScannerView = false
             }
         )
-    }
+    } else {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(start = dimen(R.dimen.space_6), end = dimen(R.dimen.space_2)),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(start = dimen(R.dimen.space_6), end = dimen(R.dimen.space_2)),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+                Text(
+                    str(R.string.total_products_list),
+                    fontFamily = Beirut_Medium,
+                    fontSize = dimenTextSize(R.dimen.text_size_xl)
+                )
 
-            Text(
-                str(R.string.total_products_list),
-                fontFamily = Beirut_Medium,
-                fontSize = dimenTextSize(R.dimen.text_size_xl)
+            }
+
+            // SearchBar with barcode scan button
+            TextField(
+                value = searchQuery,
+                onValueChange = { query -> mainProductsViewModel.updateSearchQuery(query) },
+                trailingIcon = {
+                    Row {
+                        // Barcode scanner button
+                        IconButton(onClick = { showBarcodeScannerView = true }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.barcode_scanner_24px),
+                                contentDescription = "Scan Barcode"
+                            )
+                        }
+
+                        // Clear button
+                        if (searchQuery.isNotBlank()) {
+                            IconButton(onClick = { mainProductsViewModel.updateSearchQuery("") }) {
+                                Icon(Icons.Default.Close, contentDescription = "Clear")
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = dimen(R.dimen.space_4),
+                        vertical = dimen(R.dimen.space_2)
+                    ),
+                placeholder = {
+                    Text(
+                        str(R.string.search_products),
+                        fontFamily = BMitra
+                    )
+                },
+                leadingIcon = {
+                    Icon(Icons.Default.Search, contentDescription = "Search")
+                },
+                singleLine = true,
+                shape = MaterialTheme.shapes.medium,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent
+                )
             )
 
-        }
+            // Show error snackbar
+            uiState.error?.let { error ->
+                LaunchedEffect(error) {
+                    // Show snackbar or handle error UI
+                }
+            }
 
-        // SearchBar with barcode scan button
-        TextField(
-            value = searchQuery,
-            onValueChange = { query -> mainProductsViewModel.updateSearchQuery(query) },
-            trailingIcon = {
-                Row {
-                    // Barcode scanner button
-                    IconButton(onClick = { showBarcodeScannerView = true }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.barcode_scanner_24px),
-                            contentDescription = "Scan Barcode"
+            Box(modifier = Modifier.fillMaxSize()) {
+                when {
+                    uiState.isLoading && uiState.products.isEmpty() -> {
+                        // Initial loading state
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    uiState.products.isEmpty() && !uiState.isLoading -> {
+                        // Empty state
+                        EmptyState(
+                            message = str(R.string.no_product_found),
+                            onRetry = { mainProductsViewModel.retry() }
                         )
                     }
 
-                    // Clear button
-                    if (searchQuery.isNotBlank()) {
-                        IconButton(onClick = { mainProductsViewModel.updateSearchQuery("") }) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear")
-                        }
-                    }
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = dimen(R.dimen.space_4),
-                    vertical = dimen(R.dimen.space_2)
-                ),
-            placeholder = {
-                Text(
-                    str(R.string.search_products),
-                    fontFamily = BMitra
-                )
-            },
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = "Search")
-            },
-            singleLine = true,
-            shape = MaterialTheme.shapes.medium,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-                errorIndicatorColor = Color.Transparent
-            )
-        )
-
-        // Show error snackbar
-        uiState.error?.let { error ->
-            LaunchedEffect(error) {
-                // Show snackbar or handle error UI
-            }
-        }
-
-        Box(modifier = Modifier.fillMaxSize()) {
-            when {
-                uiState.isLoading && uiState.products.isEmpty() -> {
-                    // Initial loading state
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-
-                uiState.products.isEmpty() && !uiState.isLoading -> {
-                    // Empty state
-                    EmptyState(
-                        message = str(R.string.no_product_found),
-                        onRetry = { mainProductsViewModel.retry() }
-                    )
-                }
-
-                else -> {
-                    // Products list
-                    LazyColumn(
-                        state = listState,
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(dimen(R.dimen.space_2)),
-                        verticalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_2))
-                    ) {
-                        items(
-                            items = uiState.products,
-                            key = { product -> product.id.value }
-                        ) { product ->
-                            ServerProductItem(
-                                product = product,
-                                onProductClick = { },
-                                onAdd = { },
-                                onEdit = { },
-                                onDelete = { },
-
-                                )
-                        }
-
-                        // Loading more indicator
-                        if (uiState.isLoadingMore) {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(24.dp)
+                    else -> {
+                        // Products list
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(dimen(R.dimen.space_2)),
+                            verticalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_2))
+                        ) {
+                            items(
+                                items = uiState.products,
+                                key = { product -> product.id.value }
+                            ) { product ->
+                                ServerProductItem(
+                                    product = product,
+                                    onProductClick = { },
+                                    onAdd = {
+                                        mainProductsViewModel.addProductToLocalDatabase(
+                                            product
+                                        )
+                                    },
+                                    onEdit = { },
+                                    onDelete = { },
                                     )
+                            }
+
+                            // Loading more indicator
+                            if (uiState.isLoadingMore) {
+                                item {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
+            }
         }
     }
+
+
 }

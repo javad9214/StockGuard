@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composetrainer.data.remote.dto.PagedResponseDto
 import com.example.composetrainer.domain.model.Product
+import com.example.composetrainer.domain.usecase.product.AddProductUseCase
 import com.example.composetrainer.domain.usecase.servermainproduct.GetAllMainProductsUseCase
 import com.example.composetrainer.domain.usecase.servermainproduct.GetSearchedMainProductsUseCase
 import com.example.composetrainer.domain.util.Resource
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainProductsViewModel @Inject constructor(
     private val getAllMainProductsUseCase: GetAllMainProductsUseCase,
-    private val getSearchedMainProductsUseCase: GetSearchedMainProductsUseCase
+    private val getSearchedMainProductsUseCase: GetSearchedMainProductsUseCase,
+    private val addProductUseCase: AddProductUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProductsUiState())
@@ -116,7 +118,7 @@ class MainProductsViewModel @Inject constructor(
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
-        loadProducts()
+        loadProducts(reset = true)
     }
 
     fun retry() {
@@ -127,4 +129,9 @@ class MainProductsViewModel @Inject constructor(
         _uiState.update { it.copy(error = null) }
     }
 
+    fun addProductToLocalDatabase(product: Product) {
+        viewModelScope.launch {
+            addProductUseCase.invoke(product)
+        }
+    }
 }

@@ -289,7 +289,7 @@ fun ProductScreenContent(
                         onIncreaseStock = { onIncreaseStock(product) },
                         onDecreaseStock = { onDecreaseStock(product) },
                         onProductClick = {
-                            navController?.navigate(Screen.ProductDetails.createRoute(product.id.value))
+                            navController.navigate(Screen.ProductDetails.createRoute(product.id.value))
                         }
                     )
                 }

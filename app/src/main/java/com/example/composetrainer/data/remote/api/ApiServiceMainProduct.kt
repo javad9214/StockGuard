@@ -20,7 +20,7 @@ interface ApiServiceMainProduct {
         @Query("size") size: Int
     ): ApiResponse<PagedResponseDto<ProductDto>>
 
-    @GET("products/search")
+    @GET(ApiConstants.API +"products/search")
     suspend fun searchProducts(
         @Query("query") query: String,
         @Query("page") page: Int,
