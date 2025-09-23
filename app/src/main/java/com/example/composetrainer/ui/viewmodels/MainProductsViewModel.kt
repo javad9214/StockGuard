@@ -32,6 +32,16 @@ class MainProductsViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> get() = _searchQuery
 
+    private val _createState = MutableStateFlow<Resource<Long>>(Resource.Loading())
+    val createState: StateFlow<Resource<Long>> = _createState
+
+    private val _updateState = MutableStateFlow<Resource<Product>>(Resource.Loading())
+    val updateState: StateFlow<Resource<Product>> = _updateState
+
+    private val _deleteState = MutableStateFlow<Resource<Product>>(Resource.Loading())
+    val deleteState: StateFlow<Resource<Product>> = _deleteState
+
+
     init {
         loadProducts(reset = true)
     }
@@ -139,7 +149,10 @@ class MainProductsViewModel @Inject constructor(
 
     fun addNewProductToRemote(product: Product) {
         viewModelScope.launch {
-            addNewProductToMainServerUseCase.invoke(product)
+            addNewProductToMainServerUseCase(product).collect{ resource ->
+                _createState.value = resource
+            }
         }
     }
+
 }

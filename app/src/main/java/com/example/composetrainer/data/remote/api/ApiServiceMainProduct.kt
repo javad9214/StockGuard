@@ -35,8 +35,8 @@ interface ApiServiceMainProduct {
     suspend fun updateProduct(
         @Path("id") id: Long,
         @Body product: ProductDto
-    ): ApiResponse<ApiResponseDto<Void>>
+    ): ApiResponse<ApiResponseDto<String>>
 
     @DELETE("products/{id}")
-    suspend fun deleteProduct(@Path("id") id: Long): ApiResponse<ApiResponseDto<Void>>
+    suspend fun deleteProduct(@Path("id") id: Long): ApiResponse<ApiResponseDto<String>>
 }

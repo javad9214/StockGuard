@@ -2,7 +2,6 @@ package com.example.composetrainer.data.repository
 
 import com.example.composetrainer.data.remote.api.ApiServiceMainProduct
 import com.example.composetrainer.data.remote.dto.PagedResponseDto
-import com.example.composetrainer.data.remote.dto.ProductDto
 import com.example.composetrainer.data.remote.util.ApiResponseHandler
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.toDomain
@@ -14,16 +13,22 @@ import kotlinx.coroutines.flow.Flow
 class ServerMainProductRepoImpl(private val apiServiceMainProduct: ApiServiceMainProduct) :
     ServerMainProductRepository {
 
-    override suspend fun createProduct(product: Product) {
-         apiServiceMainProduct.createProduct(product.toDto())
+    override suspend fun createProduct(product: Product): Flow<Resource<Long>> {
+         return ApiResponseHandler.handleApiResponseWithMessage(
+             apiCall = {apiServiceMainProduct.createProduct(product.toDto())}
+         )
     }
 
-    override suspend fun updateProduct(id: Long, product: Product){
-         apiServiceMainProduct.updateProduct(id, product.toDto())
+    override suspend fun updateProduct(id: Long, product: Product): Flow<Resource<String>>{
+        return ApiResponseHandler.handleApiResponseWithMessage(
+            apiCall = { apiServiceMainProduct.updateProduct(id, product.toDto()) }
+        )
     }
 
-    override suspend fun deleteProduct(id: Long) {
-        apiServiceMainProduct.deleteProduct(id)
+    override suspend fun deleteProduct(id: Long): Flow<Resource<String>> {
+        return ApiResponseHandler.handleApiResponseWithMessage(
+            apiCall = { apiServiceMainProduct.deleteProduct(id) }
+        )
     }
 
 
