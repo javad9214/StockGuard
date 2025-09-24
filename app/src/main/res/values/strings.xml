@@ -2,7 +2,7 @@
     <string name="app_name">Stock Guard</string>
 
     <!-- General -->
-    <string name="retry">تلاش مجدد</string>
+    <string name="retry">Retry</string>
 
     <!-- Home -->
     <string name="welcomeToHomeScreen">Welcome to Yaranbar!</string>
@@ -99,7 +99,7 @@
     <string name="add_to_my_products">Add To My Products</string>
     <string name="suggestion_price">Suggestion Price</string>
     <string name="no_product_found">No Products Found!</string>
-
+    <string name="product_added">Product Added</string>
     
     <!-- Analyze Screen -->
     <string name="sales_analyse">Sales Analysis</string>

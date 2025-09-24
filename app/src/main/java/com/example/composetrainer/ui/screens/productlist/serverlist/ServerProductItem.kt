@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -32,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -45,9 +48,9 @@ import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.ui.theme.BHoma
 import com.example.composetrainer.ui.theme.BMitra
-import com.example.composetrainer.utils.price.PriceValidator
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
+import com.example.composetrainer.utils.price.PriceValidator
 import com.example.composetrainer.utils.str
 
 @Composable
@@ -61,6 +64,7 @@ fun ServerProductItem(
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     var showMenu by remember { mutableStateOf(false) }
+    var itemClicked by remember { mutableStateOf(false) }
 
     val myFontFamily = FontFamily(
         Font(R.font.b_koodak_bd, FontWeight.Normal)
@@ -182,29 +186,11 @@ fun ServerProductItem(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
 
-                    Icon(
-                        painter = painterResource(id = R.drawable.toman),
-                        contentDescription = "Date",
-                        modifier = Modifier
-                            .size(dimen(R.dimen.size_sm))
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
-                        textAlign = TextAlign.Start,
-                        text = PriceValidator.formatPrice(product.price.amount.toString()),
-                        fontSize = dimenTextSize(R.dimen.text_size_md),
-                        fontFamily = BHoma
-                    )
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
-                        textAlign = TextAlign.Right,
-                        text = stringResource(id = R.string.price),
-                        fontSize = dimenTextSize(R.dimen.text_size_md),
-                        fontFamily = BMitra
-                    )
+
                 }
 
                 HorizontalDivider(
@@ -214,18 +200,78 @@ fun ServerProductItem(
                 )
 
                 Spacer(
-                    modifier = Modifier.height(16.dp)
+                    modifier = Modifier.height(dimen(R.dimen.space_2))
                 )
 
-                Button(onAdd) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Right,
-                        text = str(R.string.add_to_my_products),
-                        fontSize = dimenTextSize(R.dimen.text_size_md),
-                        fontFamily = BMitra
-                    )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Button(
+                        onClick = {
+                            itemClicked = true
+                            onAdd()
+                        },
+                        shape = RoundedCornerShape(dimen(R.dimen.radius_sm)),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (itemClicked) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        if (itemClicked) {
+                            // After click: show text + icon
+                            Text(
+                                text = str(R.string.product_added),
+                                fontSize = dimenTextSize(R.dimen.text_size_md),
+                                fontFamily = BMitra
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                painter = painterResource(R.drawable.check_24px),
+                                contentDescription = null
+                            )
+                        } else {
+                            // Before click: normal text
+                            Text(
+                                text = str(R.string.add_to_my_products),
+                                fontSize = dimenTextSize(R.dimen.text_size_md),
+                                fontFamily = BMitra
+                            )
+                        }
+                    }
+
+                    Column {
+                        Text(
+                            textAlign = TextAlign.Right,
+                            text = stringResource(id = R.string.suggestion_price),
+                            fontSize = dimenTextSize(R.dimen.text_size_xs),
+                            fontFamily = BMitra
+                        )
+
+                        Row {
+                            Icon(
+                                painter = painterResource(id = R.drawable.toman),
+                                contentDescription = "Date",
+                                modifier = Modifier
+                                    .size(dimen(R.dimen.size_sm))
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Text(
+                                textAlign = TextAlign.Start,
+                                text = PriceValidator.formatPrice(product.price.amount.toString()),
+                                fontSize = dimenTextSize(R.dimen.text_size_md),
+                                fontFamily = BHoma
+                            )
+                        }
+                    }
+
+
                 }
+
+
             }
         }
     }

@@ -105,6 +105,7 @@
     <string name="add_to_my_products">افزودن به محصولات من</string>
     <string name="suggestion_price">قیمت پیشنهادی</string>
     <string name="no_product_found">هیچ محصولی یافت نگردید!</string>
+    <string name="product_added"> افزوده شد</string>
 
     <!-- Analyze Screen -->
     <string name="sales_analyse">تحلیل فروش</string>
