@@ -26,14 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composetrainer.R
-import com.example.composetrainer.domain.model.Invoice
 import com.example.composetrainer.domain.model.InvoiceWithProducts
 import com.example.composetrainer.ui.theme.BNazanin
 import com.example.composetrainer.ui.theme.BRoya
-import com.example.composetrainer.utils.PriceValidator
+import com.example.composetrainer.utils.price.PriceValidator
 import com.example.composetrainer.utils.dateandtime.FarsiDateUtil.getFormattedPersianDate
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize

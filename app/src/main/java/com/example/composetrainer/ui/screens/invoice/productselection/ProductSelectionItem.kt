@@ -19,13 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.ui.theme.BRoya
-import com.example.composetrainer.utils.PriceValidator
+import com.example.composetrainer.utils.price.PriceValidator
 import com.example.composetrainer.utils.dimen
 
 @Composable

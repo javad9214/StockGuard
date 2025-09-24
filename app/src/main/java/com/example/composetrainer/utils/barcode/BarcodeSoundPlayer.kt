@@ -1,4 +1,4 @@
-package com.example.composetrainer.utils
+package com.example.composetrainer.utils.barcode
 
 import android.content.Context
 import android.media.ToneGenerator

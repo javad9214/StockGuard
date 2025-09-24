@@ -1,4 +1,4 @@
-package com.example.composetrainer.utils
+package com.example.composetrainer.utils.populatedbfortest
 
 import android.content.Context
 import com.example.composetrainer.data.local.dao.CategoryDao
@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import javax.inject.Singleton
 
 class ProductImporter @Inject constructor(
     private val categoryDao: CategoryDao,

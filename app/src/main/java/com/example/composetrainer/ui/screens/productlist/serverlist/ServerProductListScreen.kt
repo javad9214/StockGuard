@@ -40,14 +40,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.R
-import com.example.composetrainer.ui.components.barcodescanner.BarcodeScanAction
 import com.example.composetrainer.ui.components.barcodescanner.BarcodeScannerView
-import com.example.composetrainer.ui.components.barcodescanner.ReusableBarcodeScannerView
 import com.example.composetrainer.ui.screens.component.EmptyState
 import com.example.composetrainer.ui.theme.BMitra
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.viewmodels.MainProductsViewModel
-import com.example.composetrainer.utils.BarcodeSoundPlayer
+import com.example.composetrainer.utils.barcode.BarcodeSoundPlayer
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str

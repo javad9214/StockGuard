@@ -34,7 +34,7 @@ import com.example.composetrainer.domain.model.type.Money
 import com.example.composetrainer.ui.theme.BMitra
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
-import com.example.composetrainer.utils.PriceValidator.formatPrice
+import com.example.composetrainer.utils.price.PriceValidator.formatPrice
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str

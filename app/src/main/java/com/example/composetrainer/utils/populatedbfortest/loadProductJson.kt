@@ -1,4 +1,4 @@
-package com.example.composetrainer.utils
+package com.example.composetrainer.utils.populatedbfortest
 
 import android.content.Context
 import com.example.composetrainer.domain.model.ProductJson

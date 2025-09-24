@@ -55,7 +55,7 @@ import com.example.composetrainer.domain.model.ProductUnit
 import com.example.composetrainer.ui.theme.BHoma
 import com.example.composetrainer.ui.theme.BMitra
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
-import com.example.composetrainer.utils.PriceValidator
+import com.example.composetrainer.utils.price.PriceValidator
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import java.time.LocalDateTime

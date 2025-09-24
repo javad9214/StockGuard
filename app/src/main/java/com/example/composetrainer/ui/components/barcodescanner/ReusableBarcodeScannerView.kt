@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Product
-import com.example.composetrainer.utils.BarcodeSoundPlayer
+import com.example.composetrainer.utils.barcode.BarcodeSoundPlayer
 
 // Data class for barcode scan result
 data class BarcodeScanResult(

@@ -41,7 +41,7 @@ import com.example.composetrainer.ui.components.barcodescanner.BarcodeScannerVie
 import com.example.composetrainer.ui.viewmodels.home.HomeViewModel
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
-import com.example.composetrainer.utils.BarcodeSoundPlayer
+import com.example.composetrainer.utils.barcode.BarcodeSoundPlayer
 
 @Composable
 fun InvoiceScreen(

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.usecase.product.GetProductByBarcodeUseCase
-import com.example.composetrainer.utils.ProductImporter
+import com.example.composetrainer.utils.populatedbfortest.ProductImporter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

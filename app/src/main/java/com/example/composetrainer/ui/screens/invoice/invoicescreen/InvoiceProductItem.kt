@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,22 +29,18 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.InvoiceProduct
-import com.example.composetrainer.domain.model.InvoiceProductFactory
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.ui.theme.BNazanin
-import com.example.composetrainer.ui.theme.ComposeTrainerTheme
-import com.example.composetrainer.utils.PriceValidator
+import com.example.composetrainer.utils.price.PriceValidator
 import com.example.composetrainer.utils.dimen
 
 @Composable
