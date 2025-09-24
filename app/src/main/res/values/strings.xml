@@ -21,14 +21,18 @@
     <string name="total_amount">total amount</string>
 
     <!-- Invoice -->
-    <string name="sale_invoice">Sales Invoice</string>
+    <string name="sale_invoice">Sale Invoice</string>
+    <string name="purchase_invoice">Purchase Invoice</string>
     <string name="total">Total</string>
     <string name="submit">Submit</string>
     <string name="finalize_factor">Finalize</string>
     <string name="buyer">Buyer</string>
+    <string name="seller">Seller</string>
     <string name="unknown">Unknown</string>
     <string name="add_product">Add Product</string>
     <string name="invoice_number">Invoice Number</string>
+    <string name="scan_barcode">Scan Barcode </string>
+    <string name="choose_from_list">Choose From List</string>
 
     <!-- Invoice List -->
     <string name="sale_invoices">Sales Invoices</string>

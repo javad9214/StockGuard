@@ -3,11 +3,10 @@ package com.example.composetrainer.data.remote.api
 import com.example.composetrainer.data.remote.dto.ApiResponseDto
 import com.example.composetrainer.data.remote.dto.PagedResponseDto
 import com.example.composetrainer.data.remote.dto.ProductDto
-import retrofit2.http.GET
 import com.skydoves.sandwich.ApiResponse
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
+import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path

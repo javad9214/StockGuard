@@ -28,9 +28,13 @@
     <string name="submit">ثبت</string>
     <string name="finalize_factor">نهایی سازی</string>
     <string name="buyer">خریدار</string>
+    <string name="seller">فروشنده</string>
     <string name="unknown">ناشناخته</string>
     <string name="add_product">افزودن محصول</string>
     <string name="invoice_number">شماره فاکتور</string>
+    <string name="purchase_invoice">فاکتور خرید </string>
+    <string name="scan_barcode">اسکن بارکد</string>
+    <string name="choose_from_list"> انتخاب از لیست</string>
 
     <!-- Invoice List -->
     <string name="sale_invoices">فاکتور های فروش</string>
