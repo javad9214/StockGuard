@@ -42,6 +42,7 @@ import com.example.composetrainer.ui.viewmodels.home.HomeViewModel
 import com.example.composetrainer.utils.barcode.BarcodeSoundPlayer
 import com.example.composetrainer.utils.dateandtime.FarsiDateUtil
 import com.example.composetrainer.utils.dimen
+import com.example.composetrainer.utils.str
 
 @Composable
 fun InvoiceScreen(
@@ -108,11 +109,7 @@ fun InvoiceScreen(
                     contentPadding = PaddingValues(bottom = dimen(R.dimen.space_14))
 
                 ) {
-                    Log.i(
-                        TAG,
-                        "InvoiceScreen: Total ProductsCount = ${currentInvoice.totalProductsCount}"
-                    )
-                    Log.i(TAG, "InvoiceScreen: products = ${currentInvoice.products.size}")
+
                     items(
                         currentInvoice.totalProductsCount,
                         key = { currentInvoice.products[it].id.value }) { item ->
@@ -139,7 +136,7 @@ fun InvoiceScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No products added yet",
+                        text = str(R.string.no_products_added),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

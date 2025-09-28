@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
@@ -99,8 +100,9 @@ fun HeaderSection(
                     Spacer(modifier = Modifier.weight(1f))
 
                     ElevatedCard(
-                        modifier = Modifier.clickable(
-                            indication = ripple(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(dimen(R.dimen.radius_md)))
+                            .clickable(indication = ripple(
                                 color = MaterialTheme.colorScheme.primary,
                                 bounded = true
                             ),

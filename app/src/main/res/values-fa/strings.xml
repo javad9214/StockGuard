@@ -35,6 +35,7 @@
     <string name="purchase_invoice">فاکتور خرید </string>
     <string name="scan_barcode">اسکن بارکد</string>
     <string name="choose_from_list"> انتخاب از لیست</string>
+    <string name="no_products_added_yet">هنوز هیچ‌ محصولی به فاکتور اضافه نگردیده است!</string>
 
     <!-- Invoice List -->
     <string name="sale_invoices">فاکتور های فروش</string>

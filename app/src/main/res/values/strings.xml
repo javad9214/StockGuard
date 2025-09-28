@@ -33,7 +33,7 @@
     <string name="invoice_number">Invoice Number</string>
     <string name="scan_barcode">Scan Barcode </string>
     <string name="choose_from_list">Choose From List</string>
-
+    <string name="no_products_added_yet">No Products Added Yet</string>
     <!-- Invoice List -->
     <string name="sale_invoices">Sales Invoices</string>
     <string name="items">Quantity</string>
