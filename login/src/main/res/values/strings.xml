@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Login -->
+    <string name="login_title">Welcome Back</string>
+    <string name="login_subtitle">Sign in to continue managing your stock</string>
+    <string name="login_button">Login</string>
+    <string name="no_account">Don’t have an account? Register</string>
+
+    <!-- Register -->
+
     <string name="register_title">Create Account</string>
     <string name="register_subtitle">Join us and manage your stock with ease</string>
     <string name="register_button">Register</string>
