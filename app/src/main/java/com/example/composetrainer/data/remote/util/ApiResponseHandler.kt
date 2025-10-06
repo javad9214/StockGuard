@@ -1,7 +1,7 @@
 package com.example.composetrainer.data.remote.util
 
 import com.example.composetrainer.data.remote.dto.ApiResponseDto
-import com.example.composetrainer.domain.util.Resource
+import com.example.login.domain.util.Resource
 import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.retrofit.statusCode

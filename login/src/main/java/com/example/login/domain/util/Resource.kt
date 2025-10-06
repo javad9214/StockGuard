@@ -1,5 +1,4 @@
-package com.example.composetrainer.domain.util
-
+package com.example.login.domain.util
 
 sealed class Resource<T> {
     class Loading<T> : Resource<T>()

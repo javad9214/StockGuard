@@ -1,9 +1,8 @@
 package com.example.composetrainer.domain.repository
 
 import com.example.composetrainer.data.remote.dto.PagedResponseDto
-import com.example.composetrainer.data.remote.dto.ProductDto
 import com.example.composetrainer.domain.model.Product
-import com.example.composetrainer.domain.util.Resource
+import com.example.login.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface ServerMainProductRepository {

@@ -1,6 +1,9 @@
 package com.example.login.di
 
+import com.example.login.data.remote.api.ApiAuthService
+import com.example.login.data.repository.AuthRepositoryImpl
 import com.example.login.data.repository.LoginRepositoryImpl
+import com.example.login.domain.repository.AuthRepository
 import com.example.login.domain.repository.LoginRepository
 import com.example.login.domain.usecase.LoginUseCase
 import dagger.Module
@@ -19,7 +22,19 @@ object LoginModule {
 
     @Provides
     @Singleton
-    fun provideLoginUseCase(loginRepository: LoginRepository): LoginUseCase =
-        LoginUseCase(loginRepository)
+    fun provideAuthRepository(
+        apiAuthService: ApiAuthService
+    ): AuthRepository = AuthRepositoryImpl(
+        apiAuthService
+    )
 
+    @Provides
+    @Singleton
+    fun provideLoginUseCase(authRepository: AuthRepository): LoginUseCase =
+        LoginUseCase(authRepository)
+
+    @Provides
+    @Singleton
+    fun provideRegisterUseCase(authRepository: AuthRepository): LoginUseCase =
+        LoginUseCase(authRepository)
 }

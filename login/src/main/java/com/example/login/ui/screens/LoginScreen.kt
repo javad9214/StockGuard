@@ -17,6 +17,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,16 +34,30 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.login.R
-import com.example.login.ui.navigation.Routes
+import com.example.login.domain.util.Resource
+import com.example.login.ui.viewmodels.AuthViewModel
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit = {},
-    onLoginClick: () -> Unit = {},
     onRegisterClick: () -> Unit = {}
 ) {
+    val viewModel: AuthViewModel = hiltViewModel()
+    val loginState by viewModel.loginState.collectAsState()
+
+    LaunchedEffect(loginState) {
+        loginState?.let {
+            when (it) {
+                is Resource.Success -> {
+                    onLoginSuccess()
+                    viewModel.clearLoginState()
+                }
+            }
+        }
+    }
+
     var phoneNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -76,9 +92,10 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button(
-                    onClick = onLoginClick,
+                    onClick = { viewModel.login(phoneNumber, password) },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium
+                    shape = MaterialTheme.shapes.medium,
+                    enabled = loginState !is Resource.Loading
                 ) {
                     Text(text = stringResource(R.string.login_button))
                 }
@@ -132,6 +149,16 @@ fun LoginScreen(
                     imeAction = ImeAction.Done
                 )
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            loginState?.let {
+                when (it) {
+                    is Resource.Loading -> Text("Logging in...", color = MaterialTheme.colorScheme.primary)
+                    is Resource.Error -> Text("Error: ${it.message}", color = MaterialTheme.colorScheme.error)
+                    is Resource.Success -> {} // handled in LaunchedEffect
+                }
+            }
         }
     }
 }

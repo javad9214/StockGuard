@@ -16,6 +16,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,14 +33,37 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.login.domain.util.Resource
 import com.example.login.R
+
+import com.example.login.ui.viewmodels.AuthViewModel
 
 
 @Composable
 fun RegisterScreen(
-    onRegisterClick: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {}
 ) {
+    val viewModel: AuthViewModel = hiltViewModel()
+    val registerState by viewModel.registerState.collectAsState()
+
+    LaunchedEffect(registerState) {
+        registerState?.let {
+            when (it) {
+                is Resource.Success -> {
+                    onNavigateToLogin()
+                    viewModel.clearRegisterState()
+                }
+                is Resource.Error -> {
+                    // 错误情况不需要特殊处理，将在UI中显示
+                }
+                is Resource.Loading -> {
+                    // 加载状态不需要特殊处理
+                }
+            }
+        }
+    }
+
     var fullName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -68,11 +93,12 @@ fun RegisterScreen(
         },
         bottomBar = {
             Button(
-                onClick = onRegisterClick,
+                onClick = { viewModel.register(phoneNumber, password, fullName) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.medium,
+                enabled = registerState !is Resource.Loading
             ) {
                 Text(
                     text = stringResource(R.string.register_button),
@@ -132,6 +158,16 @@ fun RegisterScreen(
                     imeAction = ImeAction.Done
                 )
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            registerState?.let {
+                when (it) {
+                    is Resource.Loading -> Text("Registering...", color = MaterialTheme.colorScheme.primary)
+                    is Resource.Error -> Text("Error: ${it.message}", color = MaterialTheme.colorScheme.error)
+                    is Resource.Success -> {} // handled in LaunchedEffect
+                }
+            }
         }
     }
 }

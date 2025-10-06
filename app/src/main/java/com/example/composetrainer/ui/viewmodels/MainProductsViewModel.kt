@@ -8,7 +8,7 @@ import com.example.composetrainer.domain.usecase.product.AddProductUseCase
 import com.example.composetrainer.domain.usecase.servermainproduct.AddNewProductToMainServerUseCase
 import com.example.composetrainer.domain.usecase.servermainproduct.GetAllMainProductsUseCase
 import com.example.composetrainer.domain.usecase.servermainproduct.GetSearchedMainProductsUseCase
-import com.example.composetrainer.domain.util.Resource
+import com.example.login.domain.util.Resource
 import com.example.composetrainer.ui.screens.productlist.ProductsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

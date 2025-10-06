@@ -7,7 +7,7 @@ import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.toDomain
 import com.example.composetrainer.domain.model.toDto
 import com.example.composetrainer.domain.repository.ServerMainProductRepository
-import com.example.composetrainer.domain.util.Resource
+import com.example.login.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 class ServerMainProductRepoImpl(private val apiServiceMainProduct: ApiServiceMainProduct) :

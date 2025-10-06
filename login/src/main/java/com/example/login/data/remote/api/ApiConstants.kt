@@ -1,6 +1,7 @@
-package com.example.composetrainer.data.remote.api
+package com.example.login.data.remote.api
 
-import com.example.composetrainer.BuildConfig
+import com.example.login.BuildConfig
+
 
 object ApiConstants {
 
