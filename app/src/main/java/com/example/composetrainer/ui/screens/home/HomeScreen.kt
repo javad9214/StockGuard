@@ -209,6 +209,7 @@ fun HomeScreen(
                     onNewSelected = { timeRange ->
                         selectedDate = timeRange
                         showDatePickerBottomSheet = false
+                        homeTotalItemsViewModel.reLoadProductSaleSummary(selectedDate)
                     }
                 )
             }

@@ -11,11 +11,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RippleConfiguration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,7 +38,7 @@ import com.example.composetrainer.utils.str
 @Composable
 fun DatePickerBottomDialog(
     modifier: Modifier = Modifier,
-    selectedItem : TimeRange = TimeRange.TODAY,
+    selectedItem: TimeRange = TimeRange.TODAY,
     onNewSelected: (TimeRange) -> Unit
 ) {
 
@@ -74,7 +82,7 @@ fun DatePickerBottomDialog(
                 modifier = modifier.weight(1f),
                 isSelected = selectedItem == TimeRange.LAST_WEEK,
                 text = str(R.string.last_week),
-                onClick = { onNewSelected(TimeRange.LAST_WEEK)},
+                onClick = { onNewSelected(TimeRange.LAST_WEEK) },
             )
         }
         Row(
@@ -94,7 +102,7 @@ fun DatePickerBottomDialog(
                 modifier = modifier.weight(1f),
                 isSelected = selectedItem == TimeRange.LAST_MONTH,
                 text = str(R.string.last_month),
-                onClick = { onNewSelected(TimeRange.LAST_MONTH)},
+                onClick = { onNewSelected(TimeRange.LAST_MONTH) },
             )
         }
 
@@ -109,18 +117,19 @@ fun DatePickerBottomDialog(
                 modifier = modifier.weight(1f),
                 isSelected = selectedItem == TimeRange.THIS_YEAR,
                 text = str(R.string.this_year),
-                onClick = {onNewSelected(TimeRange.THIS_YEAR) },
+                onClick = { onNewSelected(TimeRange.THIS_YEAR) },
             )
             DatePickerItem(
                 modifier = modifier.weight(1f),
                 isSelected = selectedItem == TimeRange.LAST_YEAR,
                 text = str(R.string.last_year),
-                onClick = { onNewSelected(TimeRange.LAST_YEAR)},
+                onClick = { onNewSelected(TimeRange.LAST_YEAR) },
             )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DatePickerItem(
     modifier: Modifier = Modifier,
@@ -128,54 +137,60 @@ private fun DatePickerItem(
     isSelected: Boolean = false,
     onClick: () -> Unit,
 ) {
-    OutlinedButton(
-        modifier = modifier,
-        onClick = onClick,
-        shape = RoundedCornerShape(dimen(R.dimen.radius_sm)), // Border radius
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = if (isSelected)
-                MaterialTheme.colorScheme.primary
-            else
-                Color(0xFFE0E0E0),
-            contentColor = if (isSelected)
-                MaterialTheme.colorScheme.onPrimary
-            else
-                MaterialTheme.colorScheme.outline
-        ),
-        border = BorderStroke(
-            dimen(R.dimen.stroke_dimen_sm),
-            color = if (isSelected)
-                MaterialTheme.colorScheme.primary
-            else
-                MaterialTheme.colorScheme.onPrimary
+    CompositionLocalProvider(
+        LocalRippleConfiguration provides RippleConfiguration(
+            color = MaterialTheme.colorScheme.primary
         )
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ){
-
-            Text(
-                text = text,
-                style = MaterialTheme.typography.bodyLarge,
-                fontFamily = Beirut_Medium,
-                fontSize = dimenTextSize(R.dimen.text_size_lg)
+        OutlinedButton(
+            modifier = modifier,
+            onClick = onClick,
+            shape = RoundedCornerShape(dimen(R.dimen.radius_sm)), // Border radius
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = if (isSelected)
+                    MaterialTheme.colorScheme.primary
+                else
+                    Color(0xFFE0E0E0),
+                contentColor = if (isSelected)
+                    MaterialTheme.colorScheme.onPrimary
+                else
+                    MaterialTheme.colorScheme.outline
+            ),
+            border = BorderStroke(
+                dimen(R.dimen.stroke_dimen_sm),
+                color = if (isSelected)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.onPrimary
             )
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
 
-            if (isSelected) {
-
-                Spacer(modifier = Modifier.width(dimen(R.dimen.space_1)))
-
-                Icon(
-                    painter = painterResource(id = R.drawable.check_24px),
-                    contentDescription = "Selected",
-                    modifier = Modifier.size(dimen(R.dimen.size_xs))
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontFamily = Beirut_Medium,
+                    fontSize = dimenTextSize(R.dimen.text_size_lg)
                 )
+
+                if (isSelected) {
+
+                    Spacer(modifier = Modifier.width(dimen(R.dimen.space_1)))
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.check_24px),
+                        contentDescription = "Selected",
+                        modifier = Modifier.size(dimen(R.dimen.size_xs))
+                    )
+
+                }
 
             }
 
         }
-
     }
 
 }

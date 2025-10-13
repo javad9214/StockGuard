@@ -47,7 +47,7 @@ class HomeTotalItemsViewModel @Inject constructor(
 
     init {
         loadAnalyticsData()
-        loadProductSalesSummary()
+        loadProductSalesSummary(TimeRange.TODAY)
     }
 
     private fun loadAnalyticsData(){
@@ -66,11 +66,11 @@ class HomeTotalItemsViewModel @Inject constructor(
         }
     }
 
-    private fun loadProductSalesSummary(){
+    private fun loadProductSalesSummary(timeRange: TimeRange){
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val (productsSaleSummeryList, products) = getProductSalesSummaryUseCase.invoke(TimeRange.TODAY)
+                val (productsSaleSummeryList, products) = getProductSalesSummaryUseCase.invoke(timeRange)
                 _productSalesSummaryList.value = productsSaleSummeryList
                 _products.value = products
                 _isLoading.value = false
@@ -80,6 +80,10 @@ class HomeTotalItemsViewModel @Inject constructor(
                 _isLoading.value = false
             }
         }
+    }
+
+    fun reLoadProductSaleSummary(timeRange: TimeRange){
+        loadProductSalesSummary(timeRange)
     }
 
     companion object {
