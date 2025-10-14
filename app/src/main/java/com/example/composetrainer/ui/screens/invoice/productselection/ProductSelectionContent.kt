@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.Product
+import org.acra.config.Configuration
 
 @Composable
 fun ProductSelectionContent(

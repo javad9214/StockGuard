@@ -72,7 +72,7 @@ fun AddProductToInvoice(
                 topStart = dimen(R.dimen.radius_xl),
                 topEnd = dimen(R.dimen.radius_xl)
             ),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 6.dp,
             )
