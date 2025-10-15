@@ -1,4 +1,4 @@
-package com.exampfix: fix a warn about how to get container height from localWindowle.composetrainer.domain.usecase.sales
+package com.example.composetrainer.domain.usecase.sales
 
 import android.util.Log
 import com.example.composetrainer.domain.model.InvoiceProduct
