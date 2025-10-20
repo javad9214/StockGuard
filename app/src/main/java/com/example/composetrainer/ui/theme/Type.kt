@@ -51,6 +51,10 @@ val Beirut_Medium = FontFamily(
     Font(R.font.beirut_md_mrt, FontWeight.Medium)
 )
 
+val MRTPoster = FontFamily(
+    Font(R.font.mrt_poster, FontWeight.Normal)
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(

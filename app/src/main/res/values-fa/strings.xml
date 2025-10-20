@@ -115,6 +115,12 @@
     <string name="products_name">نام محصول</string>
     <string name="Barcode">بارکد</string>
 
+
+    <!-- Alert Dialog -->
+    <string name="no_product_with_barcode">هیچ محصولی با این بارکد : </string>
+    <string name="not_found">یافت نشد!</string>
+    <string name="add_as_new_product">افزودن به عنوان محصول جدید </string>
+
     <!-- Server Main Products  -->
     <string name="total_products_list">لیست تمامی محصولات</string>
     <string name="add_to_my_products">افزودن به محصولات من</string>
@@ -142,7 +148,7 @@
 
     <!-- Barcode Scanner View -->
     <string name="barcode_position">موقعیت بارکد در داخل قاب</string>
-    <string name="no_product_found_with_barcode">محصولی با بارکد مورد نظر یافت نشد </string>
+    <string name="no_product_found_with_barcode">محصولی با بارکد مورد نظر یافت نشد !</string>
     <!-- Add Product Bottom Sheet -->
     <string name="add_product_title">افزودن محصول</string>
     <string name="edit_product_title">ویرایش محصول</string>

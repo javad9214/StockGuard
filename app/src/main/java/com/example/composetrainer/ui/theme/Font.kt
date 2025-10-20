@@ -13,6 +13,7 @@ object AppFont {
     val BKoodak: FontFamily = com.example.composetrainer.ui.theme.BKoodak
     val BNazanin: FontFamily = com.example.composetrainer.ui.theme.BNazanin
     val BComps: FontFamily = com.example.composetrainer.ui.theme.BComps
+    val MRTPoster: FontFamily = com.example.composetrainer.ui.theme.MRTPoster
 
     // Default app font
     val Default: FontFamily = BComps

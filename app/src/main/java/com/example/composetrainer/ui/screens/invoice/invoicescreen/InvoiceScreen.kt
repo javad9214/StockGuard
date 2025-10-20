@@ -14,8 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -31,10 +34,15 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.R
+import com.example.composetrainer.domain.model.Barcode
+import com.example.composetrainer.domain.model.ProductFactory
+import com.example.composetrainer.domain.model.ProductName
 import com.example.composetrainer.domain.model.calculateTotalAmount
 import com.example.composetrainer.domain.model.hasProducts
 import com.example.composetrainer.ui.components.barcodescanner.BarcodeScannerView
+import com.example.composetrainer.ui.screens.component.NoBarcodeFoundDialog
 import com.example.composetrainer.ui.screens.invoice.productselection.AddProductToInvoice
+import com.example.composetrainer.ui.screens.productlist.AddProductBottomSheet
 import com.example.composetrainer.ui.viewmodels.InvoiceListViewModel
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
@@ -44,6 +52,7 @@ import com.example.composetrainer.utils.dateandtime.FarsiDateUtil
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.str
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InvoiceScreen(
     onComplete: () -> Unit,
@@ -66,6 +75,13 @@ fun InvoiceScreen(
     val scannedProduct by homeViewModel.scannedProduct.collectAsState()
     val scannerIsLoading by homeViewModel.isLoading.collectAsState()
     val scannerErrorMessage by homeViewModel.errorMessage.collectAsState()
+    val scannedBarcode by homeViewModel.detectedBarcode.collectAsState()
+    val noBarcodeFoundDialogSheetState = rememberModalBottomSheetState()
+    var showNoBarcodeFoundDialog by remember { mutableStateOf(false) }
+
+    // for add new product Bottom Sheet
+    val addNewProductSheetState = rememberModalBottomSheetState()
+    val isAddProductSheetOpen = remember { mutableStateOf(false) }
 
     // Context for MediaPlayer
     val context = LocalContext.current
@@ -80,6 +96,49 @@ fun InvoiceScreen(
             Log.d("InvoiceScreen", "Added product from barcode: ${product.name}")
             // Clear scanned product
             homeViewModel.clearScannedProduct()
+        }
+    }
+
+    LaunchedEffect(scannerErrorMessage) {
+        if (scannerErrorMessage != null && scannedBarcode != null) {
+            showNoBarcodeFoundDialog = true
+            noBarcodeFoundDialogSheetState.show()
+        }
+    }
+
+    if (showNoBarcodeFoundDialog) {
+
+        NoBarcodeFoundDialog(
+            barcode = scannedBarcode!!,
+            sheetState = noBarcodeFoundDialogSheetState,
+            onAddToNewProductClicked = {
+                showNoBarcodeFoundDialog = false
+                isAddProductSheetOpen.value = true
+            },
+            onDismiss = {
+                showNoBarcodeFoundDialog = false
+                homeViewModel.clearErrorMessage()
+            }
+        )
+
+    }
+
+    if (isAddProductSheetOpen.value) {
+        ModalBottomSheet(
+            onDismissRequest = { isAddProductSheetOpen.value = false },
+            sheetState = addNewProductSheetState
+        ) {
+            AddProductBottomSheet(
+                initialProduct = null,
+                onSave = { product ->
+                    productsViewModel.addProduct(product)
+                    isAddProductSheetOpen.value = false
+
+                },
+                onDismiss = {
+                    isAddProductSheetOpen.value = false
+                }
+            )
         }
     }
 
@@ -190,6 +249,7 @@ fun InvoiceScreen(
                 },
                 onClose = { showBarcodeScannerView = false }
             )
+
         }
 
         // Show loading indicator for barcode scanning

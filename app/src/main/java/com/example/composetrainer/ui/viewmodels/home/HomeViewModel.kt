@@ -29,6 +29,9 @@ class HomeViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
+    private val _detectedBarcode = MutableStateFlow<String?>(null)
+    val detectedBarcode: StateFlow<String?> = _detectedBarcode
+
     fun importProducts() {
         viewModelScope.launch {
             productImporter.importFromJsonWithProgress().collect {
@@ -49,9 +52,11 @@ class HomeViewModel @Inject constructor(
                 _isLoading.value = false
                 if (product == null) {
                     _errorMessage.value = "No product found with barcode: $barcode"
+                    _detectedBarcode.value = barcode
                 }
             } catch (e: Exception) {
                 _errorMessage.value = "Error searching for product: ${e.message}"
+                _detectedBarcode.value = barcode
                 _isLoading.value = false
             }
         }
@@ -59,6 +64,10 @@ class HomeViewModel @Inject constructor(
 
     fun clearScannedProduct() {
         _scannedProduct.value = null
+    }
+
+    fun clearErrorMessage() {
         _errorMessage.value = null
+        _detectedBarcode.value = null
     }
 }

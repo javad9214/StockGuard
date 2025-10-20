@@ -107,13 +107,18 @@
     <string name="products_name">Product Name</string>
     <string name="Barcode">Barcode</string>
 
+    <!-- Alert Dialog -->
+    <string name="no_product_with_barcode">Product With Barcode</string>
+    <string name="not_found">Not Found</string>
+    <string name="add_as_new_product">Add As New Product</string>
+
     <!-- Server Main Products  -->
     <string name="total_products_list">Total Products List</string>
     <string name="add_to_my_products">Add To My Products</string>
     <string name="suggestion_price">Suggestion Price</string>
     <string name="no_product_found">No Products Found!</string>
     <string name="product_added">Product Added</string>
-    
+
     <!-- Analyze Screen -->
     <string name="sales_analyse">Sales Analysis</string>
     <string name="refresh">Refresh</string>
@@ -126,7 +131,7 @@
     <string name="product_quantity">Product Count</string>
     <string name="sold_quantity">Sold: %s</string>
     <string name="currency_suffix">%s Toman</string>
-    
+
     <!-- Create Invoice Screen -->
     <string name="invoice_creation">Create Invoice</string>
     <string name="customer_name">Customer Name</string>
