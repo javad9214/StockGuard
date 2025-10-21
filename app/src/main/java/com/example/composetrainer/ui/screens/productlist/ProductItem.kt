@@ -13,7 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
@@ -33,10 +34,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.*
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
@@ -47,18 +51,19 @@ import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.ProductDescription
 import com.example.composetrainer.domain.model.ProductId
 import com.example.composetrainer.domain.model.ProductName
+import com.example.composetrainer.domain.model.ProductUnit
 import com.example.composetrainer.domain.model.StockQuantity
 import com.example.composetrainer.domain.model.SubcategoryId
 import com.example.composetrainer.domain.model.SupplierId
 import com.example.composetrainer.domain.model.type.Money
-import com.example.composetrainer.domain.model.ProductUnit
 import com.example.composetrainer.ui.screens.component.CurrencyIcon
 import com.example.composetrainer.ui.theme.BHoma
 import com.example.composetrainer.ui.theme.BMitra
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
-import com.example.composetrainer.utils.price.PriceValidator
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
+import com.example.composetrainer.utils.price.PriceValidator
+import com.example.composetrainer.utils.str
 import java.time.LocalDateTime
 
 @Composable
@@ -87,22 +92,19 @@ fun ProductItem(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(dimen(R.dimen.space_4))
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box {
-                        IconButton(
-                            onClick = { showMenu = true },
-                            modifier = Modifier.align(Alignment.CenterStart)
-                        ) {
-                            Icon(
-                                Icons.Default.MoreVert,
-                                contentDescription = "Menu"
-                            )
-                        }
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = "Menu",
+                            modifier = Modifier
+                                .clickable { showMenu = true }
+                        )
 
                         DropdownMenu(
                             expanded = showMenu,
@@ -133,80 +135,58 @@ fun ProductItem(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
+
+                // Barcode
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.End
                 ) {
-
-                    // Category ID
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    product.barcode?.value?.let {
                         Text(
-                            text = product.subcategoryId?.value.toString(),
+                            text = it,
                             fontSize = dimenTextSize(R.dimen.text_size_md),
                             fontFamily = BHoma
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(
-                            imageVector = Icons.Default.Category,
-                            contentDescription = "Category",
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    } ?: Text(
+                        text = "N/A",
+                        fontSize = dimenTextSize(R.dimen.text_size_md),
+                        fontFamily = BHoma
+                    )
+                    Spacer(modifier = Modifier.width(dimen(R.dimen.space_4)))
 
-                    // Barcode
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        product.barcode?.value?.let {
-                            Text(
-                                text = it,
-                                fontSize = dimenTextSize(R.dimen.text_size_md),
-                                fontFamily = BHoma
-                            )
-                        } ?: Text(
-                            text = "N/A",
-                            fontSize = dimenTextSize(R.dimen.text_size_md),
-                            fontFamily = BHoma
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            painter = painterResource(id = R.drawable.barcode_24px),
-                            contentDescription = "barcode"
-                        )
-
-
-                    }
+                    Icon(
+                        painter = painterResource(id = R.drawable.barcode_24px),
+                        contentDescription = "barcode"
+                    )
                 }
+
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
                 // Stock Section
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.End
                 ) {
                     Text(
+                        modifier = Modifier.padding(end = dimen(R.dimen.space_4)),
                         text = product.stock.value.toString(),
                         fontSize = dimenTextSize(R.dimen.text_size_md),
                         fontFamily = BHoma
                     )
-                    Row {
-                        IconButton(onClick = onDecreaseStock) {
-                            Icon(Icons.Default.Remove, contentDescription = "Decrease Stock")
-                        }
-                        IconButton(onClick = onIncreaseStock) {
-                            Icon(Icons.Default.Add, contentDescription = "Increase Stock")
-                        }
-                    }
+
+                    Text(
+                        text = str(R.string.stock),
+                        fontSize = dimenTextSize(R.dimen.text_size_md),
+                        fontFamily = BHoma
+                    )
+
                 }
 
-                Spacer(
-                    modifier = Modifier.height(4.dp)
-                )
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
                 HorizontalDivider(
                     modifier = Modifier.fillMaxWidth(),
@@ -218,38 +198,68 @@ fun ProductItem(
                     modifier = Modifier.height(16.dp)
                 )
 
-                // Price
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    // Cost Price (Red, smaller, down icon)
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDownward,
+                            contentDescription = "Down",
+                            tint = Color.Red,
+                            modifier = Modifier.size(dimen(R.dimen.size_sm))
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
 
-                    CurrencyIcon(
-                        contentDescription = "Rial",
-                        modifier = Modifier
-                            .size(dimen(R.dimen.size_sm))
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                        CurrencyIcon(
+                            contentDescription = "Rial",
+                            modifier = Modifier.size(dimen(R.dimen.size_sm))
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
 
-                    Text(
-                        modifier = Modifier.weight(4f),
-                        textAlign = TextAlign.Start,
-                        text = PriceValidator.formatPrice(product.price.amount.toString()),
-                        fontSize = dimenTextSize(R.dimen.text_size_md),
-                        fontFamily = BHoma
-                    )
+                        Text(
+                            text = PriceValidator.formatPrice(product.costPrice.amount.toString()),
+                            fontSize = dimenTextSize(R.dimen.text_size_sm), // Smaller
+                            fontFamily = BHoma,
+                            color = Color.Red
+                        )
+                    }
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
 
-                    Text(
-                        modifier = Modifier.weight(2f, fill = true),
-                        textAlign = TextAlign.Right,
-                        text = stringResource(id = R.string.price),
-                        fontSize = dimenTextSize(R.dimen.text_size_md),
-                        fontFamily = BMitra
-                    )
+                    // Price (Green, normal size, up icon)
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowUpward,
+                            contentDescription = "Up",
+                            tint = Color.Green,
+                            modifier = Modifier.size(dimen(R.dimen.size_sm))
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+
+                        CurrencyIcon(
+                            contentDescription = "Rial",
+                            modifier = Modifier.size(dimen(R.dimen.size_sm))
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+
+                        Text(
+                            text = PriceValidator.formatPrice(product.price.amount.toString()),
+                            fontSize = dimenTextSize(R.dimen.text_size_md),
+                            fontFamily = BHoma,
+                            color = Color.Green
+                        )
+                    }
                 }
+
+
 
             }
         }

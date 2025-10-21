@@ -102,6 +102,7 @@ fun ProductScreen(
     if (selectedProductForEdit.value != null || isAddProductSheetOpen.value) {
         ModalBottomSheet(
             onDismissRequest = { isAddProductSheetOpen.value = false },
+            containerColor = MaterialTheme.colorScheme.background,
             sheetState = sheetState
         ) {
             AddProductBottomSheet(

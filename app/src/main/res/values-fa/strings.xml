@@ -157,8 +157,9 @@
     <string name="add_product_title">افزودن محصول</string>
     <string name="edit_product_title">ویرایش محصول</string>
     <string name="product_name">نام محصول</string>
-    <string name="barcode_optional">بارکد (اختیاری)</string>
-    <string name="price_optional">قیمت (اختیاری)</string>
+    <string name="barcode_optional">بارکد</string>
+    <string name="cost_price">قیمت خرید</string>
+    <string name="sale_price">قیمت فروش</string>
     <string name="category_id_optional">شناسه دسته‌بندی (اختیاری)</string>
     <string name="add_product_button">افزودن محصول</string>
     <string name="save_changes_button">ذخیره تغییرات</string>

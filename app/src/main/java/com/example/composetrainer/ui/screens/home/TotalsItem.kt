@@ -77,7 +77,7 @@ fun TotalsItem(
                         contentDescription = "Rial",
                         modifier = Modifier
                             .size(dimen(R.dimen.size_sm))
-                            .padding(start = dimen(R.dimen.space_1))
+                            .padding(end = dimen(R.dimen.space_1))
                     )
                 }
 
@@ -141,7 +141,7 @@ fun TotalsItem(
                     style = MaterialTheme.typography.bodyLarge,
                     fontFamily = BMitra,
                     fontSize = dimenTextSize(R.dimen.text_size_lg),
-                    modifier = Modifier.padding(end = dimen(R.dimen.space_4))
+                    modifier = Modifier.padding(end = dimen(R.dimen.space_7))
                 )
             }
 
