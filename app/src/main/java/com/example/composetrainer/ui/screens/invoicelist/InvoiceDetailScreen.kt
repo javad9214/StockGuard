@@ -430,7 +430,7 @@ private fun InvoiceDetailContent(
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         CurrencyIcon(
-                            contentDescription = "Rial",
+                            contentDescription = "Currency Icon",
                             modifier = Modifier
                                 .size(dimen(R.dimen.size_sm))
                                 .padding(start = dimen(R.dimen.space_1))

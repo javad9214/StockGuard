@@ -54,8 +54,8 @@ import com.example.composetrainer.ui.screens.component.CurrencyIcon
 import com.example.composetrainer.ui.theme.BHoma
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
-import com.example.composetrainer.ui.theme.googleGreen
-import com.example.composetrainer.ui.theme.orangeRed
+import com.example.composetrainer.ui.theme.costPrice
+import com.example.composetrainer.ui.theme.salePrice
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.price.PriceValidator
@@ -206,7 +206,7 @@ fun ProductItem(
                                 fontSize = dimenTextSize(R.dimen.text_size_sm),
                                 textAlign = TextAlign.Center,
                                 fontFamily = Beirut_Medium,
-                                color = googleGreen
+                                color = MaterialTheme.colorScheme.salePrice
                             )
 
                             Spacer(modifier = Modifier.width(dimen(R.dimen.space_1)))
@@ -215,7 +215,7 @@ fun ProductItem(
                                 modifier = Modifier
                                     .size(dimen(R.dimen.size_xs))
                                     .rotate(90f),
-                                tint = googleGreen,
+                                tint = MaterialTheme.colorScheme.salePrice,
                                 painter = painterResource(id = R.drawable.output_circle_24px),
                                 contentDescription = "Sale Icon"
                             )
@@ -251,7 +251,7 @@ fun ProductItem(
                                 fontSize = dimenTextSize(R.dimen.text_size_sm),
                                 textAlign = TextAlign.Center,
                                 fontFamily = Beirut_Medium,
-                                color = orangeRed
+                                color = MaterialTheme.colorScheme.costPrice
                             )
                             Spacer(modifier = Modifier.width(dimen(R.dimen.space_1)))
 
@@ -261,7 +261,7 @@ fun ProductItem(
                                     .rotate(90f),
                                 painter = painterResource(id = R.drawable.input_circle_24px),
                                 contentDescription = "Sale Icon",
-                                tint = orangeRed
+                                tint = MaterialTheme.colorScheme.costPrice
                             )
                         }
 

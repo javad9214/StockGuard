@@ -1,10 +1,13 @@
 package com.example.composetrainer.ui.screens.productlist
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -12,6 +15,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -23,26 +27,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.composetrainer.R
-import com.example.composetrainer.domain.model.Barcode
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.ProductFactory
-import com.example.composetrainer.domain.model.ProductId
-import com.example.composetrainer.domain.model.ProductName
-import com.example.composetrainer.domain.model.StockQuantity
-import com.example.composetrainer.domain.model.SubcategoryId
-import com.example.composetrainer.domain.model.type.Money
+import com.example.composetrainer.ui.screens.component.CurrencyIcon
 import com.example.composetrainer.ui.theme.BKoodak
 import com.example.composetrainer.ui.theme.Beirut_Medium
+import com.example.composetrainer.ui.theme.costPrice
+import com.example.composetrainer.ui.theme.salePrice
 import com.example.composetrainer.utils.barcode.BarcodeGenerator
+import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.price.ThousandSeparatorTransformation
-import java.time.LocalDateTime
 
 @Composable
 fun AddProductBottomSheet(
@@ -58,7 +61,11 @@ fun AddProductBottomSheet(
         )
     }
     var salePrice by remember { mutableStateOf(initialProduct?.price?.amount?.toString() ?: "") }
-    var costPrice by remember { mutableStateOf(initialProduct?.costPrice?.amount?.toString() ?: "") }
+    var costPrice by remember {
+        mutableStateOf(
+            initialProduct?.costPrice?.amount?.toString() ?: ""
+        )
+    }
     var subcategoryId by remember {
         mutableStateOf(
             initialProduct?.subcategoryId?.value?.toString() ?: ""
@@ -99,7 +106,13 @@ fun AddProductBottomSheet(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text(stringResource(R.string.product_name), fontFamily = BKoodak, fontWeight = FontWeight.Bold) },
+                label = {
+                    Text(
+                        stringResource(R.string.product_name),
+                        fontFamily = BKoodak,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -119,7 +132,24 @@ fun AddProductBottomSheet(
                         barcode = newValue
                     }
                 },
-                label = { Text(stringResource(R.string.barcode_optional), fontFamily = BKoodak, fontWeight = FontWeight.Bold) },
+                label = {
+                    Row( verticalAlignment = Alignment.CenterVertically){
+
+                        Icon(
+                            modifier = Modifier
+                                .size(dimen(R.dimen.size_xs)),
+                            painter = painterResource(id = R.drawable.barcode_24px),
+                            contentDescription = "Barcode Icon"
+                        )
+                        Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
+                        Text(
+                            stringResource(R.string.barcode_optional),
+                            fontFamily = BKoodak,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number
@@ -141,7 +171,40 @@ fun AddProductBottomSheet(
                     // store raw number (without commas) in state
                     costPrice = newText.replace(",", "")
                 },
-                label = { Text(stringResource(R.string.cost_price), fontFamily = BKoodak, fontWeight = FontWeight.Bold) },
+                trailingIcon = {
+                    CurrencyIcon(
+                        contentDescription = "Currency Icon",
+                        tint = MaterialTheme.colorScheme.costPrice,
+                        modifier = Modifier
+                            .size(dimen(R.dimen.size_sm))
+                    )
+                },
+                label = {
+                    Row( verticalAlignment = Alignment.CenterVertically) {
+
+                        Icon(
+                            modifier = Modifier
+                                .size(dimen(R.dimen.size_xs))
+                                .rotate(90f),
+                            painter = painterResource(id = R.drawable.input_circle_24px),
+                            contentDescription = "Cost Icon",
+                            tint = MaterialTheme.colorScheme.costPrice
+                        )
+
+                        Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
+
+                        Text(
+                            stringResource(R.string.cost_price),
+                            fontFamily = BKoodak,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.costPrice
+                        )
+
+
+
+                    }
+
+                },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number
@@ -169,7 +232,39 @@ fun AddProductBottomSheet(
                     // store raw number (without commas) in state
                     salePrice = newText.replace(",", "")
                 },
-                label = { Text(stringResource(R.string.sale_price), fontFamily = BKoodak, fontWeight = FontWeight.Bold) },
+                trailingIcon = {
+                    CurrencyIcon(
+                        contentDescription = "Currency Icon",
+                        tint = MaterialTheme.colorScheme.salePrice,
+                        modifier = Modifier
+                            .size(dimen(R.dimen.size_sm))
+                    )
+                },
+                label = {
+                    Row ( verticalAlignment = Alignment.CenterVertically) {
+
+                        Icon(
+                            modifier = Modifier
+                                .size(dimen(R.dimen.size_xs))
+                                .rotate(90f),
+                            tint = MaterialTheme.colorScheme.salePrice,
+                            painter = painterResource(id = R.drawable.output_circle_24px),
+                            contentDescription = "Sale Icon"
+                        )
+
+                        Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
+
+                        Text(
+                            stringResource(R.string.sale_price),
+                            fontFamily = BKoodak,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.salePrice
+                        )
+
+
+                    }
+
+                },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number
@@ -194,7 +289,13 @@ fun AddProductBottomSheet(
             OutlinedTextField(
                 value = subcategoryId,
                 onValueChange = { subcategoryId = it },
-                label = { Text(stringResource(R.string.category_id_optional), fontFamily = BKoodak, fontWeight = FontWeight.Bold) },
+                label = {
+                    Text(
+                        stringResource(R.string.category_id_optional),
+                        fontFamily = BKoodak,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number
@@ -214,8 +315,8 @@ fun AddProductBottomSheet(
                     val newProduct = ProductFactory.createComplete(
                         name = name,
                         barcode = barcode.ifEmpty { BarcodeGenerator.generateBarcodeNumber() },
-                        price = salePrice.toLongOrNull() ?: 0 ,
-                        costPrice = costPrice.toLongOrNull() ?: 0 ,
+                        price = salePrice.toLongOrNull() ?: 0,
+                        costPrice = costPrice.toLongOrNull() ?: 0,
                         description = initialProduct?.description?.value ?: "",
                         subcategoryId = subcategoryId.toIntOrNull() ?: 0,
                         supplierId = initialProduct?.supplierId?.value ?: 0,
