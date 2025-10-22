@@ -78,6 +78,7 @@
 
     <!-- Product Screen -->
     <string name="products">Products</string>
+    <string name="myProducts">My Products</string>
     <string name="product_details">Product Details</string>
     <string name="price">Price</string>
     <string name="toman">Toman</string>
@@ -92,6 +93,10 @@
     <string name="search">Search</string>
     <string name="ok">OK</string>
     <string name="no_product_found_with_barcode">No product found with barcode: </string>
+
+    <!-- Product Item -->
+    <string name="buy">BUY</string>
+    <string name="sale">SALE</string>
 
     <!-- Product Selection -->
     <string name="search_product">Search Product…</string>

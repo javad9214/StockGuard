@@ -128,7 +128,7 @@ fun HeaderSection(
                                         .size(dimen(R.dimen.size_xs))
                                         .rotate(90f),
                                     painter = painterResource(id = R.drawable.output_circle_24px),
-                                    contentDescription = "Arrow Down"
+                                    contentDescription = "Sale Icon "
                                 )
 
                                 Text(
@@ -144,7 +144,7 @@ fun HeaderSection(
                                         .size(dimen(R.dimen.size_xs))
                                         .rotate(90f),
                                     painter = painterResource(id = R.drawable.input_circle_24px),
-                                    contentDescription = "Arrow Down"
+                                    contentDescription = "Buy Icon"
                                 )
 
                                 Text(

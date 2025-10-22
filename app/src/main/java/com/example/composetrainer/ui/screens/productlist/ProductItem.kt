@@ -12,18 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,10 +29,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -58,8 +52,10 @@ import com.example.composetrainer.domain.model.SupplierId
 import com.example.composetrainer.domain.model.type.Money
 import com.example.composetrainer.ui.screens.component.CurrencyIcon
 import com.example.composetrainer.ui.theme.BHoma
-import com.example.composetrainer.ui.theme.BMitra
+import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
+import com.example.composetrainer.ui.theme.googleGreen
+import com.example.composetrainer.ui.theme.orangeRed
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.price.PriceValidator
@@ -194,76 +190,105 @@ fun ProductItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                Spacer(
-                    modifier = Modifier.height(16.dp)
-                )
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Cost Price (Red, smaller, down icon)
-                    Row(
-                        modifier = Modifier.weight(1f),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDownward,
-                            contentDescription = "Down",
-                            tint = Color.Red,
-                            modifier = Modifier.size(dimen(R.dimen.size_sm))
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
 
-                        CurrencyIcon(
-                            contentDescription = "Rial",
-                            modifier = Modifier.size(dimen(R.dimen.size_sm))
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
+                    // Sale Price
+                    Column(modifier = Modifier.weight(1f)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
 
-                        Text(
-                            text = PriceValidator.formatPrice(product.costPrice.amount.toString()),
-                            fontSize = dimenTextSize(R.dimen.text_size_sm), // Smaller
-                            fontFamily = BHoma,
-                            color = Color.Red
-                        )
+                            Text(
+                                text = str(R.string.sale_price),
+                                fontSize = dimenTextSize(R.dimen.text_size_sm),
+                                textAlign = TextAlign.Center,
+                                fontFamily = Beirut_Medium,
+                                color = googleGreen
+                            )
+
+                            Spacer(modifier = Modifier.width(dimen(R.dimen.space_1)))
+
+                            Icon(
+                                modifier = Modifier
+                                    .size(dimen(R.dimen.size_xs))
+                                    .rotate(90f),
+                                tint = googleGreen,
+                                painter = painterResource(id = R.drawable.output_circle_24px),
+                                contentDescription = "Sale Icon"
+                            )
+                        }
+
+                        Row {
+                            CurrencyIcon(
+                                contentDescription = "Rial",
+                                modifier = Modifier.size(dimen(R.dimen.size_sm))
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+
+                            Text(
+                                text = PriceValidator.formatPrice(product.price.amount.toString()),
+                                fontSize = dimenTextSize(R.dimen.text_size_md),
+                                fontFamily = BHoma
+                            )
+                        }
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    // Price (Green, normal size, up icon)
-                    Row(
-                        modifier = Modifier.weight(1f),
-                        verticalAlignment = Alignment.CenterVertically,
+                    // Cost Price
+                    Column(
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowUpward,
-                            contentDescription = "Up",
-                            tint = Color.Green,
-                            modifier = Modifier.size(dimen(R.dimen.size_sm))
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
 
-                        CurrencyIcon(
-                            contentDescription = "Rial",
-                            modifier = Modifier.size(dimen(R.dimen.size_sm))
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = str(R.string.cost_price),
+                                fontSize = dimenTextSize(R.dimen.text_size_sm),
+                                textAlign = TextAlign.Center,
+                                fontFamily = Beirut_Medium,
+                                color = orangeRed
+                            )
+                            Spacer(modifier = Modifier.width(dimen(R.dimen.space_1)))
 
-                        Text(
-                            text = PriceValidator.formatPrice(product.price.amount.toString()),
-                            fontSize = dimenTextSize(R.dimen.text_size_md),
-                            fontFamily = BHoma,
-                            color = Color.Green
-                        )
+                            Icon(
+                                modifier = Modifier
+                                    .size(dimen(R.dimen.size_xs))
+                                    .rotate(90f),
+                                painter = painterResource(id = R.drawable.input_circle_24px),
+                                contentDescription = "Sale Icon",
+                                tint = orangeRed
+                            )
+                        }
+
+                        Row (
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth().padding(end = dimen(R.dimen.space_1)),
+                            horizontalArrangement = Arrangement.End
+                        ){
+                            CurrencyIcon(
+                                contentDescription = "Rial",
+                                modifier = Modifier.size(dimen(R.dimen.size_sm))
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+
+                            Text(
+                                text = PriceValidator.formatPrice(product.costPrice.amount.toString()),
+                                fontSize = dimenTextSize(R.dimen.text_size_sm), // Smaller
+                                fontFamily = BHoma
+                            )
+                        }
                     }
                 }
-
-
 
             }
         }
     }
+
 }
 
 // Add this Preview function at the bottom of your ProductItem.kt file

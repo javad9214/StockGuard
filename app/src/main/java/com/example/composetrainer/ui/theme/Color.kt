@@ -13,6 +13,11 @@ val charcoal_gray = Color(0xFF2B2B2B)
 val amber = Color(0xFFFFB74D)
 val lightRed = Color(0xFFFB8080)
 val errorRed = Color(0xFFb30000)
+val orangeRed = Color(0xFFFF8A65)
+val warmRed = Color(0xFFFF6B6B)
+val googleGreen = Color(0xFF4CAF50)
+val modernGreen = Color(0xFF2ECC71)
+
 
 // --- Material 3 Color Roles ---
 // Light theme colors

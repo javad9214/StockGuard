@@ -83,6 +83,7 @@
 
     <!-- Product Screen -->
     <string name="products">محصولات</string>
+    <string name="myProducts">محصولات من</string>
 
     <!-- Product Item -->
     <string name="price">قیمت</string>
@@ -100,6 +101,10 @@
     <string name="save">ذخیره</string>
     <string name="search">جستجو</string>
     <string name="ok">باشه</string>
+
+    <!-- Product Item -->
+    <string name="buy">خرید</string>
+    <string name="sale">فروش</string>
 
     <!-- Product Selection -->
     <string name="select_product">انتخاب محصول</string>
