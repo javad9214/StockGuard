@@ -229,36 +229,22 @@ value class Barcode(val value: String) {
 @JvmInline
 value class ProductDescription(val value: String) {
     init {
-        require(value.isNotBlank()) { "Product description cannot be blank" }
-        require(value.length <= 1000) { "Product description cannot exceed 1000 characters" }
+        require(value.length <= 5000) { "Product description cannot exceed 1000 characters" }
     }
 }
 
 @JvmInline
-value class ProductImage(val value: String) {
-    init {
-        require(value.isNotBlank()) { "Product image path cannot be blank" }
-    }
-}
+value class ProductImage(val value: String)
 
 @JvmInline
-value class SubcategoryId(val value: Int) {
-    init {
-        require(value > 0) { "Subcategory ID must be positive" }
-    }
-}
+value class SubcategoryId(val value: Int)
 
 @JvmInline
-value class SupplierId(val value: Int) {
-    init {
-        require(value > 0) { "Supplier ID must be positive" }
-    }
-}
+value class SupplierId(val value: Int)
 
 @JvmInline
 value class ProductUnit(val value: String) {
     init {
-        require(value.isNotBlank()) { "Product unit cannot be blank" }
         require(value.length <= 20) { "Product unit cannot exceed 20 characters" }
     }
 }
@@ -273,9 +259,6 @@ value class StockQuantity(val value: Int) {
 
 @JvmInline
 value class ProductTags(val value: String) {
-    init {
-        require(value.isNotBlank()) { "Product tags cannot be blank" }
-    }
 
     val tagList: List<String>
         get() = value.split(",").map { it.trim() }.filter { it.isNotEmpty() }
