@@ -119,7 +119,7 @@ fun Confirmy(
     modifier: Modifier = Modifier
 ) {
     val offsetY by animateDpAsState(
-        targetValue = if (confirmyState.isVisible) 0.dp else 100.dp,
+        targetValue = if (confirmyState.isVisible) 0.dp else 400.dp,
         animationSpec = tween(
             durationMillis = 300,
             easing = FastOutSlowInEasing
@@ -139,22 +139,23 @@ fun Confirmy(
     if (confirmyState.isVisible || alpha > 0f) {
         val typeColor = confirmyState.type.getColor()
 
-        Dialog(
-            onDismissRequest = { confirmyState.onCancel() },
-            properties = DialogProperties(
-                dismissOnBackPress = true,
-                dismissOnClickOutside = true
-            )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = alpha * 0.5f)),
+            contentAlignment = Alignment.BottomCenter
         ) {
             Card(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimen(R.dimen.space_4))
                     .offset(y = offsetY)
                     .graphicsLayer {
                         this.alpha = alpha
                     },
-                shape = RoundedCornerShape(dimen(R.dimen.radius_md)),
+                shape = RoundedCornerShape(
+                    topStart = dimen(R.dimen.radius_md),
+                    topEnd = dimen(R.dimen.radius_md)
+                ),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
@@ -196,7 +197,8 @@ fun Confirmy(
                             ),
                             shape = RoundedCornerShape(dimen(R.dimen.radius_md))
                         ) {
-                            Text(confirmyState.confirmText,
+                            Text(
+                                confirmyState.confirmText,
                                 fontFamily = Beirut_Medium,
                                 fontSize = dimenTextSize(R.dimen.text_size_md)
                             )
@@ -211,9 +213,11 @@ fun Confirmy(
                             ),
                             shape = RoundedCornerShape(dimen(R.dimen.radius_md))
                         ) {
-                            Text(confirmyState.cancelText,
+                            Text(
+                                confirmyState.cancelText,
                                 fontFamily = Beirut_Medium,
-                                fontSize = dimenTextSize(R.dimen.text_size_md))
+                                fontSize = dimenTextSize(R.dimen.text_size_md)
+                            )
                         }
 
 
