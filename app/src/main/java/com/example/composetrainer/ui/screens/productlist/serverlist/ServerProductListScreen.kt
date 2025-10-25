@@ -52,6 +52,7 @@ import com.example.composetrainer.utils.str
 
 @Composable
 fun ServerProductListScreen(
+    onNavigateBack: () -> Unit,
     context: Context = LocalContext.current,
     mainProductsViewModel: MainProductsViewModel = hiltViewModel()
 ) {
@@ -109,6 +110,13 @@ fun ServerProductListScreen(
                     fontFamily = Beirut_Medium,
                     fontSize = dimenTextSize(R.dimen.text_size_xl)
                 )
+
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.arrow_back_ios_new_24px),
+                        contentDescription = str(R.string.back)
+                    )
+                }
 
             }
 

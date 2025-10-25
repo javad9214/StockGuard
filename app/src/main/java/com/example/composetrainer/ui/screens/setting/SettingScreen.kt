@@ -44,10 +44,10 @@ fun SettingScreen(
 
     val snackyHostState = rememberSnackyHostState()
     val scope = rememberCoroutineScope()
-    val  message = str(R.string.no_product_found_with_barcode)
+    val message = str(R.string.no_product_found_with_barcode)
     Box(
         modifier = Modifier.fillMaxSize()
-    ){
+    ) {
 
         Column {
             Row(
@@ -65,15 +65,14 @@ fun SettingScreen(
                     fontSize = dimenTextSize(R.dimen.text_size_xl)
                 )
 
-                Row {
 
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow_back_ios_new_24px),
-                            contentDescription = str(R.string.back)
-                        )
-                    }
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.arrow_back_ios_new_24px),
+                        contentDescription = str(R.string.back)
+                    )
                 }
+
 
             }
 
@@ -132,8 +131,6 @@ fun SettingScreen(
         }
 
     }
-
-
 
 
 }

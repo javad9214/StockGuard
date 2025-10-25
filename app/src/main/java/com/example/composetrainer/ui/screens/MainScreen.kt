@@ -222,7 +222,9 @@ fun MainScreen(
                 }
 
                 composable(Routes.MAIN_PRODUCTS_LIST) {
-                    ServerProductListScreen()
+                    ServerProductListScreen(
+                        onNavigateBack = { navController.popBackStack() }
+                    )
                 }
             }
 

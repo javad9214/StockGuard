@@ -49,6 +49,7 @@ import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.ui.screens.component.CurrencyIcon
 import com.example.composetrainer.ui.theme.BHoma
 import com.example.composetrainer.ui.theme.BMitra
+import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.price.PriceValidator
@@ -226,7 +227,7 @@ fun ServerProductItem(
                             Text(
                                 text = str(R.string.product_added),
                                 fontSize = dimenTextSize(R.dimen.text_size_md),
-                                fontFamily = BMitra
+                                fontFamily = Beirut_Medium
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Icon(
@@ -238,7 +239,7 @@ fun ServerProductItem(
                             Text(
                                 text = str(R.string.add_to_my_products),
                                 fontSize = dimenTextSize(R.dimen.text_size_md),
-                                fontFamily = BMitra
+                                fontFamily = Beirut_Medium
                             )
                         }
                     }
