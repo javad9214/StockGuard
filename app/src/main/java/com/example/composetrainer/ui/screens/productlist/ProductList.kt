@@ -37,12 +37,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -52,6 +54,12 @@ import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.ProductFactory
 import com.example.composetrainer.domain.model.ProductName
 import com.example.composetrainer.ui.components.barcodescanner.BarcodeScannerView
+import com.example.composetrainer.ui.components.util.ConfirmyHost
+import com.example.composetrainer.ui.components.util.ConfirmyType
+import com.example.composetrainer.ui.components.util.SnackyHost
+import com.example.composetrainer.ui.components.util.SnackyType
+import com.example.composetrainer.ui.components.util.rememberConfirmyHostState
+import com.example.composetrainer.ui.components.util.rememberSnackyHostState
 import com.example.composetrainer.ui.navigation.Screen
 import com.example.composetrainer.ui.screens.component.NoBarcodeFoundDialog
 import com.example.composetrainer.ui.theme.BMitra
@@ -64,6 +72,7 @@ import com.example.composetrainer.utils.barcode.BarcodeSoundPlayer
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,6 +107,7 @@ fun ProductScreen(
     // Barcode scanner state
     var showBarcodeScannerView by remember { mutableStateOf(false) }
 
+    var productToDelete by remember { mutableStateOf<Product?>(null) }
 
     if (selectedProductForEdit.value != null || isAddProductSheetOpen.value) {
         ModalBottomSheet(
@@ -196,11 +206,21 @@ fun ProductScreen(
             onSortOrderSelected = { productsViewModel.updateSortOrder(it) },
             onAddProduct = { isAddProductSheetOpen.value = true },
             onEditProduct = { selectedProductForEdit.value = it },
-            onDeleteProduct = { productsViewModel.deleteProduct(it) },
+            onDisableProduct = {  }, // TODO: Implement disable product functionality
+            onDeleteProduct = { productToDelete = it },
             onIncreaseStock = { productsViewModel.increaseStock(it) },
             onDecreaseStock = { productsViewModel.decreaseStock(it) },
             onScanBarcode = { showBarcodeScannerView = true },
             navController = navController
+        )
+    }
+
+    // Show confirmation dialog for product deletion
+    productToDelete?.let { product ->
+        ShowConfirmy(
+            productsViewModel = productsViewModel,
+            product = product,
+            onFinish = { productToDelete = null }
         )
     }
 
@@ -215,6 +235,45 @@ fun ProductScreen(
             CircularProgressIndicator()
         }
     }
+
+}
+@Composable
+fun ShowConfirmy(
+    productsViewModel: ProductsViewModel,
+    product: Product,
+    onFinish: () -> Unit
+){
+    val confirmyHostState = rememberConfirmyHostState()
+    val snackyHostState = rememberSnackyHostState()
+    val scope = rememberCoroutineScope()
+
+    val deleteMessage = stringResource(R.string.product_is_deleted_successfully)
+
+    Log.d("ProductList", "ShowConfirmy: $product")
+
+    confirmyHostState.show(
+        message = str(R.string.are_you_sure_you_want_to_delete_this_product),
+        type = ConfirmyType.SUCCESS,
+        confirmText = str(R.string.delete),
+        cancelText = str(R.string.cancel),
+        onConfirm = {
+            scope.launch {
+                productsViewModel.deleteProduct(product)
+                snackyHostState.show(
+                    message = deleteMessage,
+                    type = SnackyType.INFO
+                )
+                onFinish()
+            }
+        },
+        onCancel = {
+            onFinish()
+           // nothing happen
+        }
+    )
+
+    ConfirmyHost(hostState = confirmyHostState)
+    SnackyHost(hostState = snackyHostState)
 }
 
 @Composable
@@ -227,6 +286,7 @@ fun ProductScreenContent(
     onSortOrderSelected: (SortOrder) -> Unit,
     onAddProduct: () -> Unit,
     onEditProduct: (Product) -> Unit,
+    onDisableProduct: (Product) -> Unit,
     onDeleteProduct: (Product) -> Unit,
     onIncreaseStock: (Product) -> Unit,
     onDecreaseStock: (Product) -> Unit,
@@ -344,6 +404,7 @@ fun ProductScreenContent(
                     ProductItem(
                         product = product,
                         onEdit = { onEditProduct(product) },
+                        onDisable = { onDisableProduct(product) },
                         onDelete = { onDeleteProduct(product) },
                         onProductClick = {
                            // navController.navigate(Screen.ProductDetails.createRoute(product.id.value))

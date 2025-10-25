@@ -1,4 +1,4 @@
-package com.example.composetrainer.ui.components
+package com.example.composetrainer.ui.components.util
 
 
 import androidx.compose.animation.core.FastOutSlowInEasing

@@ -22,9 +22,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.R
-import com.example.composetrainer.ui.components.SnackyHost
-import com.example.composetrainer.ui.components.SnackyType
-import com.example.composetrainer.ui.components.rememberSnackyHostState
+import com.example.composetrainer.ui.components.util.SnackyHost
+import com.example.composetrainer.ui.components.util.SnackyType
+import com.example.composetrainer.ui.components.util.rememberSnackyHostState
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.viewmodels.SettingViewModel
 import com.example.composetrainer.utils.dimen

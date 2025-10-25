@@ -37,8 +37,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.calculateTotalAmount
 import com.example.composetrainer.domain.model.hasProducts
-import com.example.composetrainer.ui.components.SnackyHostState
-import com.example.composetrainer.ui.components.SnackyType
+import com.example.composetrainer.ui.components.util.SnackyHostState
+import com.example.composetrainer.ui.components.util.SnackyType
 import com.example.composetrainer.ui.components.barcodescanner.BarcodeScannerView
 import com.example.composetrainer.ui.screens.component.NoBarcodeFoundDialog
 import com.example.composetrainer.ui.screens.invoice.productselection.AddProductToInvoice

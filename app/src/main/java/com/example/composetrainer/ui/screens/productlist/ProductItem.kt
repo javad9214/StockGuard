@@ -21,6 +21,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -31,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -67,6 +69,7 @@ import java.time.LocalDateTime
 fun ProductItem(
     product: Product,
     onEdit: () -> Unit,
+    onDisable: () -> Unit,
     onDelete: () -> Unit,
     onProductClick: () -> Unit = {}
 ) {
@@ -104,24 +107,96 @@ fun ProductItem(
                         DropdownMenu(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false },
-                            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                            modifier = Modifier
+                                .padding(vertical = 0.dp)
+                                .background(
+                                    MaterialTheme.colorScheme.surface
+                                )
                         ) {
+                            //Edit Item
                             DropdownMenuItem(
-                                text = { Text(text = str(R.string.edit), fontFamily = BHoma) },
+                                text = {
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        textAlign = TextAlign.Start,
+                                        text = str(R.string.edit),
+                                        fontFamily = myFontFamily,
+                                    )
+                                },
+                                trailingIcon = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.edit_24px),
+                                        contentDescription = "Edit Icon"
+                                    )
+                                },
                                 onClick = {
                                     showMenu = false
                                     onEdit()
                                 }
                             )
+
+                            // Disable item
                             DropdownMenuItem(
-                                text = { Text(text = str(R.string.delete), fontFamily = BHoma) },
+                                text = {
+                                    if (product.isActive) {
+                                        Text(
+                                            text = str(R.string.disable),
+                                            fontFamily = myFontFamily,
+                                            modifier = Modifier.fillMaxWidth(),
+                                            textAlign = TextAlign.Start,
+
+                                        )
+                                    } else {
+                                        Text(
+                                            text = str(R.string.enable),
+                                            modifier = Modifier.fillMaxWidth(),
+                                            textAlign = TextAlign.Start,
+                                            fontFamily = myFontFamily
+                                        )
+                                    }
+
+                                },
+                                trailingIcon = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.block_24px),
+                                        contentDescription = null
+                                    )
+                                },
+                                onClick = {
+                                    showMenu = false
+                                    onDisable()
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = str(R.string.delete),
+                                        modifier = Modifier.fillMaxWidth(),
+                                        textAlign = TextAlign.Start,
+                                        fontFamily = myFontFamily
+                                    )
+                                },
+
+                                trailingIcon = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.delete_24px),
+                                        contentDescription = null,
+                                        tint = Color.Red,
+                                    )
+                                },
                                 onClick = {
                                     showMenu = false
                                     onDelete()
-                                }
+                                },
+                                colors = MenuDefaults.itemColors(
+                                    textColor = Color.Red,
+                                    leadingIconColor = Color.Red
+                                ),
+                                modifier = Modifier.padding(vertical = 0.dp).background(Color.Red.copy(alpha = 0.1f))
                             )
                         }
                     }
+
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.End,
@@ -265,11 +340,13 @@ fun ProductItem(
                             )
                         }
 
-                        Row (
+                        Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth().padding(end = dimen(R.dimen.space_1)),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(end = dimen(R.dimen.space_1)),
                             horizontalArrangement = Arrangement.End
-                        ){
+                        ) {
                             CurrencyIcon(
                                 contentDescription = "Rial",
                                 modifier = Modifier.size(dimen(R.dimen.size_sm))
@@ -324,6 +401,7 @@ fun ProductItemPreview() {
         ProductItem(
             product = mockProduct,
             onEdit = { /* Preview: Edit clicked */ },
+            onDisable = { /* Preview: Disable clicked */ },
             onDelete = { /* Preview: Delete clicked */ },
             onProductClick = { /* Preview: Product clicked */ }
         )
@@ -361,6 +439,7 @@ fun ProductItemWithoutBarcodePreview() {
         ProductItem(
             product = mockProductNoBarcode,
             onEdit = { },
+            onDisable = { },
             onDelete = { },
             onProductClick = { }
         )

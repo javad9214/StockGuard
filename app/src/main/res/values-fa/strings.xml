@@ -69,7 +69,7 @@
 
     <!-- Delete Dialog -->
     <string name="Delete_invoice">حذف فاکتور</string>
-    <string name="are_you_sure_to_delete_this_invoice">"آیا مطمئن هستید که می‌خواهید این فاکتور را حذف کنید؟"</string>
+    <string name="are_you_sure_to_delete_this_invoice">آیا مطمئن هستید که می‌خواهید این فاکتور را حذف کنید؟</string>
     <string name="delete">حذف</string>
     <string name="cancel">انصراف</string>
     <string name="delete_selected_invoices">حذف فاکتورهای انتخاب شده</string>
@@ -106,6 +106,10 @@
     <string name="buy">خرید</string>
     <string name="sale">فروش</string>
     <string name="edit">ویرایش</string>
+    <string name="disable">غیرفعال کردن</string>
+    <string name="enable">فعال کردن</string>
+    <string name="are_you_sure_you_want_to_delete_this_product">آیا مطمئن هستید که می‌خواهید این محصول را حذف کنید؟</string>
+    <string name="product_is_deleted_successfully">محصول با موفقیت حذف گردید</string>
     <!-- Product Selection -->
     <string name="select_product">انتخاب محصول</string>
     <string name="stock">موجودی</string>
