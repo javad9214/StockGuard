@@ -38,16 +38,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.InvoiceProduct
+import com.example.composetrainer.domain.model.InvoiceType
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.ui.screens.component.CurrencyIcon
 import com.example.composetrainer.ui.theme.BNazanin
-import com.example.composetrainer.utils.price.PriceValidator
 import com.example.composetrainer.utils.dimen
+import com.example.composetrainer.utils.price.PriceValidator
 
 @Composable
 fun InvoiceProductItem(
     productWithQuantity: InvoiceProduct,
     product: Product,
+    invoiceType: InvoiceType = InvoiceType.SALE,
     onRemove: () -> Unit,
     onQuantityChange: (Int) -> Unit
 ) {
@@ -80,7 +82,7 @@ fun InvoiceProductItem(
                         ),
                         modifier = Modifier.weight(1f)
                     )
-                    
+
                     IconButton(
                         onClick = onRemove,
                         modifier = Modifier
@@ -96,9 +98,9 @@ fun InvoiceProductItem(
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 // Price information
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -111,7 +113,7 @@ fun InvoiceProductItem(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
-                    
+
                     Text(
                         text = PriceValidator.formatPrice(product.price.amount.toString()),
                         style = MaterialTheme.typography.bodyMedium.copy(
@@ -133,14 +135,14 @@ fun InvoiceProductItem(
                         )
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(12.dp))
                 Divider(
                     color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
                     thickness = 1.dp
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                
+
                 // Quantity control and total row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -162,7 +164,9 @@ fun InvoiceProductItem(
                             },
                             modifier = Modifier.size(32.dp),
                             colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
+                                    alpha = 0.7f
+                                )
                             )
                         ) {
                             Icon(
@@ -171,7 +175,7 @@ fun InvoiceProductItem(
                                 modifier = Modifier.size(16.dp)
                             )
                         }
-                        
+
                         Box(
                             modifier = Modifier
                                 .width(36.dp)
@@ -194,7 +198,7 @@ fun InvoiceProductItem(
                                 )
                             }
                         }
-                        
+
                         FilledTonalIconButton(
                             onClick = {
                                 val newQuantity = productWithQuantity.quantity.value + 1
@@ -215,7 +219,7 @@ fun InvoiceProductItem(
                                     alpha = 0.12f
                                 )
                             ),
-                            enabled = productWithQuantity.quantity.value < product.stock.value
+                            enabled = (productWithQuantity.quantity.value < product.stock.value || invoiceType == InvoiceType.PURCHASE)
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Add,
@@ -224,15 +228,15 @@ fun InvoiceProductItem(
                             )
                         }
                     }
-                    
+
                     Spacer(modifier = Modifier.weight(1f))
-                    
+
                     // Total price
                     Column(
                         horizontalAlignment = Alignment.End
                     ) {
 
-                        Row (
+                        Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.height(dimen(R.dimen.size_sm))
                         ) {

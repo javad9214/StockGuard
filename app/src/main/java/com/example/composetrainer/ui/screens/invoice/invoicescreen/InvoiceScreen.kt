@@ -35,11 +35,12 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composetrainer.R
+import com.example.composetrainer.domain.model.InvoiceType
 import com.example.composetrainer.domain.model.calculateTotalAmount
 import com.example.composetrainer.domain.model.hasProducts
+import com.example.composetrainer.ui.components.barcodescanner.BarcodeScannerView
 import com.example.composetrainer.ui.components.util.SnackyHostState
 import com.example.composetrainer.ui.components.util.SnackyType
-import com.example.composetrainer.ui.components.barcodescanner.BarcodeScannerView
 import com.example.composetrainer.ui.screens.component.NoBarcodeFoundDialog
 import com.example.composetrainer.ui.screens.invoice.productselection.AddProductToInvoice
 import com.example.composetrainer.ui.screens.productlist.AddProductBottomSheet
@@ -188,7 +189,8 @@ fun InvoiceScreen(
                                     currentInvoice.products[item].id.value,
                                     newQuantity
                                 )
-                            }
+                            },
+                            invoiceType = currentInvoice.invoice.invoiceType ?: InvoiceType.SALE
                         )
 
                     }
