@@ -253,7 +253,7 @@ fun ShowConfirmy(
 
     confirmyHostState.show(
         message = str(R.string.are_you_sure_you_want_to_delete_this_product),
-        type = ConfirmyType.SUCCESS,
+        type = ConfirmyType.ERROR,
         confirmText = str(R.string.delete),
         cancelText = str(R.string.cancel),
         onConfirm = {

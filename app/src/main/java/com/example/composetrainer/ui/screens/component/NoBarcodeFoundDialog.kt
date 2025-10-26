@@ -72,7 +72,7 @@ fun NoBarcodeFoundDialog(
                             topEnd = dimen(R.dimen.radius_lg)
                         )
                     )
-                    .background(lightRed)
+                    .background(errorRed)
             )
 
 

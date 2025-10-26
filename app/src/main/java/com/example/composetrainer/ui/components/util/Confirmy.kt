@@ -1,10 +1,5 @@
 package com.example.composetrainer.ui.components.util
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,29 +8,26 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.theme.customError
@@ -113,114 +105,92 @@ fun rememberConfirmyHostState(): ConfirmyHostState {
 }
 
 // Main Confirmation Dialog Component
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Confirmy(
     confirmyState: ConfirmyState,
     modifier: Modifier = Modifier
 ) {
-    val offsetY by animateDpAsState(
-        targetValue = if (confirmyState.isVisible) 0.dp else 400.dp,
-        animationSpec = tween(
-            durationMillis = 300,
-            easing = FastOutSlowInEasing
-        ),
-        label = "offsetY"
-    )
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    val alpha by animateFloatAsState(
-        targetValue = if (confirmyState.isVisible) 1f else 0f,
-        animationSpec = tween(
-            durationMillis = 300,
-            easing = LinearEasing
-        ),
-        label = "alpha"
-    )
-
-    if (confirmyState.isVisible || alpha > 0f) {
+    if (confirmyState.isVisible) {
         val typeColor = confirmyState.type.getColor()
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = alpha * 0.5f)),
-            contentAlignment = Alignment.BottomCenter
+        ModalBottomSheet(
+            onDismissRequest = { confirmyState.onCancel() },
+            sheetState = sheetState,
+            containerColor = MaterialTheme.colorScheme.surface,
+            dragHandle = null,
+            shape = RoundedCornerShape(
+                topStart = dimen(R.dimen.radius_lg),
+                topEnd = dimen(R.dimen.radius_lg)
+            ),
+            modifier = modifier
         ) {
-            Card(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .offset(y = offsetY)
-                    .graphicsLayer {
-                        this.alpha = alpha
-                    },
-                shape = RoundedCornerShape(
-                    topStart = dimen(R.dimen.radius_md),
-                    topEnd = dimen(R.dimen.radius_md)
-                ),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = dimen(androidx.cardview.R.dimen.cardview_default_elevation))
-            ) {
-                Column {
-                    // Top Line
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(4.dp)
-                            .background(typeColor)
-                    )
+            Column {
+                // Top Line
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(dimen(R.dimen.size_xxs))
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = dimen(R.dimen.radius_lg),
+                                topEnd = dimen(R.dimen.radius_lg)
+                            )
+                        )
+                        .background(typeColor)
+                )
 
-                    // Message
-                    Text(
-                        text = confirmyState.message,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp)
-                    )
+                // Message
+                Text(
+                    text = confirmyState.message,
+                    fontFamily = Beirut_Medium,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = dimen(R.dimen.space_4), horizontal = dimen(R.dimen.space_6))
+                )
 
-                    // Buttons
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                // Buttons
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+
+                    // Confirm Button
+                    Button(
+                        onClick = { confirmyState.onConfirm() },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = typeColor
+                        ),
+                        shape = RoundedCornerShape(dimen(R.dimen.radius_md))
                     ) {
+                        Text(
+                            confirmyState.confirmText,
+                            fontFamily = Beirut_Medium,
+                            fontSize = dimenTextSize(R.dimen.text_size_md)
+                        )
+                    }
 
-                        // Confirm Button
-                        Button(
-                            onClick = { confirmyState.onConfirm() },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = typeColor
-                            ),
-                            shape = RoundedCornerShape(dimen(R.dimen.radius_md))
-                        ) {
-                            Text(
-                                confirmyState.confirmText,
-                                fontFamily = Beirut_Medium,
-                                fontSize = dimenTextSize(R.dimen.text_size_md)
-                            )
-                        }
-
-                        // Cancel Button
-                        OutlinedButton(
-                            onClick = { confirmyState.onCancel() },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = MaterialTheme.colorScheme.onSurface
-                            ),
-                            shape = RoundedCornerShape(dimen(R.dimen.radius_md))
-                        ) {
-                            Text(
-                                confirmyState.cancelText,
-                                fontFamily = Beirut_Medium,
-                                fontSize = dimenTextSize(R.dimen.text_size_md)
-                            )
-                        }
-
-
+                    // Cancel Button
+                    OutlinedButton(
+                        onClick = { confirmyState.onCancel() },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        shape = RoundedCornerShape(dimen(R.dimen.radius_md))
+                    ) {
+                        Text(
+                            confirmyState.cancelText,
+                            fontFamily = Beirut_Medium,
+                            fontSize = dimenTextSize(R.dimen.text_size_md)
+                        )
                     }
                 }
             }

@@ -53,6 +53,8 @@ import com.example.composetrainer.domain.model.StockQuantity
 import com.example.composetrainer.domain.model.SubcategoryId
 import com.example.composetrainer.domain.model.SupplierId
 import com.example.composetrainer.domain.model.type.Money
+import com.example.composetrainer.ui.components.util.BottomSheetMenu
+import com.example.composetrainer.ui.components.util.BottomSheetMenuItem
 import com.example.composetrainer.ui.screens.component.CurrencyIcon
 import com.example.composetrainer.ui.theme.BHoma
 import com.example.composetrainer.ui.theme.Beirut_Medium
@@ -104,97 +106,40 @@ fun ProductItem(
                                 .clickable { showMenu = true }
                         )
 
-                        DropdownMenu(
-                            expanded = showMenu,
-                            onDismissRequest = { showMenu = false },
-                            modifier = Modifier
-                                .padding(vertical = 0.dp)
-                                .background(
-                                    MaterialTheme.colorScheme.surface
-                                )
-                        ) {
-                            //Edit Item
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        textAlign = TextAlign.Start,
-                                        text = str(R.string.edit),
-                                        fontFamily = myFontFamily,
-                                    )
-                                },
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.edit_24px),
-                                        contentDescription = "Edit Icon"
-                                    )
-                                },
-                                onClick = {
-                                    showMenu = false
-                                    onEdit()
-                                }
-                            )
-
-                            // Disable item
-                            DropdownMenuItem(
-                                text = {
-                                    if (product.isActive) {
-                                        Text(
-                                            text = str(R.string.disable),
-                                            fontFamily = myFontFamily,
-                                            modifier = Modifier.fillMaxWidth(),
-                                            textAlign = TextAlign.Start,
-
-                                        )
-                                    } else {
-                                        Text(
-                                            text = str(R.string.enable),
-                                            modifier = Modifier.fillMaxWidth(),
-                                            textAlign = TextAlign.Start,
-                                            fontFamily = myFontFamily
-                                        )
+                        BottomSheetMenu(
+                            visible = showMenu,
+                            onDismiss = { showMenu = false },
+                            fontFamily = myFontFamily,
+                            items = listOf(
+                                BottomSheetMenuItem(
+                                    text = str(R.string.edit),
+                                    icon = painterResource(id = R.drawable.edit_24px),
+                                    onClick = {
+                                        showMenu = false
+                                        onEdit()
                                     }
-
-                                },
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.block_24px),
-                                        contentDescription = null
-                                    )
-                                },
-                                onClick = {
-                                    showMenu = false
-                                    onDisable()
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = str(R.string.delete),
-                                        modifier = Modifier.fillMaxWidth(),
-                                        textAlign = TextAlign.Start,
-                                        fontFamily = myFontFamily
-                                    )
-                                },
-
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.delete_24px),
-                                        contentDescription = null,
-                                        tint = Color.Red,
-                                    )
-                                },
-                                onClick = {
-                                    showMenu = false
-                                    onDelete()
-                                },
-                                colors = MenuDefaults.itemColors(
-                                    textColor = Color.Red,
-                                    leadingIconColor = Color.Red
                                 ),
-                                modifier = Modifier.padding(vertical = 0.dp).background(Color.Red.copy(alpha = 0.1f))
+                                BottomSheetMenuItem(
+                                    text = if (product.isActive) str(R.string.disable) else str(R.string.enable),
+                                    icon = painterResource(id = R.drawable.block_24px),
+                                    onClick = {
+                                        showMenu = false
+                                        onDisable()
+                                    }
+                                ),
+                                BottomSheetMenuItem(
+                                    text = str(R.string.delete),
+                                    icon = painterResource(id = R.drawable.delete_24px),
+                                    iconTint = Color.Red,
+                                    textColor = Color.Red,
+                                    backgroundColor = Color.Red.copy(alpha = 0.1f),
+                                    onClick = {
+                                        showMenu = false
+                                        onDelete()
+                                    }
+                                )
                             )
-                        }
+                        )
                     }
 
                     Text(
