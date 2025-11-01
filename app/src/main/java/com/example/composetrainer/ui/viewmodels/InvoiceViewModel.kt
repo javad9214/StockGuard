@@ -73,14 +73,24 @@ class InvoiceViewModel @Inject constructor(
         }
 
         val availableStock = product.stock
-        val safeQuantityToAdd =
+
+
+        val safeQuantityToAdd = if (_currentInvoice.value.invoice.invoiceType == InvoiceType.SALE) {
             if (quantity > availableStock.value) availableStock.value else quantity
+        } else {
+            quantity // For PURCHASE, allow any quantity
+        }
 
         val updatedList = if (existingItem != null) {
             // Calculate the new total quantity for the existing item
             val newTotalQuantity = existingItem.quantity.value + safeQuantityToAdd
-            val finalQuantity =
+
+
+            val finalQuantity = if (_currentInvoice.value.invoice.invoiceType == InvoiceType.SALE) {
                 if (newTotalQuantity > availableStock.value) availableStock.value else newTotalQuantity
+            } else {
+                newTotalQuantity // For PURCHASE, allow any quantity
+            }
 
             // Update the existing invoice item
             _currentInvoice.value.updateProduct(
@@ -116,9 +126,13 @@ class InvoiceViewModel @Inject constructor(
                     val availableStock =
                         _currentInvoice.value.products.find { it.id == ProductId(productId) }?.stock?.value
                             ?: 0
-                    // Ensure new quantity doesn't exceed stock
-                    val safeQuantity =
+
+                    val safeQuantity = if (_currentInvoice.value.invoice.invoiceType == InvoiceType.SALE) {
                         if (newQuantity > availableStock) availableStock else newQuantity
+                    } else {
+                        newQuantity // For PURCHASE, allow any quantity
+                    }
+
                     invoiceProduct.updateQuantity(safeQuantity)
                 } else {
                     invoiceProduct
