@@ -26,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,8 +38,7 @@ import com.example.composetrainer.domain.model.InvoiceType
 import com.example.composetrainer.domain.model.calculateTotalAmount
 import com.example.composetrainer.domain.model.hasProducts
 import com.example.composetrainer.ui.components.barcodescanner.BarcodeScannerView
-import com.example.composetrainer.ui.components.util.SnackyHostState
-import com.example.composetrainer.ui.components.util.SnackyType
+import com.example.composetrainer.ui.components.barcodescanner.CompactBarcodeScanner
 import com.example.composetrainer.ui.screens.component.NoBarcodeFoundDialog
 import com.example.composetrainer.ui.screens.invoice.productselection.AddProductToInvoice
 import com.example.composetrainer.ui.screens.productlist.AddProductBottomSheet
@@ -52,7 +50,6 @@ import com.example.composetrainer.utils.barcode.BarcodeSoundPlayer
 import com.example.composetrainer.utils.dateandtime.FarsiDateUtil
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.str
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,7 +65,6 @@ fun InvoiceScreen(
     val persianDate = remember { FarsiDateUtil.getTodayPersianDate() }
     val currentTime = remember { FarsiDateUtil.getCurrentTimeFormatted() }
     var showProductSelection by remember { mutableStateOf(false) }
-    var showBarcodeScannerView by remember { mutableStateOf(false) }
     val products by productsViewModel.products.collectAsState()
     val currentInvoice by invoiceViewModel.currentInvoice.collectAsState()
     val isLoading by invoiceListViewModel.isLoading.collectAsState()
@@ -155,12 +151,23 @@ fun InvoiceScreen(
                 invoiceNumber = currentInvoice.invoice.invoiceNumber.value.toString(),
                 persianDate = persianDate,
                 currentTime = currentTime,
-                onAddProductClick = { showProductSelection = true },
                 onClose = onClose,
-                onScanBarcodeClick = { showBarcodeScannerView = true },
                 onInvoiceTypeChange = { invoiceType ->
                     invoiceViewModel.changeInvoiceType(invoiceType)
                 }
+            )
+
+            CompactBarcodeScanner(
+                onBarcodeDetected = { barcode ->
+
+                    // Play barcode success sound
+                    BarcodeSoundPlayer.playBarcodeSuccessSound(context)
+
+                    homeViewModel.searchProductByBarcode(barcode)
+                },
+                startPaused = true,
+                modifier = Modifier.padding(horizontal = dimen(R.dimen.space_2), vertical = dimen(R.dimen.space_4)),
+                cardRadius = dimen(R.dimen.radius_md)
             )
 
             // Products list section
@@ -242,21 +249,6 @@ fun InvoiceScreen(
             )
         }
 
-        // Show barcode scanner when activated
-        if (showBarcodeScannerView) {
-            BarcodeScannerView(
-                onBarcodeDetected = { barcode ->
-                    showBarcodeScannerView = false
-                    Log.d("InvoiceScreen", "Barcode detected: $barcode")
-                    // Play barcode success sound
-                    BarcodeSoundPlayer.playBarcodeSuccessSound(context)
-
-                    homeViewModel.searchProductByBarcode(barcode)
-                },
-                onClose = { showBarcodeScannerView = false }
-            )
-
-        }
 
         // Show loading indicator for barcode scanning
         if (scannerIsLoading) {
