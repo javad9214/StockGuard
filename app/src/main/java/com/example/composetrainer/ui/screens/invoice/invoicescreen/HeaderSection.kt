@@ -292,11 +292,13 @@ fun HeaderSection(
                     Text(
                         text = str(R.string.unknown),
                         fontFamily = Beirut_Medium,
+                        fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(horizontal = dimen(R.dimen.space_1))
                     )
 
                     Text(
                         text = if (isSaleInvoice) str(R.string.buyer) else str(R.string.seller),
+                        fontWeight = FontWeight.Medium,
                         fontFamily = Beirut_Medium,
                         modifier = Modifier.padding(horizontal = dimen(R.dimen.space_1))
                     )

@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -58,6 +59,14 @@ fun LoginScreen(
 ) {
     val viewModel: AuthViewModel = hiltViewModel()
     val loginState by viewModel.loginState.collectAsState()
+    val autoLoginAvailable by viewModel.autoLoginAvailable.collectAsState()
+    var rememberMe by remember { mutableStateOf(false) }
+
+    LaunchedEffect(autoLoginAvailable) {
+        if (autoLoginAvailable == true) {
+            viewModel.attemptAutoLogin()
+        }
+    }
 
     LaunchedEffect(loginState) {
         loginState?.let {
@@ -66,7 +75,11 @@ fun LoginScreen(
                     onLoginSuccess()
                     viewModel.clearLoginState()
                 }
-                is Resource.Error -> {}
+                is Resource.Error -> {
+                    // Skip for now
+                    onLoginSuccess()
+                    viewModel.clearLoginState()
+                }
                 is Resource.Loading -> {}
             }
         }
@@ -214,7 +227,7 @@ fun LoginScreen(
                         }
                     },
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
+                        keyboardType = KeyboardType.Phone,
                         imeAction = ImeAction.Done
                     ),
                     shape = RoundedCornerShape(12.dp),
@@ -238,11 +251,27 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // Remember Me Checkbox
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = rememberMe,
+                        onCheckedChange = { rememberMe = it }
+                    )
+                    Text(
+                        text = stringResource(R.string.remember_me),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
                 // Login Button
                 Button(
                     onClick = {
-                        // viewModel.login(phoneNumber, password)
-                        onLoginSuccess()
+                        viewModel.login(phoneNumber, password, rememberMe)
                     },
                     modifier = Modifier
                         .fillMaxWidth()

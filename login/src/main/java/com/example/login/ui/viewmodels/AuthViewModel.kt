@@ -7,6 +7,7 @@ import com.example.login.data.remote.dto.response.LoginResponse
 import com.example.login.data.remote.dto.response.RegisterResponse
 import com.example.login.domain.usecase.LoginUseCase
 import com.example.login.domain.usecase.RegisterUseCase
+import com.example.login.data.local.CredentialsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val registerUseCase: RegisterUseCase
+    private val registerUseCase: RegisterUseCase,
+    private val credentialsManager: CredentialsManager
 ) : ViewModel() {
 
     private val _loginState = MutableStateFlow<Resource<LoginResponse>?>(null)
@@ -27,8 +29,31 @@ class AuthViewModel @Inject constructor(
     private val _registerState = MutableStateFlow<Resource<RegisterResponse>?>(null)
     val registerState: StateFlow<Resource<RegisterResponse>?> = _registerState
 
-    fun login(phoneNumber: String, password: String) {
+    private val _autoLoginAvailable = MutableStateFlow<Boolean?>(null)
+    val autoLoginAvailable: StateFlow<Boolean?> = _autoLoginAvailable
+
+    init {
+        checkStoredCredentials()
+    }
+
+    private fun checkStoredCredentials() {
+        _autoLoginAvailable.value = credentialsManager.getCredentials() != null
+    }
+
+    fun login(phoneNumber: String, password: String, remember: Boolean = false) {
         loginUseCase(phoneNumber, password).onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    if (remember) {
+                        credentialsManager.saveCredentials(phoneNumber, password)
+                    }
+                }
+                is Resource.Error -> {
+                    credentialsManager.saveCredentials(phoneNumber, password) //skip fr now
+                   // credentialsManager.clearCredentials()
+                }
+                else -> {}
+            }
             _loginState.value = result
         }.launchIn(viewModelScope)
     }
@@ -39,6 +64,12 @@ class AuthViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    fun attemptAutoLogin() {
+        credentialsManager.getCredentials()?.let { (phone, password) ->
+            login(phone, password, true)
+        }
+    }
+
     fun clearLoginState() {
         _loginState.value = null
     }
@@ -47,5 +78,8 @@ class AuthViewModel @Inject constructor(
         _registerState.value = null
     }
 
-
+    fun logout() {
+        credentialsManager.clearCredentials()
+        _autoLoginAvailable.value = false
+    }
 }

@@ -62,6 +62,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.theme.Beirut_Medium
+import com.example.composetrainer.utils.dimen
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.Executors
@@ -96,6 +97,14 @@ fun CompactBarcodeScanner(
                         .clickable { isScanning = true },
                     contentAlignment = Alignment.Center
                 ) {
+
+                    Icon(
+                        painter = painterResource(R.drawable.barcode_scanner_24px),
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
+                        contentDescription = "Barcode Scanner Icon",
+                        modifier = Modifier.size(dimen(R.dimen.size_8xl))
+                    )
+
                     Text(
                         text = stringResource(R.string.Tap_to_start_scanning),
                         color = MaterialTheme.colorScheme.onSurface,

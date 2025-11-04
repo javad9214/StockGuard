@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Login -->
-    <string name="login_title">خوش آمدید</string>
-    <string name="login_subtitle">برای ادامه مدیریت انبار وارد شوید</string>
-    <string name="login_button">ورود</string>
-    <string name="no_account">حساب ندارید؟ ثبت‌نام کنید</string>
-
-    <!-- Register -->
-    <string name="register_title">ایجاد حساب</string>
-    <string name="register_subtitle">به ما بپیوندید و انبار خود را آسان مدیریت کنید</string>
-    <string name="register_button">ثبت‌نام</string>
-    <string name="full_name">نام کامل</string>
+    <string name="login_title">خوش آمدید!</string>
+    <string name="login_subtitle">برای ادامه وارد شوید</string>
     <string name="phone_number">شماره تلفن</string>
     <string name="password">رمز عبور</string>
+    <string name="login_button">ورود</string>
+    <string name="remember_me">مرا به خاطر بسپار</string>
+    <string name="no_account">حساب کاربری ندارید؟ ثبت نام کنید</string>
+
+    <!-- Registration strings -->
+    <string name="register_title">ایجاد حساب کاربری</string>
+    <string name="register_subtitle">برای شروع ثبت نام کنید</string>
+    <string name="register_button">ثبت نام</string>
+    <string name="full_name">نام و نام خانوادگی</string>
 </resources>
+
