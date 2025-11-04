@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,12 +32,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.theme.MRTPoster
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
-import androidx.core.content.edit
 
 @Composable
 fun CurrencySelector() {
@@ -96,11 +97,11 @@ fun CurrencyOption(
             .scale(scale)
             .border(
                 width = 2.dp,
-                color = if (isSelected) Color(0xFF3B82F6) else Color(0xFFE5E7EB),
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(dimen(R.dimen.radius_sm))
             )
             .background(
-                color = if (isSelected) Color(0xFFEFF6FF) else Color.White,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(dimen(R.dimen.radius_sm))
             )
             .clickable(onClick = onClick),
@@ -115,7 +116,7 @@ fun CurrencyOption(
                 painter = painterResource(id = iconId),
                 contentDescription = "Price",
                 modifier = Modifier.size(dimen(R.dimen.size_md)),
-                tint = if (isSelected) Color(0xFF3B82F6) else Color(0xFF9CA3AF)
+                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
             )
 
             if (isSelected) {
@@ -124,7 +125,7 @@ fun CurrencyOption(
                     modifier = Modifier
                         .size(8.dp)
                         .background(
-                            color = Color(0xFF3B82F6),
+                            color = MaterialTheme.colorScheme.primary,
                             shape = CircleShape
                         )
                 )

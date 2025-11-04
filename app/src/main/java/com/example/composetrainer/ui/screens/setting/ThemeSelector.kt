@@ -12,7 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -33,63 +37,70 @@ fun ThemeSelector(
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(
-                horizontal = dimen(R.dimen.space_6),
-                vertical = dimen(R.dimen.space_4)
-            ),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column {
-            Text(
-                text = str(R.string.select_theme),
-                fontFamily = Beirut_Medium,
-                fontSize = dimenTextSize(R.dimen.text_size_lg),
-                color = Color(0xFF1A1A1A)
-            )
-            Text(
-                text = if (isDarkTheme) str(R.string.dark) else str(R.string.light),
-                fontSize = dimenTextSize(R.dimen.text_size_sm),
-                color = Color.Gray
-            )
-        }
 
-        // Modern Toggle Switch
-        Box(
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = dimen(R.dimen.space_2), vertical = dimen(R.dimen.space_4)),
+        shape = RoundedCornerShape(dimen(R.dimen.radius_md)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+    ){
+        Row(
             modifier = Modifier
-                .size(width = 64.dp, height = 36.dp)
-                .clip(CircleShape)
-                .background(if (isDarkTheme) Color(0xFF4CAF50) else Color(0xFFE0E0E0))
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = LocalIndication.current,
-                    onClick = onToggleTheme
-                )
-                .padding(4.dp)
+                .fillMaxWidth()
+                .padding(
+                    horizontal = dimen(R.dimen.space_6),
+                    vertical = dimen(R.dimen.space_4)
+                ),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            Column {
+                Text(
+                    text = str(R.string.select_theme),
+                    fontFamily = Beirut_Medium,
+                    fontSize = dimenTextSize(R.dimen.text_size_lg),
+                    color = Color(0xFF1A1A1A)
+                )
+                Text(
+                    text = if (isDarkTheme) str(R.string.dark) else str(R.string.light),
+                    fontSize = dimenTextSize(R.dimen.text_size_sm),
+                    color = Color.Gray
+                )
+            }
+
+            // Modern Toggle Switch
             Box(
                 modifier = Modifier
-                    .size(28.dp)
-                    .align(if (isDarkTheme) Alignment.CenterEnd else Alignment.CenterStart)
+                    .size(width = 64.dp, height = 36.dp)
                     .clip(CircleShape)
-                    .background(Color.White)
+                    .background(if (isDarkTheme) Color(0xFF4CAF50) else Color(0xFFE0E0E0))
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = LocalIndication.current,
+                        onClick = onToggleTheme
+                    )
+                    .padding(4.dp)
             ) {
-                Icon(
-                    painter = painterResource(
-                        id = if (isDarkTheme) R.drawable.moon else R.drawable.sun
-                    ),
-                    contentDescription = if (isDarkTheme) "Dark Mode" else "Light Mode",
-                    tint = if (isDarkTheme) Color(0xFF4CAF50) else Color(0xFFFFA000),
+                Box(
                     modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(16.dp)
+                        .size(28.dp)
+                        .align(if (isDarkTheme) Alignment.CenterEnd else Alignment.CenterStart)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            id = if (isDarkTheme) R.drawable.moon else R.drawable.sun
+                        ),
+                        contentDescription = if (isDarkTheme) "Dark Mode" else "Light Mode",
+                        tint = if (isDarkTheme) Color(0xFF4CAF50) else Color(0xFFFFA000),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(16.dp)
 
-                )
+                    )
+                }
             }
         }
     }
+
 }

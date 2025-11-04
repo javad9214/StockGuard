@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -41,10 +40,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.InvoiceType
 import com.example.composetrainer.ui.theme.BKoodak
-import com.example.composetrainer.ui.theme.BMitra
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.theme.costPrice
@@ -117,7 +116,7 @@ fun HeaderSection(
 
                     Text(
                         text = "#",
-                        fontFamily = BMitra,
+                        fontFamily = BKoodak,
                         fontWeight = FontWeight.Bold,
                         fontSize = dimenTextSize(R.dimen.text_size_md),
                         modifier = Modifier.padding(start = dimen(R.dimen.space_2))
@@ -125,7 +124,7 @@ fun HeaderSection(
 
                     Text(
                         text = invoiceNumber,
-                        fontFamily = BMitra,
+                        fontFamily = BKoodak,
                         fontWeight = FontWeight.Bold,
                         fontSize = dimenTextSize(R.dimen.text_size_md),
                         modifier = Modifier.padding(start = dimen(R.dimen.space_1))
@@ -219,40 +218,51 @@ fun HeaderSection(
                 Row(
                     modifier = Modifier
                         .padding(
-                            vertical = dimen(R.dimen.space_4),
+                            vertical = dimen(R.dimen.space_3),
                             horizontal = dimen(R.dimen.space_4)
                         )
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
 
-                    Text(
-                        text = currentTime,
-                        fontFamily = BMitra,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = dimenTextSize(R.dimen.text_size_lg)
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.schedule_24px),
-                        contentDescription = "Time",
-                        modifier = Modifier
-                            .padding(end = dimen(R.dimen.space_6), start = dimen(R.dimen.space_2))
-                            .size(dimen(R.dimen.size_sm))
-                    )
-                    Text(
-                        text = persianDate,
-                        fontFamily = BMitra,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = dimenTextSize(R.dimen.text_size_lg),
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.calendar_today_24px),
-                        contentDescription = "Date",
-                        modifier = Modifier
-                            .padding(start = dimen(R.dimen.space_2))
-                            .size(dimen(R.dimen.size_sm))
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically){
+                        Icon(
+                            painter = painterResource(id = R.drawable.schedule_24px),
+                            contentDescription = "Time",
+                            modifier = Modifier
+                                .padding(end = dimen(R.dimen.space_2))
+                                .size(dimen(R.dimen.size_sm))
+                                .alignByBaseline()
+                        )
+
+                        Text(
+                            text = currentTime,
+                            fontFamily = BKoodak,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = dimenTextSize(R.dimen.text_size_lg),
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                    }
+
+
+                    Row{
+                        Text(
+                            text = persianDate,
+                            fontFamily = BKoodak,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = dimenTextSize(R.dimen.text_size_lg),
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                        Icon(
+                            painter = painterResource(id = R.drawable.calendar_today_24px),
+                            contentDescription = "Date",
+                            modifier = Modifier
+                                .padding(start = dimen(R.dimen.space_2))
+                                .size(dimen(R.dimen.size_sm))
+                        )
+                    }
+
                 }
 
 
@@ -273,7 +283,7 @@ fun HeaderSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            vertical = dimen(R.dimen.space_4),
+                            vertical = dimen(R.dimen.space_3),
                             horizontal = dimen(R.dimen.space_4)
                         ),
                     horizontalArrangement = Arrangement.End
@@ -281,15 +291,13 @@ fun HeaderSection(
 
                     Text(
                         text = str(R.string.unknown),
-                        fontFamily = BKoodak,
-                        fontWeight = FontWeight.Bold,
+                        fontFamily = Beirut_Medium,
                         modifier = Modifier.padding(horizontal = dimen(R.dimen.space_1))
                     )
 
                     Text(
                         text = if (isSaleInvoice) str(R.string.buyer) else str(R.string.seller),
-                        fontFamily = BKoodak,
-                        fontWeight = FontWeight.Bold,
+                        fontFamily = Beirut_Medium,
                         modifier = Modifier.padding(horizontal = dimen(R.dimen.space_1))
                     )
 

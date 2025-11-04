@@ -42,7 +42,10 @@ import com.example.composetrainer.domain.model.InvoiceProduct
 import com.example.composetrainer.domain.model.InvoiceType
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.ui.screens.component.CurrencyIcon
+import com.example.composetrainer.ui.theme.BKoodak
 import com.example.composetrainer.ui.theme.BNazanin
+import com.example.composetrainer.ui.theme.Beirut_Medium
+import com.example.composetrainer.ui.theme.customError
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.price.PriceValidator
 
@@ -89,12 +92,12 @@ fun InvoiceProductItem(
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f))
+                            .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.08f))
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.delete_24px),
                             contentDescription = "حذف",
-                            tint = MaterialTheme.colorScheme.error,
+                            tint = MaterialTheme.colorScheme.customError,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -109,7 +112,7 @@ fun InvoiceProductItem(
                 ) {
                     Text(
                         text = "قیمت واحد: ",
-                        fontFamily = BNazanin,
+                        fontFamily = Beirut_Medium,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -118,7 +121,8 @@ fun InvoiceProductItem(
                     Text(
                         text = PriceValidator.formatPrice(product.price.amount.toString()),
                         style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.Medium,
+                            fontFamily = BKoodak,
+                            fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     )
@@ -127,6 +131,8 @@ fun InvoiceProductItem(
 
                     Text(
                         text = "موجودی: ${product.stock.value}",
+                        fontFamily = BKoodak,
+                        fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = if (invoiceType == InvoiceType.SALE &&
                                 productWithQuantity.quantity.value >= product.stock.value)
@@ -193,6 +199,7 @@ fun InvoiceProductItem(
                                 Text(
                                     text = "${productWithQuantity.quantity.value}",
                                     style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontFamily = BKoodak,
                                         fontWeight = FontWeight.Bold,
                                         textAlign = TextAlign.Center,
                                         color = if (isNearingLimit)
@@ -255,6 +262,7 @@ fun InvoiceProductItem(
                                     .align(Alignment.Bottom)
                                     .padding(end = dimen(R.dimen.space_1)),
                                 style = MaterialTheme.typography.titleMedium.copy(
+                                    fontFamily = BKoodak,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary
                                 )

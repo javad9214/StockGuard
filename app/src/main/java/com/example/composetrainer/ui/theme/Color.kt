@@ -18,6 +18,17 @@ val warmRed = Color(0xFFFF6B6B)
 val googleGreen = Color(0xFF4CAF50)
 val modernGreen = Color(0xFF2ECC71)
 
+// --- Custom BlackColor Roles ---
+val RichBlack = Color(0xFF0B0B0D)
+val EerieBlack = Color(0xFF1B1B1D)
+val JetBlack = Color(0xFF121212)
+val Charcoal = Color(0xFF232323)
+val Onyx = Color(0xFF353535)
+val OuterSpace = Color(0xFF2E3237)
+val Gunmetal = Color(0xFF2A2D32)
+val RaisinBlack = Color(0xFF242424)
+val BlackOlive = Color(0xFF3B3B3B)
+val MatteBlack = Color(0xFF1C1C1C)
 
 // --- Material 3 Color Roles ---
 // Light theme colors

@@ -166,7 +166,7 @@ fun InvoiceScreen(
                     homeViewModel.searchProductByBarcode(barcode)
                 },
                 startPaused = true,
-                modifier = Modifier.padding(horizontal = dimen(R.dimen.space_2), vertical = dimen(R.dimen.space_4)),
+                modifier = Modifier.padding(horizontal = dimen(R.dimen.space_2), vertical = dimen(R.dimen.space_2)),
                 cardRadius = dimen(R.dimen.radius_md)
             )
 
