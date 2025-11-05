@@ -3,10 +3,10 @@ package com.example.composetrainer.utils.dateandtime
 import saman.zamani.persiandate.PersianDate
 import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Calendar
-
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object TimeStampUtil {
 
@@ -29,6 +29,9 @@ object TimeStampUtil {
         return LocalDateTime.now(ZoneId.systemDefault()).withMinute(0).withSecond(0).withNano(0)
     }
 
+    fun formatTime(invoiceDate: LocalDateTime): String {
+        return invoiceDate.format(DateTimeFormatter.ofPattern("HH:mm"))
+    }
 
     // General
     fun getTodayAsTimestamp(): Long {

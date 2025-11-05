@@ -111,7 +111,7 @@ object FarsiDateUtil {
         val dayOfWeek = getDayOfWeek(year, month, day)
 
         // Step 3: Format the final string
-        return getFormattedDate(dayOfWeek, day, month, year)
+        return getFormattedDate(dayOfWeek, year, month, day)
     }
 
     private fun getShamsiDateTriple(localDateTime: LocalDateTime): Triple<Int, Int, Int> {

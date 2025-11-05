@@ -65,6 +65,8 @@
     <string name="product_total">Subtotal</string>
     <string name="invoice_total_amount">Total Invoice Amount</string>
     <string name="product_not_found">Unknown product</string>
+    <string name="goods">Goods</string>
+    <string name="show_details">Show Details</string>
 
     <!-- Delete Dialog -->
     <string name="Delete_invoice">Delete Invoice</string>
@@ -78,6 +80,7 @@
     <string name="no_invoices_selected">No invoices selected</string>
     <string name="selected_invoices_count">Selected: %d</string>
     <string name="no_products_added">No products added yet</string>
+    <string name="number_of_good">numbers</string>
 
     <!-- Product Screen -->
     <string name="products">Products</string>

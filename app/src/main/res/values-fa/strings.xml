@@ -70,6 +70,8 @@
     <string name="product_total">مبلغ جزء</string>
     <string name="invoice_total_amount">مبلغ کل فاکتور</string>
     <string name="product_not_found">محصول ناشناخته</string>
+    <string name="goods">کالا</string>
+    <string name="show_details">مشاهده جزییات </string>
 
     <!-- Delete Dialog -->
     <string name="Delete_invoice">حذف فاکتور</string>
@@ -83,7 +85,7 @@
     <string name="no_invoices_selected">هیچ فاکتوری انتخاب نشده است</string>
     <string name="selected_invoices_count">انتخاب شده: %d</string>
     <string name="no_products_added">هنوز محصولی اضافه نشده است</string>
-
+    <string name="number_of_good">تعداد اقلام</string>
 
     <!-- Product Screen -->
     <string name="products">محصولات</string>

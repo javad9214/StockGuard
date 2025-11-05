@@ -1,30 +1,29 @@
 package com.example.composetrainer.ui.screens.invoicelist
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composetrainer.R
+import com.example.composetrainer.domain.model.Invoice
 import com.example.composetrainer.domain.model.InvoiceNumber
 import com.example.composetrainer.domain.model.InvoiceType
 import com.example.composetrainer.domain.model.InvoiceWithProducts
@@ -42,13 +42,13 @@ import com.example.composetrainer.ui.screens.component.CurrencyIcon
 import com.example.composetrainer.ui.theme.BHoma
 import com.example.composetrainer.ui.theme.BKoodak
 import com.example.composetrainer.ui.theme.BNazanin
-import com.example.composetrainer.ui.theme.BRoya
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.theme.costPrice
 import com.example.composetrainer.ui.theme.costPriceBg
 import com.example.composetrainer.ui.theme.salePrice
 import com.example.composetrainer.ui.theme.salePriceBg
+import com.example.composetrainer.utils.dateandtime.FarsiDateUtil
 import com.example.composetrainer.utils.dateandtime.FarsiDateUtil.getFormattedPersianDate
 import com.example.composetrainer.utils.dateandtime.TimeStampUtil
 import com.example.composetrainer.utils.dimen
@@ -56,9 +56,8 @@ import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.price.PriceValidator
 import com.example.composetrainer.utils.str
 
-
 @Composable
-fun InvoiceItem(
+fun InvoiceItemNew(
     invoiceWithProducts: InvoiceWithProducts,
     onClick: () -> Unit,
     onDelete: () -> Unit,
@@ -66,16 +65,16 @@ fun InvoiceItem(
     isSelected: Boolean = false,
     isSelectionMode: Boolean = false,
 ) {
+
     val invoice = invoiceWithProducts.invoice
     val invoiceType = invoice.invoiceType
     val formattedDate: String = getFormattedPersianDate(invoice.invoiceDate)
 
     ElevatedCard(
-        modifier = Modifier.padding(
-            vertical = dimen(R.dimen.space_2),
-            horizontal = dimen(R.dimen.space_4)
+        shape = RoundedCornerShape(
+            bottomStart = dimen(R.dimen.radius_xl),
+            bottomEnd = dimen(R.dimen.radius_xl)
         ),
-        shape = RoundedCornerShape(dimen(R.dimen.radius_lg)),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column {
@@ -94,7 +93,7 @@ fun InvoiceItem(
 
                 val invoiceNumber = invoice.invoiceNumber.value.toString()
                 Text(
-                    text = "${str(R.string.invoice_number)} # $invoiceNumber",
+                    text = " # $invoiceNumber ${str(R.string.invoice_number)}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     fontFamily = BKoodak,
@@ -122,8 +121,8 @@ fun InvoiceItem(
                             .clip(RoundedCornerShape(dimen(R.dimen.radius_md)))
                             .background(
                                 if (invoiceType == InvoiceType.SALE)
-                                    MaterialTheme.colorScheme.salePrice.copy(alpha = 0.08f)
-                                else MaterialTheme.colorScheme.costPrice.copy(alpha = 0.08f)
+                                    MaterialTheme.colorScheme.salePrice.copy(alpha = 0.1f)
+                                else MaterialTheme.colorScheme.costPrice.copy(alpha = 0.1f)
                             )
                             .padding(dimen(R.dimen.space_2))
                     ) {
@@ -131,7 +130,7 @@ fun InvoiceItem(
                             painter = if (invoiceType == InvoiceType.SALE) painterResource(R.drawable.shopping_cart) else painterResource(
                                 R.drawable.bag_happy
                             ),
-                            modifier = Modifier.size(dimen(R.dimen.size_sm)),
+                            modifier = Modifier.size(dimen(R.dimen.size_xs)),
                             contentDescription = "shopping Cart Icon",
                             tint = if (invoiceType == InvoiceType.SALE)
                                 MaterialTheme.colorScheme.salePrice
@@ -169,9 +168,9 @@ fun InvoiceItem(
                     Box(
                         modifier = Modifier
                             .padding(dimen(R.dimen.space_2))
-                            .size(dimen(R.dimen.size_md))
+                            .size(dimen(R.dimen.size_lg))
                             .clip(RoundedCornerShape(dimen(R.dimen.radius_md)))
-                            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.03f))
+                            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
                             .padding(dimen(R.dimen.space_2))
                     ) {
                         Icon(
@@ -198,9 +197,9 @@ fun InvoiceItem(
                     Box(
                         modifier = Modifier
                             .padding(dimen(R.dimen.space_2))
-                            .size(dimen(R.dimen.size_md))
+                            .size(dimen(R.dimen.size_lg))
                             .clip(RoundedCornerShape(dimen(R.dimen.radius_md)))
-                            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.03f))
+                            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
                             .padding(dimen(R.dimen.space_2))
                     ) {
                         Icon(
@@ -208,7 +207,7 @@ fun InvoiceItem(
                             contentDescription = str(R.string.date),
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier
-                                .size(dimen(R.dimen.size_md))
+                                .size(dimen(R.dimen.size_sm))
                         )
                     }
 
@@ -226,7 +225,7 @@ fun InvoiceItem(
             ) {
 
                 Text(
-                    text = "${str(R.string.goods)}  ${invoiceWithProducts.totalProductsCount}",
+                    text = "${invoiceWithProducts.totalProductsCount}  ${str(R.string.goods)}",
                     fontSize = dimenTextSize(R.dimen.text_size_sm),
                     textAlign = TextAlign.Center,
                     fontFamily = Beirut_Medium,
@@ -292,31 +291,41 @@ fun InvoiceItem(
                 )
             ) {
 
-                Text(
-                    text = str(R.string.show_details),
-                    fontFamily = BHoma,
-                    fontSize = dimenTextSize(R.dimen.text_size_md),
-                    modifier = Modifier.padding(
-                        vertical = dimen(R.dimen.space_1), horizontal = dimen(R.dimen.space_2)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+
+                    Text(
+                        text = str(R.string.show_details),
+                        fontFamily = BHoma,
+                        fontSize = dimenTextSize(R.dimen.text_size_sm),
+                        modifier = Modifier.padding(
+                            vertical = dimen(R.dimen.space_1), horizontal = dimen(R.dimen.space_2)
+                        )
                     )
-                )
+
+                    Icon(
+                        modifier = Modifier.size(dimen(R.dimen.size_sm)),
+                        painter = painterResource(R.drawable.eye),
+                        contentDescription = "show details"
+                    )
+                }
 
 
             }
 
         }
     }
+
 }
 
-@Preview(showBackground = true, name = "Invoice Item Preview")
+@Preview(showBackground = true, name = "Invoice Item New Preview")
 @Composable
-fun InvoiceItemPreview() {
+fun InvoiceItemNewPreview() {
     // Create a simple default invoice with a specific invoice number for preview
     val mockInvoiceWithProducts =
         InvoiceWithProducts.createDefault(invoiceNumber = InvoiceNumber(42))
 
     ComposeTrainerTheme {
-        InvoiceItem(
+        InvoiceItemNew(
             invoiceWithProducts = mockInvoiceWithProducts,
             onClick = {},
             onDelete = {},
