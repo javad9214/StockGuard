@@ -11,18 +11,27 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.ripple
@@ -58,6 +67,7 @@ import com.example.composetrainer.ui.viewmodels.home.HomeViewModel
 import com.example.composetrainer.utils.barcode.BarcodeSoundPlayer
 import com.example.composetrainer.utils.dateandtime.FarsiDateUtil
 import com.example.composetrainer.utils.dimen
+import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -191,33 +201,34 @@ fun InvoiceScreen(
                     cardRadius = dimen(R.dimen.radius_md)
                 )
 
-                ElevatedCard(
+                OutlinedButton(
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .clickable(
-                            indication = ripple(
-                                color = MaterialTheme.colorScheme.onSurface,
-                                bounded = true
-                            ),
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) {
-                            /* Handle card click */
-                        },
+                        .align(Alignment.BottomStart)
+                        .padding(start = dimen(R.dimen.space_4)),
+                    onClick = { showProductSelection = true },
                     shape = RoundedCornerShape(dimen(R.dimen.radius_md)),
-                    colors = CardDefaults.cardColors(
+                    contentPadding = PaddingValues(
+                        vertical = dimen(R.dimen.space_1),
+                        horizontal = dimen(R.dimen.space_3)
+                    ),
+                    colors = ButtonDefaults.elevatedButtonColors(
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.onSurface
-                    ),
+                    )
                 ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add",
+                        modifier = Modifier.size(ButtonDefaults.IconSize)
+                    )
+                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
-                        modifier = Modifier.padding(
-                            vertical = dimen(R.dimen.space_2),
-                            horizontal = dimen(R.dimen.space_4)
-                        ),
                         text = str(R.string.choose_from_list),
-                        fontFamily = Beirut_Medium
+                        fontFamily = Beirut_Medium,
+                        fontSize = dimenTextSize(R.dimen.text_size_sm)
                     )
                 }
+
             }
 
             // Products list section
@@ -260,6 +271,7 @@ fun InvoiceScreen(
                     Text(
                         text = str(R.string.no_products_added),
                         style = MaterialTheme.typography.bodyLarge,
+                        fontFamily = Beirut_Medium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
