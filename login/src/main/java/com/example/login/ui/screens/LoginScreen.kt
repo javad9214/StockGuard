@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.LocalAutofillHighlightColor
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -60,7 +61,13 @@ fun LoginScreen(
     val viewModel: AuthViewModel = hiltViewModel()
     val loginState by viewModel.loginState.collectAsState()
     val autoLoginAvailable by viewModel.autoLoginAvailable.collectAsState()
+    val skipLogin by viewModel.skipLogin.collectAsState()
     var rememberMe by remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(skipLogin) {
+        onLoginSuccess()
+    }
 
     LaunchedEffect(autoLoginAvailable) {
         if (autoLoginAvailable == true) {

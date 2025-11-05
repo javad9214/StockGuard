@@ -32,7 +32,11 @@ class AuthViewModel @Inject constructor(
     private val _autoLoginAvailable = MutableStateFlow<Boolean?>(null)
     val autoLoginAvailable: StateFlow<Boolean?> = _autoLoginAvailable
 
+    private val _skipLogin = MutableStateFlow<Boolean>(true)
+    val skipLogin : StateFlow<Boolean> = _skipLogin
+
     init {
+        _skipLogin.value = true
         checkStoredCredentials()
     }
 
