@@ -28,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -56,6 +55,7 @@ import com.example.composetrainer.ui.theme.BHoma
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
 import com.example.composetrainer.ui.theme.costPrice
+import com.example.composetrainer.ui.theme.customError
 import com.example.composetrainer.ui.theme.salePrice
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
@@ -126,8 +126,8 @@ fun ProductItem(
                                 BottomSheetMenuItem(
                                     text = str(R.string.delete),
                                     icon = painterResource(id = R.drawable.delete_24px),
-                                    iconTint = Color.Red,
-                                    textColor = Color.Red,
+                                    iconTint = MaterialTheme.colorScheme.customError,
+                                    textColor = MaterialTheme.colorScheme.customError,
                                     onClick = {
                                         showMenu = false
                                         onDelete()

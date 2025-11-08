@@ -5,7 +5,7 @@ object Routes {
     const val REGISTER = "register"
     const val HOME = "home"
     const val PRODUCTS_LIST = "product"
-    const val PRODUCT_CREATE = "create_product"
+    const val PRODUCT_CREATE = "product_create"
     const val INVOICES_LIST = "invoice"
     const val INVOICE_CREATE = "create_invoice"
     const val INVOICE_DETAILS = "invoice_details/{invoiceId}"

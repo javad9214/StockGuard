@@ -1,5 +1,6 @@
 package com.example.composetrainer.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -142,18 +143,29 @@ fun MainScreen(
                     ProductScreen(navController = navController)
                 }
 
-                composable(Routes.PRODUCT_CREATE){ backStackEntry ->
-                    // Read optional params passed via savedStateHandle from Product list screen
-                    val barcodeFromPrevious = navController.previousBackStackEntry?.savedStateHandle?.get<String>("barcode")
-                    val productIdFromPrevious = navController.previousBackStackEntry?.savedStateHandle?.get<Long>("productId")
+                composable(route = "product_create?barcode={barcode}&productId={productId}",
+                    arguments = listOf(
+                        navArgument("barcode") {
+                            type = NavType.StringType
+                            nullable = true
+                            defaultValue = null
+                        },
+                        navArgument("productId") {
+                            type = NavType.LongType
+                            nullable = true
+                            defaultValue = null
+                        }
+                    )){ backStackEntry ->
 
-                    // Provide ProductsViewModel via hilt inside AddProduct as needed (AddEditProduct resolves it),
-                    // here just wire navigation callbacks.
+                    val barcode = backStackEntry.arguments?.getString("barcode")?.takeIf { it.isNotEmpty() }
+                    val productId = backStackEntry.arguments?.getLong("productId")?.takeIf { it != 0L }
+
+
+
                     AddProduct(
-                        initialBarcode = barcodeFromPrevious,
-                        productId = productIdFromPrevious,
+                        initialBarcode = barcode,
+                        productId = productId,
                         onSave = { product ->
-                            // After save, navigate back to product list
                             productsViewModel.addProduct(product)
                             navController.popBackStack()
                         },
@@ -161,9 +173,6 @@ fun MainScreen(
                             navController.popBackStack()
                         }
                     )
-                    // Clear savedState to avoid reusing stale values on next navigation
-                    navController.previousBackStackEntry?.savedStateHandle?.remove<String>("barcode")
-                    navController.previousBackStackEntry?.savedStateHandle?.remove<Long>("productId")
                 }
 
                 composable(Routes.HOME) {
@@ -211,6 +220,7 @@ fun MainScreen(
                         onClose = {
                             navController.popBackStack()
                         },
+                        navController = navController,
                         invoiceListViewModel = sharedInvoiceListViewModel,
                         homeViewModel = sharedHomeViewModel
                     )

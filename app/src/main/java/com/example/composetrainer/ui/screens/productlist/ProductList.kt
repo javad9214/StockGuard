@@ -48,10 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.composetrainer.R
-import com.example.composetrainer.domain.model.Barcode
 import com.example.composetrainer.domain.model.Product
-import com.example.composetrainer.domain.model.ProductFactory
-import com.example.composetrainer.domain.model.ProductName
 import com.example.composetrainer.ui.components.barcodescanner.BarcodeScannerView
 import com.example.composetrainer.ui.components.util.ConfirmyHost
 import com.example.composetrainer.ui.components.util.ConfirmyType
@@ -96,12 +93,6 @@ fun ProductScreen(
     // Context for MediaPlayer
     val context = LocalContext.current
 
-    // State for bottom sheet visibility
-    val sheetState = rememberModalBottomSheetState()
-    // for add new product Bottom Sheet
-    val addNewProductSheetState = rememberModalBottomSheetState()
-    val isAddProductSheetOpen = remember { mutableStateOf(false) }
-    val selectedProductForEdit = remember { mutableStateOf<Product?>(null) }
 
     // Barcode scanner state
     var showBarcodeScannerView by remember { mutableStateOf(false) }
@@ -135,7 +126,7 @@ fun ProductScreen(
             sheetState = noBarcodeFoundDialogSheetState,
             onAddToNewProductClicked = {
                 showNoBarcodeFoundDialog = false
-                isAddProductSheetOpen.value = true
+                navController.navigate(Screen.ProductCreate.createRoute(barcode = scannedBarcode))
             },
             onDismiss = {
                 showNoBarcodeFoundDialog = false
@@ -169,14 +160,11 @@ fun ProductScreen(
             onSearchQueryChange = { productsViewModel.updateSearchQuery(it) },
             onSortOrderSelected = { productsViewModel.updateSortOrder(it) },
             onAddProduct = {
-                // Navigate to Add Product screen and provide scanned barcode via savedStateHandle
-                navController.currentBackStackEntry?.savedStateHandle?.set("barcode", scannedBarcode)
-                navController.navigate(Screen.ProductCreate.route)
+
+                navController.navigate(Screen.ProductCreate.createRoute(barcode = scannedBarcode))
             },
             onEditProduct = { product ->
-                // Provide productId via savedStateHandle then navigate to edit screen
-                navController.currentBackStackEntry?.savedStateHandle?.set("productId", product.id.value)
-                navController.navigate(Screen.ProductCreate.route)
+                navController.navigate(Screen.ProductCreate.createRoute(productId = product.id.value))
             },
             onDisableProduct = { }, // TODO: Implement disable product functionality
             onDeleteProduct = { productToDelete = it },

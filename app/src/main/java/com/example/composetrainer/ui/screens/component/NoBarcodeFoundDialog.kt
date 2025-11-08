@@ -18,14 +18,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -33,8 +31,6 @@ import com.example.composetrainer.R
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.theme.MRTPoster
 import com.example.composetrainer.ui.theme.customError
-import com.example.composetrainer.ui.theme.errorRed
-import com.example.composetrainer.ui.theme.smoke_white
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
@@ -99,7 +95,7 @@ fun NoBarcodeFoundDialog(
 
             Text(
                 text = barcode,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = dimenTextSize(R.dimen.text_size_3xl),
                 fontWeight = FontWeight.Medium,
                 fontFamily = MRTPoster,
@@ -107,7 +103,7 @@ fun NoBarcodeFoundDialog(
                     .wrapContentWidth()
                     .align(Alignment.CenterHorizontally)
                     .background(
-                        color = smoke_white,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = RoundedCornerShape(dimen(R.dimen.radius_sm))
                     )
                     .padding(horizontal = dimen(R.dimen.space_4), vertical = dimen(R.dimen.space_2))

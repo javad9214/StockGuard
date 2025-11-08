@@ -24,7 +24,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -43,14 +42,15 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.InvoiceType
 import com.example.composetrainer.domain.model.calculateTotalAmount
 import com.example.composetrainer.domain.model.hasProducts
 import com.example.composetrainer.ui.components.barcodescanner.CompactBarcodeScanner
+import com.example.composetrainer.ui.navigation.Screen
 import com.example.composetrainer.ui.screens.component.NoBarcodeFoundDialog
 import com.example.composetrainer.ui.screens.invoice.productselection.AddProductToInvoice
-import com.example.composetrainer.ui.screens.productlist.AddProduct
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.viewmodels.InvoiceListViewModel
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
@@ -67,6 +67,7 @@ import com.example.composetrainer.utils.str
 fun InvoiceScreen(
     onComplete: () -> Unit,
     onClose: () -> Unit,
+    navController: NavController,
     invoiceListViewModel: InvoiceListViewModel = hiltViewModel(),
     invoiceViewModel: InvoiceViewModel = hiltViewModel(),
     productsViewModel: ProductsViewModel = hiltViewModel(),
@@ -88,9 +89,6 @@ fun InvoiceScreen(
     val noBarcodeFoundDialogSheetState = rememberModalBottomSheetState()
     var showNoBarcodeFoundDialog by remember { mutableStateOf(false) }
 
-    // for add new product Bottom Sheet
-    val addNewProductSheetState = rememberModalBottomSheetState()
-    val isAddProductSheetOpen = remember { mutableStateOf(false) }
 
     // Context for MediaPlayer
     val context = LocalContext.current
@@ -124,7 +122,9 @@ fun InvoiceScreen(
             sheetState = noBarcodeFoundDialogSheetState,
             onAddToNewProductClicked = {
                 showNoBarcodeFoundDialog = false
-                isAddProductSheetOpen.value = true
+
+                // Navigate with barcode as argument
+                navController.navigate(Screen.ProductCreate.createRoute(barcode = scannedBarcode))
             },
             onDismiss = {
                 showNoBarcodeFoundDialog = false
@@ -132,26 +132,6 @@ fun InvoiceScreen(
             }
         )
 
-    }
-
-    if (isAddProductSheetOpen.value) {
-        ModalBottomSheet(
-            onDismissRequest = { isAddProductSheetOpen.value = false },
-            sheetState = addNewProductSheetState
-        ) {
-            AddProduct(
-                initialBarcode = scannedBarcode,
-                onSave = { product ->
-                    productsViewModel.addProduct(product)
-                    isAddProductSheetOpen.value = false
-                    homeViewModel.clearDetectedBarcode()
-                },
-                onNavigateBack = {
-                    isAddProductSheetOpen.value = false
-                    homeViewModel.clearDetectedBarcode()
-                }
-            )
-        }
     }
 
     val totalPrice = currentInvoice.calculateTotalAmount()

@@ -1,5 +1,6 @@
 package com.example.composetrainer.ui.screens.productlist
 
+import android.util.Log
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -69,12 +70,16 @@ fun AddProduct(
     onNavigateBack: () -> Unit,
     productsViewModel: ProductsViewModel = hiltViewModel(),
 ) {
+
+
     // Fetch product if editing
     LaunchedEffect(productId) {
         productId?.let { productsViewModel.getProductById(it) }
     }
 
     val product by productsViewModel.selectedProduct.collectAsState()
+
+    Log.i("AddProduct", "AddProduct: initialBarcode: $initialBarcode, productId: $productId")
 
     // Initialize form fields with product data or defaults
     var name by remember(product) {
