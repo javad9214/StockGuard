@@ -17,6 +17,8 @@
     <!-- Setting -->
     <string name="setting">Setting</string>
     <string name="select_currency">Choose Currency</string>
+    <string name="rial">Rial</string>
+    <string name="toman">Toman</string>
     <string name="select_theme">Select Theme</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>
@@ -87,7 +89,6 @@
     <string name="myProducts">My Products</string>
     <string name="product_details">Product Details</string>
     <string name="price">Price</string>
-    <string name="toman">Toman</string>
     <string name="total_price">Total price: %s</string>
     <string name="search_invoices">Search invoices</string>
     <string name="active_customers">Active Customers</string>

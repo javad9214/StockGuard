@@ -23,11 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.composetrainer.R
+import com.example.composetrainer.ui.theme.BKoodak
 import com.example.composetrainer.ui.theme.Beirut_Medium
+import com.example.composetrainer.ui.theme.warning
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
@@ -39,7 +41,7 @@ fun ThemeSelector(
 ) {
 
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = dimen(R.dimen.space_2), vertical = dimen(R.dimen.space_4)),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = dimen(R.dimen.space_2), vertical = dimen(R.dimen.space_2)),
         shape = RoundedCornerShape(dimen(R.dimen.radius_md)),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ){
@@ -58,12 +60,15 @@ fun ThemeSelector(
                     text = str(R.string.select_theme),
                     fontFamily = Beirut_Medium,
                     fontSize = dimenTextSize(R.dimen.text_size_lg),
-                    color = Color(0xFF1A1A1A)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
+
                 Text(
                     text = if (isDarkTheme) str(R.string.dark) else str(R.string.light),
-                    fontSize = dimenTextSize(R.dimen.text_size_sm),
-                    color = Color.Gray
+                    fontSize = dimenTextSize(R.dimen.text_size_md),
+                    fontFamily = BKoodak,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -72,7 +77,7 @@ fun ThemeSelector(
                 modifier = Modifier
                     .size(width = 64.dp, height = 36.dp)
                     .clip(CircleShape)
-                    .background(if (isDarkTheme) Color(0xFF4CAF50) else Color(0xFFE0E0E0))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = LocalIndication.current,
@@ -85,14 +90,14 @@ fun ThemeSelector(
                         .size(28.dp)
                         .align(if (isDarkTheme) Alignment.CenterEnd else Alignment.CenterStart)
                         .clip(CircleShape)
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.surface)
                 ) {
                     Icon(
                         painter = painterResource(
                             id = if (isDarkTheme) R.drawable.moon else R.drawable.sun
                         ),
                         contentDescription = if (isDarkTheme) "Dark Mode" else "Light Mode",
-                        tint = if (isDarkTheme) Color(0xFF4CAF50) else Color(0xFFFFA000),
+                        tint = MaterialTheme.colorScheme.warning,
                         modifier = Modifier
                             .align(Alignment.Center)
                             .size(16.dp)

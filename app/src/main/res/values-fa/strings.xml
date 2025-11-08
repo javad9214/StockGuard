@@ -19,6 +19,8 @@
     <!-- Setting -->
     <string name="setting">تنظیمات</string>
     <string name="select_currency">انتخاب واحد پولی</string>
+    <string name="rial">ریال</string>
+    <string name="toman">تومان</string>
     <string name="select_theme">انتخاب تم برنامه</string>
     <string name="dark">تاریک</string>
     <string name="light">روشن</string>
@@ -93,7 +95,6 @@
 
     <!-- Product Item -->
     <string name="price">قیمت</string>
-    <string name="toman">تـومان</string>
 
     <!-- Product Screen -->
     <string name="product_details">جزئیات محصول</string>

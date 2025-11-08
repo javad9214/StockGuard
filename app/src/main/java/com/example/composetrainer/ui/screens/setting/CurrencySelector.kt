@@ -2,7 +2,6 @@ package com.example.composetrainer.ui.screens.setting
 
 import android.content.Context
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,8 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,13 +28,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import com.example.composetrainer.R
-import com.example.composetrainer.ui.theme.MRTPoster
+import com.example.composetrainer.ui.theme.BKoodak
+import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
@@ -51,37 +52,61 @@ fun CurrencySelector() {
         CurrencyPreferences.saveCurrency(context, selectedCurrency)
     }
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = dimen(R.dimen.space_2), vertical = dimen(R.dimen.space_2)),
+        shape = RoundedCornerShape(dimen(R.dimen.radius_md)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
 
-        Text(
-            str(R.string.select_currency),
-            fontFamily = MRTPoster,
-            fontSize = dimenTextSize(R.dimen.text_size_lg),
-            modifier = Modifier.padding(start = dimen(R.dimen.space_4)),
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = dimen(R.dimen.space_6),
+                    vertical = dimen(R.dimen.space_4)
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        )  {
 
-        CurrencyOption(
-            iconId = R.drawable.currencyrial,
-            isSelected = selectedCurrency == "Rial",
-            onClick = { selectedCurrency = "Rial" }
-        )
+            Column(modifier = Modifier.weight(3f)) {
+                Text(
+                    text = str(R.string.select_currency),
+                    fontFamily = Beirut_Medium,
+                    fontSize = dimenTextSize(R.dimen.text_size_lg),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
 
-        CurrencyOption(
-            iconId = R.drawable.toman,
-            isSelected = selectedCurrency == "Toman",
-            onClick = { selectedCurrency = "Toman" }
-        )
+                Text(
+                    text = if (selectedCurrency == "Rial") str(R.string.rial) else str(R.string.toman),
+                    fontSize = dimenTextSize(R.dimen.text_size_md),
+                    fontFamily = BKoodak,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            CurrencyOption(
+                modifier = Modifier.weight(1f),
+                iconId = R.drawable.currencyrial,
+                isSelected = selectedCurrency == "Rial",
+                onClick = { selectedCurrency = "Rial" }
+            )
+
+            CurrencyOption(
+                modifier = Modifier.weight(1f),
+                iconId = R.drawable.toman,
+                isSelected = selectedCurrency == "Toman",
+                onClick = { selectedCurrency = "Toman" }
+            )
+        }
+
     }
-
 
 }
 
 @Composable
 fun CurrencyOption(
+    modifier: Modifier = Modifier,
     iconId: Int,
     isSelected: Boolean,
     onClick: () -> Unit
@@ -91,47 +116,44 @@ fun CurrencyOption(
         label = "scale"
     )
 
-    Box(
-        modifier = Modifier
-            .size(dimen(R.dimen.size_3xl))
-            .scale(scale)
-            .border(
-                width = 2.dp,
-                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(dimen(R.dimen.radius_sm))
-            )
-            .background(
-                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(dimen(R.dimen.radius_sm))
-            )
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+    Column(
+        modifier = modifier.padding(horizontal = dimen(R.dimen.space_2)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ){
+        Box(
+            modifier = Modifier
+                .size(dimen(R.dimen.size_lg))
+                .scale(scale)
+                .border(
+                    width = 2.dp,
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                    shape = RoundedCornerShape(dimen(R.dimen.radius_sm))
+                )
+                .clickable(onClick = onClick),
+            contentAlignment = Alignment.Center
         ) {
 
-            Icon(
-                painter = painterResource(id = iconId),
-                contentDescription = "Price",
-                modifier = Modifier.size(dimen(R.dimen.size_md)),
+                Icon(
+                    painter = painterResource(id = iconId),
+                    contentDescription = "Price",
+                    modifier = Modifier.size(dimen(R.dimen.size_sm)),
+                    tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                )
+        }
+
+        Spacer(modifier = Modifier.height(dimen(R.dimen.space_1)))
+
+        Icon(
+                painter = painterResource(id = R.drawable.check_24px),
+                contentDescription = "check",
+                modifier = Modifier.size(dimen(R.dimen.size_xs)),
                 tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
             )
 
-            if (isSelected) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = CircleShape
-                        )
-                )
-            }
-        }
     }
+
+
 }
 
 object CurrencyPreferences {
