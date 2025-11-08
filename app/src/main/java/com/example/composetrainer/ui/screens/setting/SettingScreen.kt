@@ -26,7 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.composetrainer.BuildConfig
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.viewmodels.SettingViewModel
@@ -101,7 +103,15 @@ fun SettingScreen(
             )
         }
 
-
+        Text(
+            text = "Version: ${BuildConfig.VERSION_NAME}",
+            fontFamily = FontFamily.SansSerif,
+            fontSize = dimenTextSize(R.dimen.text_size_sm),
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = dimen(R.dimen.space_4))
+        )
 
     }
 
