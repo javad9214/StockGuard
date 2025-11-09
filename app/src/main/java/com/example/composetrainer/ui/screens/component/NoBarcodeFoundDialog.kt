@@ -146,7 +146,7 @@ fun NoBarcodeFoundDialog(
                         text = str(R.string.cancel),
                         fontFamily = Beirut_Medium,
                         style = MaterialTheme.typography.bodyLarge,
-                        fontSize = dimenTextSize(R.dimen.text_size_lg),
+                        fontSize = dimenTextSize(R.dimen.text_size_md),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
