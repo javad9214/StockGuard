@@ -151,14 +151,15 @@ fun MainScreen(
                             defaultValue = null
                         },
                         navArgument("productId") {
-                            type = NavType.LongType
+                            type = NavType.StringType
                             nullable = true
                             defaultValue = null
                         }
                     )){ backStackEntry ->
 
                     val barcode = backStackEntry.arguments?.getString("barcode")?.takeIf { it.isNotEmpty() }
-                    val productId = backStackEntry.arguments?.getLong("productId")?.takeIf { it != 0L }
+                    val productIdString = backStackEntry.arguments?.getString("productId")
+                    val productId = productIdString?.toLongOrNull()
 
 
 

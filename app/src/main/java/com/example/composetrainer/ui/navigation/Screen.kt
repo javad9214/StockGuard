@@ -9,7 +9,7 @@ sealed class Screen(val route: String) {
         const val route = "product_create?barcode={barcode}&productId={productId}"
 
         fun createRoute(barcode: String? = null, productId: Long? = null): String {
-            return "product_create?barcode=${barcode ?: ""}&productId=${productId ?: ""}"
+            return "product_create?barcode=${barcode ?: ""}&productId=${productId?.toString() ?: ""}"
         }
     }
     object Invoice : Screen(Routes.INVOICE_CREATE)
