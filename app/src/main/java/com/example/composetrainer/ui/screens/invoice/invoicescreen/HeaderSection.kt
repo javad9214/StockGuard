@@ -46,10 +46,10 @@ import com.example.composetrainer.domain.model.InvoiceType
 import com.example.composetrainer.ui.theme.BKoodak
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
-import com.example.composetrainer.ui.theme.costPrice
-import com.example.composetrainer.ui.theme.costPriceBg
-import com.example.composetrainer.ui.theme.salePrice
-import com.example.composetrainer.ui.theme.salePriceBg
+import com.example.composetrainer.ui.theme.color.costPrice
+import com.example.composetrainer.ui.theme.color.costPriceBg
+import com.example.composetrainer.ui.theme.color.salePrice
+import com.example.composetrainer.ui.theme.color.salePriceBg
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str

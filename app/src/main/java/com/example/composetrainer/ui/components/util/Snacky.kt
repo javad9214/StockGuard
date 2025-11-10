@@ -46,9 +46,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.theme.BRoya
-import com.example.composetrainer.ui.theme.customError
-import com.example.composetrainer.ui.theme.info
-import com.example.composetrainer.ui.theme.success
+import com.example.composetrainer.ui.theme.color.customError
+import com.example.composetrainer.ui.theme.color.info
+import com.example.composetrainer.ui.theme.color.success
 import com.example.composetrainer.utils.dimenTextSize
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

@@ -1,5 +1,6 @@
 package com.example.composetrainer.ui.screens.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,9 +41,14 @@ import com.example.composetrainer.ui.screens.component.CurrencyIcon
 import com.example.composetrainer.ui.theme.BMitra
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
-import com.example.composetrainer.utils.price.PriceValidator.formatPrice
+import com.example.composetrainer.ui.theme.color.bronze
+import com.example.composetrainer.ui.theme.color.customError
+import com.example.composetrainer.ui.theme.color.gold
+import com.example.composetrainer.ui.theme.color.silver
+import com.example.composetrainer.ui.theme.color.success
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
+import com.example.composetrainer.utils.price.PriceValidator.formatPrice
 import com.example.composetrainer.utils.str
 import java.math.RoundingMode
 import java.time.LocalDate
@@ -55,9 +61,11 @@ fun MostSoldProductItem(
     productSalesSummary: ProductSalesSummary,
     rank: Int? = null
 ) {
-    val profitMargin = productSalesSummary.getProfitMargin()
-        .setScale(0, RoundingMode.HALF_UP)
-        .toInt()
+    val profitMargin =
+        productSalesSummary.getProfitMargin().setScale(0, RoundingMode.HALF_UP).toString()
+
+    Log.i(TAG, "MostSoldProductItem: profitMargin ${productSalesSummary.getProfitMargin()}")
+    Log.i(TAG, "MostSoldProductItem: profitMargin: $profitMargin")
 
     val stockStatus = product.getStockStatus()
     val performanceLevel = productSalesSummary.getSalesPerformance()
@@ -69,10 +77,10 @@ fun MostSoldProductItem(
             .wrapContentHeight(),
         shape = RoundedCornerShape(dimen(R.dimen.radius_lg)),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
-        Column(modifier = Modifier.padding(dimen(R.dimen.space_2))) {
+        Column(modifier = Modifier.padding(dimen(R.dimen.space_4))) {
 
             // Header with rank badge and product name
             Row(
@@ -128,9 +136,9 @@ fun MostSoldProductItem(
 @Composable
 private fun RankBadge(rank: Int) {
     val (backgroundColor, icon) = when (rank) {
-        1 -> MaterialTheme.colorScheme.primary to R.drawable.crown
-        2 -> MaterialTheme.colorScheme.secondary to R.drawable.medal_star
-        3 -> MaterialTheme.colorScheme.tertiary to R.drawable.award
+        1 -> MaterialTheme.colorScheme.gold to R.drawable.crown
+        2 -> MaterialTheme.colorScheme.silver to R.drawable.medal_star
+        3 -> MaterialTheme.colorScheme.bronze to R.drawable.award
         else -> MaterialTheme.colorScheme.outline to R.drawable.award
     }
 
@@ -246,14 +254,14 @@ private fun SalesMetricRow(
 private fun ProfitInfoRow(
     label: String,
     amount: Long,
-    percentage: Int,
+    percentage: String,
     icon: Int,
     isProfitable: Boolean
 ) {
     val profitColor = if (isProfitable)
-        MaterialTheme.colorScheme.tertiary
+        MaterialTheme.colorScheme.success
     else
-        MaterialTheme.colorScheme.error
+        MaterialTheme.colorScheme.customError
 
     Row(
         modifier = Modifier
@@ -326,10 +334,13 @@ private fun StockIndicator(
     val (statusText, statusColor) = when (stockStatus) {
         com.example.composetrainer.domain.model.StockStatus.OUT_OF_STOCK ->
             str(R.string.out_of_stock) to MaterialTheme.colorScheme.error
+
         com.example.composetrainer.domain.model.StockStatus.LOW_STOCK ->
             str(R.string.stock_low) to MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+
         com.example.composetrainer.domain.model.StockStatus.OVERSTOCKED ->
             str(R.string.overstocked) to MaterialTheme.colorScheme.secondary
+
         com.example.composetrainer.domain.model.StockStatus.NORMAL ->
             str(R.string.stock_healthy) to MaterialTheme.colorScheme.tertiary
     }

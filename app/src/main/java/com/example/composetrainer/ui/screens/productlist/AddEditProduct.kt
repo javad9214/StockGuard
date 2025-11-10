@@ -54,8 +54,8 @@ import com.example.composetrainer.domain.model.ProductFactory
 import com.example.composetrainer.ui.screens.component.CurrencyIcon
 import com.example.composetrainer.ui.theme.BKoodak
 import com.example.composetrainer.ui.theme.Beirut_Medium
-import com.example.composetrainer.ui.theme.costPrice
-import com.example.composetrainer.ui.theme.salePrice
+import com.example.composetrainer.ui.theme.color.costPrice
+import com.example.composetrainer.ui.theme.color.salePrice
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
 import com.example.composetrainer.utils.barcode.BarcodeGenerator
 import com.example.composetrainer.utils.dimen

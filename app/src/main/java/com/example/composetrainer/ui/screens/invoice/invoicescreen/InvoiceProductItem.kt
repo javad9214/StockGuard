@@ -43,9 +43,8 @@ import com.example.composetrainer.domain.model.InvoiceType
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.ui.screens.component.CurrencyIcon
 import com.example.composetrainer.ui.theme.BKoodak
-import com.example.composetrainer.ui.theme.BNazanin
 import com.example.composetrainer.ui.theme.Beirut_Medium
-import com.example.composetrainer.ui.theme.customError
+import com.example.composetrainer.ui.theme.color.customError
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.price.PriceValidator
 

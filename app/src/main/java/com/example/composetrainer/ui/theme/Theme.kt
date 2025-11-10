@@ -1,9 +1,7 @@
 package com.example.composetrainer.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
@@ -18,7 +16,54 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.composetrainer.R
-import androidx.compose.ui.graphics.Color
+import com.example.composetrainer.ui.theme.color.Charcoal
+import com.example.composetrainer.ui.theme.color.JetBlack
+import com.example.composetrainer.ui.theme.color.cultured_white
+import com.example.composetrainer.ui.theme.color.green
+import com.example.composetrainer.ui.theme.color.md_theme_dark_error
+import com.example.composetrainer.ui.theme.color.md_theme_dark_errorContainer
+import com.example.composetrainer.ui.theme.color.md_theme_dark_onBackground
+import com.example.composetrainer.ui.theme.color.md_theme_dark_onError
+import com.example.composetrainer.ui.theme.color.md_theme_dark_onErrorContainer
+import com.example.composetrainer.ui.theme.color.md_theme_dark_onPrimary
+import com.example.composetrainer.ui.theme.color.md_theme_dark_onPrimaryContainer
+import com.example.composetrainer.ui.theme.color.md_theme_dark_onSecondary
+import com.example.composetrainer.ui.theme.color.md_theme_dark_onSecondaryContainer
+import com.example.composetrainer.ui.theme.color.md_theme_dark_onSurface
+import com.example.composetrainer.ui.theme.color.md_theme_dark_onSurfaceVariant
+import com.example.composetrainer.ui.theme.color.md_theme_dark_onTertiary
+import com.example.composetrainer.ui.theme.color.md_theme_dark_onTertiaryContainer
+import com.example.composetrainer.ui.theme.color.md_theme_dark_outline
+import com.example.composetrainer.ui.theme.color.md_theme_dark_outlineVariant
+import com.example.composetrainer.ui.theme.color.md_theme_dark_primary
+import com.example.composetrainer.ui.theme.color.md_theme_dark_primaryContainer
+import com.example.composetrainer.ui.theme.color.md_theme_dark_secondary
+import com.example.composetrainer.ui.theme.color.md_theme_dark_secondaryContainer
+import com.example.composetrainer.ui.theme.color.md_theme_dark_surfaceVariant
+import com.example.composetrainer.ui.theme.color.md_theme_dark_tertiary
+import com.example.composetrainer.ui.theme.color.md_theme_dark_tertiaryContainer
+import com.example.composetrainer.ui.theme.color.md_theme_light_error
+import com.example.composetrainer.ui.theme.color.md_theme_light_errorContainer
+import com.example.composetrainer.ui.theme.color.md_theme_light_onBackground
+import com.example.composetrainer.ui.theme.color.md_theme_light_onError
+import com.example.composetrainer.ui.theme.color.md_theme_light_onErrorContainer
+import com.example.composetrainer.ui.theme.color.md_theme_light_onPrimary
+import com.example.composetrainer.ui.theme.color.md_theme_light_onPrimaryContainer
+import com.example.composetrainer.ui.theme.color.md_theme_light_onSecondary
+import com.example.composetrainer.ui.theme.color.md_theme_light_onSecondaryContainer
+import com.example.composetrainer.ui.theme.color.md_theme_light_onSurface
+import com.example.composetrainer.ui.theme.color.md_theme_light_onSurfaceVariant
+import com.example.composetrainer.ui.theme.color.md_theme_light_onTertiary
+import com.example.composetrainer.ui.theme.color.md_theme_light_onTertiaryContainer
+import com.example.composetrainer.ui.theme.color.md_theme_light_outline
+import com.example.composetrainer.ui.theme.color.md_theme_light_outlineVariant
+import com.example.composetrainer.ui.theme.color.md_theme_light_primary
+import com.example.composetrainer.ui.theme.color.md_theme_light_primaryContainer
+import com.example.composetrainer.ui.theme.color.md_theme_light_secondary
+import com.example.composetrainer.ui.theme.color.md_theme_light_secondaryContainer
+import com.example.composetrainer.ui.theme.color.md_theme_light_surface
+import com.example.composetrainer.ui.theme.color.md_theme_light_surfaceVariant
+import com.example.composetrainer.ui.theme.color.md_theme_light_tertiaryContainer
 
 // Remove all md_theme_* color val definitions here. Only Color.kt defines palette colors.
 

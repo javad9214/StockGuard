@@ -258,7 +258,8 @@ fun HomeScreen(
                     MostSoldProductItem(
                         product = mostSoldProducts.find { it.id == mostSoldProductsSummeryItem.productId }
                             ?: return@items,
-                        productSalesSummary = mostSoldProductsSummeryItem
+                        productSalesSummary = mostSoldProductsSummeryItem,
+                        rank = mostSoldProductsSummery.indexOf(mostSoldProductsSummeryItem) + 1
                     )
                 }
             }
@@ -286,7 +287,8 @@ fun HomeScreen(
                     MostSoldProductItem(
                         product = mostProfitableProducts.find { it.id == mostProfitableProductsSummeryItem.productId }
                             ?: return@items,
-                        productSalesSummary = mostProfitableProductsSummeryItem
+                        productSalesSummary = mostProfitableProductsSummeryItem,
+                        rank = mostProfitableProductsSummery.indexOf(mostProfitableProductsSummeryItem) + 1
                     )
                 }
             }

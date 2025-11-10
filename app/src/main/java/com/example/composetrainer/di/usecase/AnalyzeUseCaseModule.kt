@@ -1,9 +1,11 @@
 package com.example.composetrainer.di.usecase
 
 import com.example.composetrainer.domain.repository.InvoiceRepository
+import com.example.composetrainer.domain.repository.ProductRepository
 import com.example.composetrainer.domain.repository.ProductSalesSummaryRepository
 import com.example.composetrainer.domain.usecase.analytics.GetAnalyticsDataUseCase
 import com.example.composetrainer.domain.usecase.analytics.GetInvoiceReportCountUseCase
+import com.example.composetrainer.domain.usecase.analytics.GetLowStockProductsUseCase
 import com.example.composetrainer.domain.usecase.analytics.GetTotalProfitPriceUseCase
 import com.example.composetrainer.domain.usecase.analytics.GetTotalSoldPriceUseCase
 import com.example.composetrainer.domain.usecase.product.GetProductsByIDsUseCase
@@ -71,4 +73,10 @@ object AnalyzeUseCaseModule {
     fun provideGetTotalProfitPriceUseCase(
         invoiceRepository: InvoiceRepository
     ): GetTotalProfitPriceUseCase = GetTotalProfitPriceUseCase(invoiceRepository)
+
+    @Provides
+    @Singleton
+    fun provideGetLowStockProductsUseCase(
+        productRepository: ProductRepository
+    ): GetLowStockProductsUseCase = GetLowStockProductsUseCase(productRepository)
 }

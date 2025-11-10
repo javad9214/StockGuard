@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.theme.Beirut_Medium
 import com.example.composetrainer.ui.theme.MRTPoster
-import com.example.composetrainer.ui.theme.customError
+import com.example.composetrainer.ui.theme.color.customError
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
