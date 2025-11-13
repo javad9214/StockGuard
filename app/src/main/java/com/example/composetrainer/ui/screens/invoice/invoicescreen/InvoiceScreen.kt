@@ -145,12 +145,11 @@ fun InvoiceScreen(
 
     }
 
-    val totalPrice = currentInvoice.calculateTotalAmount()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             HeaderSection(
-                invoiceNumber = currentInvoice.invoice.invoiceNumber.value.toString(),
+                invoiceNumber = uiState.currentInvoice.invoiceNumber.value.toString(),
                 persianDate = persianDate,
                 currentTime = currentTime,
                 onClose = onClose,
@@ -215,7 +214,7 @@ fun InvoiceScreen(
             }
 
             // Products list section
-            if (currentInvoice.hasProducts()) {
+            if (uiState.currentInvoice.hasProducts()) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -226,19 +225,19 @@ fun InvoiceScreen(
                 ) {
 
                     items(
-                        currentInvoice.totalProductsCount,
-                        key = { currentInvoice.products[it].id.value }) { item ->
+                        uiState.currentInvoice.totalProductsCount,
+                        key = { uiState.currentInvoice.products[it].id.value }) { item ->
                         InvoiceProductItem(
-                            productWithQuantity = currentInvoice.invoiceProducts[item],
-                            product = currentInvoice.products[item],
-                            onRemove = { invoiceViewModel.removeFromCurrentInvoice(currentInvoice.products[item].id) },
+                            productWithQuantity = uiState.currentInvoice.invoiceProducts[item],
+                            product = uiState.currentInvoice.products[item],
+                            onRemove = { invoiceViewModel.removeFromCurrentInvoice(uiState.currentInvoice.products[item].id) },
                             onQuantityChange = { newQuantity ->
                                 invoiceViewModel.updateItemQuantity(
-                                    currentInvoice.products[item].id.value,
+                                    uiState.currentInvoice.products[item].id.value,
                                     newQuantity
                                 )
                             },
-                            invoiceType = currentInvoice.invoice.invoiceType ?: InvoiceType.SALE
+                            invoiceType = uiState.currentInvoice.invoice.invoiceType ?: InvoiceType.SALE
                         )
 
                     }
@@ -263,7 +262,7 @@ fun InvoiceScreen(
 
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
             BottomTotalSection(
-                totalPrice = uiState.currentInvoice.invoiceProducts.totalPrice.amount,
+                totalPrice = uiState.currentInvoice.calculateTotalAmount().amount,
                 isLoading = uiState.isLoading,
                 hasItems = uiState.currentInvoice.products.isNotEmpty(),
                 onSubmit = {
