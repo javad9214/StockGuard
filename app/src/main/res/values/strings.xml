@@ -183,7 +183,7 @@
     <string name="save_invoice">Save Invoice</string>
     <string name="Tap_to_start_scanning">Tap to Start Scanning</string>
     <string name="invoice_created_successfully">invoice created successfully</string>
-
+    <string name="finalizing_invoice">Finalizing Invoice</string>
     
     <!-- Barcode Scanner View -->
     <string name="barcode_position">Place the product barcode inside the frame!</string>

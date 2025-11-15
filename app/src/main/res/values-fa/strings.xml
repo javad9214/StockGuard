@@ -189,7 +189,8 @@
     <string name="save_invoice">ذخیره فاکتور</string>
     <string name="Tap_to_start_scanning">برای شروع اسکن ضربه بزنید</string>
     <string name="invoice_created_successfully">فاکتور با موفقیت ثبت گردید!</string>
-
+    <string name="finalizing_invoice">درحال نهایی سازی فاکتور ...</string>
+    
     <!-- Barcode Scanner View -->
     <string name="barcode_position">موقعیت بارکد در داخل قاب</string>
     <string name="no_product_found_with_barcode">محصولی با بارکد مورد نظر یافت نشد !</string>

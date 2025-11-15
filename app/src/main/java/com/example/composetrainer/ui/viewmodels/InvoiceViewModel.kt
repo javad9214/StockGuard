@@ -10,6 +10,7 @@ import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.model.ProductId
 import com.example.composetrainer.domain.model.Quantity
 import com.example.composetrainer.domain.model.addProduct
+import com.example.composetrainer.domain.model.autoCreateInvoiceFromTemplate
 import com.example.composetrainer.domain.model.removeProduct
 import com.example.composetrainer.domain.model.updateProduct
 import com.example.composetrainer.domain.model.updateQuantity
@@ -19,12 +20,14 @@ import com.example.composetrainer.domain.usecase.invoice.InitInvoiceWithProducts
 import com.example.composetrainer.domain.usecase.invoice.InsertInvoiceUseCase
 import com.example.composetrainer.domain.usecase.product.CheckProductStockUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,8 +44,11 @@ class InvoiceViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     // One-time events - Channel
-    private val _events = Channel<InvoiceEvent>()
+    private val _events = Channel<InvoiceEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
+
+    private val _saveInvoiceLoading = MutableStateFlow(false)
+    val saveInvoiceLoading = _saveInvoiceLoading.asStateFlow()
 
     init {
         initCurrentInvoice()
@@ -156,14 +162,43 @@ class InvoiceViewModel @Inject constructor(
 
     fun saveInvoice() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            // Set loading state
+            _saveInvoiceLoading.value = true
+
             try {
-                // ... save logic
+                // Get current invoice and prepare it for saving
+                val currentInvoice = _uiState.value.currentInvoice
+                val finalInvoice = currentInvoice.autoCreateInvoiceFromTemplate()
+                val invoiceToSave = currentInvoice.copy(invoice = finalInvoice)
+
+                // Save invoice - this operation must complete even if user navigates away
+                withContext(NonCancellable) {
+                    insertInvoiceUseCase.invoke(invoiceToSave)
+                }
+
+                // Update state: clear invoice, stop loading, clear errors
+                _uiState.update {
+                    it.copy(
+                        currentInvoice = InvoiceWithProducts.empty(),
+                        isLoading = false,
+                        errorMessage = null
+                    )
+                }
+
+                _saveInvoiceLoading.value = false
+                // Send success event for navigation
                 _events.send(InvoiceEvent.SaveSuccess)
+
             } catch (e: Exception) {
-                _events.send(InvoiceEvent.SaveError(e.message))
-            } finally {
-                _uiState.update { it.copy(isLoading = false) }
+                // Handle error: stop loading, show error message
+                val errorMsg = "Failed to create invoice: ${e.message}"
+
+                _saveInvoiceLoading.value = false
+                // Send error event (for toast/snackbar)
+                _events.send(InvoiceEvent.SaveError(errorMsg))
+
+                // Log for debugging
+                Log.e("InvoiceViewModel", "Error saving invoice", e)
             }
         }
     }

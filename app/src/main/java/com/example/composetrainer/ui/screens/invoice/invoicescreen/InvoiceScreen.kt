@@ -34,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +49,10 @@ import com.example.composetrainer.domain.model.InvoiceType
 import com.example.composetrainer.domain.model.calculateTotalAmount
 import com.example.composetrainer.domain.model.hasProducts
 import com.example.composetrainer.ui.components.barcodescanner.CompactBarcodeScanner
+import com.example.composetrainer.ui.components.util.SnackyDuration
+import com.example.composetrainer.ui.components.util.SnackyHost
+import com.example.composetrainer.ui.components.util.SnackyType
+import com.example.composetrainer.ui.components.util.rememberSnackyHostState
 import com.example.composetrainer.ui.navigation.Screen
 import com.example.composetrainer.ui.screens.component.NoBarcodeFoundDialog
 import com.example.composetrainer.ui.screens.invoice.productselection.AddProductToInvoice
@@ -61,6 +66,7 @@ import com.example.composetrainer.utils.dateandtime.FarsiDateUtil
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
 import com.example.composetrainer.utils.str
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +85,13 @@ fun InvoiceScreen(
     var showProductSelection by remember { mutableStateOf(false) }
     val products by productsViewModel.products.collectAsState()
     val uiState by invoiceViewModel.uiState.collectAsState()
-    val isLoading by invoiceListViewModel.isLoading.collectAsState()
+
+    //  Save Invoice Loading
+    val saveInvoiceLoading by invoiceViewModel.saveInvoiceLoading.collectAsState()
+    val snackyHostState = rememberSnackyHostState()
+    val scope = rememberCoroutineScope()
+    val loadingSaveInvoiceMessage = str(R.string.finalizing_invoice)
+    val successSaveInvoiceMessage = str(R.string.invoice_created_successfully)
 
     // Observe scanned product from HomeViewModel for barcode scanning
     val scannedProduct by homeViewModel.scannedProduct.collectAsState()
@@ -118,10 +130,43 @@ fun InvoiceScreen(
     LaunchedEffect(Unit) {
         invoiceViewModel.events.collect { event ->
             when (event) {
-                is InvoiceViewModel.InvoiceEvent.SaveSuccess -> onComplete()
-                is InvoiceViewModel.InvoiceEvent.SaveError -> {
-                    // Optionally show a toast or snackbar
+                is InvoiceViewModel.InvoiceEvent.SaveSuccess -> {
+
+                    delay(200)
+                    snackyHostState.show(
+                        message = successSaveInvoiceMessage,
+                        type = SnackyType.SUCCESS,
+                        duration = SnackyDuration.SHORT
+                    )
+
+                    delay(300)
+                    onComplete()
+
                 }
+
+                is InvoiceViewModel.InvoiceEvent.SaveError -> {
+                    event.message?.let { message ->
+                        snackyHostState.show(
+                            message = message,
+                            type = SnackyType.ERROR,
+                            duration = SnackyDuration.LONG
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        invoiceViewModel.saveInvoiceLoading.collect { isLoading ->
+            if (isLoading) {
+                snackyHostState.show(
+                    message = loadingSaveInvoiceMessage,
+                    type = SnackyType.LOADING
+                )
+
+            } else {
+                snackyHostState.dismiss()
             }
         }
     }
@@ -237,7 +282,8 @@ fun InvoiceScreen(
                                     newQuantity
                                 )
                             },
-                            invoiceType = uiState.currentInvoice.invoice.invoiceType ?: InvoiceType.SALE
+                            invoiceType = uiState.currentInvoice.invoice.invoiceType
+                                ?: InvoiceType.SALE
                         )
 
                     }
@@ -268,6 +314,7 @@ fun InvoiceScreen(
                 onSubmit = {
                     if (uiState.currentInvoice.isValid()) {
                         invoiceViewModel.saveInvoice()
+
                     }
                 },
                 modifier = Modifier.align(Alignment.BottomCenter)
@@ -305,4 +352,5 @@ fun InvoiceScreen(
         }
     }
 
+    SnackyHost(hostState = snackyHostState)
 }

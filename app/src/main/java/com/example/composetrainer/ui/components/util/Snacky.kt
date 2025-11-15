@@ -6,6 +6,9 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +29,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -53,11 +57,19 @@ import com.example.composetrainer.utils.dimenTextSize
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+// Snackbar Duration
+enum class SnackyDuration(val milliseconds: Long) {
+    SHORT(2000L),
+    LONG(5000L),
+    INFINITE(Long.MAX_VALUE)
+}
+
 // Snackbar Types
-enum class SnackyType(val icon: ImageVector) {
+enum class SnackyType(val icon: ImageVector?) {
     SUCCESS(Icons.Default.CheckCircle),
     ERROR(Icons.Default.Error),
-    INFO(Icons.Default.Info)
+    INFO(Icons.Default.Info),
+    LOADING(null) // No icon, will show CircularProgressIndicator
 }
 
 @Composable
@@ -66,6 +78,7 @@ fun SnackyType.getColor(): Color {
         SnackyType.SUCCESS -> MaterialTheme.colorScheme.success
         SnackyType.ERROR -> MaterialTheme.colorScheme.customError
         SnackyType.INFO -> MaterialTheme.colorScheme.info
+        SnackyType.LOADING -> MaterialTheme.colorScheme.primary
     }
 }
 
@@ -82,15 +95,23 @@ class SnackyHostState {
     private val _currentSnacky = mutableStateOf(SnackyState())
     val currentSnacky: State<SnackyState> = _currentSnacky
 
-    suspend fun show(message: String, type: SnackyType, duration: Long = 3000L) {
+    suspend fun show(
+        message: String,
+        type: SnackyType,
+        duration: SnackyDuration = SnackyDuration.SHORT
+    ) {
         _currentSnacky.value = SnackyState(
             message = message,
             type = type,
-            duration = duration,
+            duration = duration.milliseconds,
             isVisible = true
         )
-        delay(duration + 300) // Extra time for animation to complete
-        _currentSnacky.value = _currentSnacky.value.copy(isVisible = false)
+
+        // For LOADING type or INFINITE duration, don't auto-dismiss
+        if (type != SnackyType.LOADING && duration != SnackyDuration.INFINITE) {
+            delay(duration.milliseconds + 300) // Extra time for animation to complete
+            _currentSnacky.value = _currentSnacky.value.copy(isVisible = false)
+        }
     }
 
     fun dismiss() {
@@ -129,8 +150,8 @@ fun Snacky(
 
     var progress by remember { mutableStateOf(0f) }
 
-    LaunchedEffect(snackyState.isVisible) {
-        if (snackyState.isVisible) {
+    LaunchedEffect(snackyState.isVisible, snackyState.type) {
+        if (snackyState.isVisible && snackyState.type != SnackyType.LOADING) {
             progress = 0f
             val startTime = System.currentTimeMillis()
             while (progress < 1f) {
@@ -161,19 +182,46 @@ fun Snacky(
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Column {
-                // Progress Line
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(4.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                ) {
+                // Progress Line (only show for non-LOADING types)
+                if (snackyState.type != SnackyType.LOADING) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth(progress)
-                            .fillMaxHeight()
-                            .background(typeColor)
+                            .fillMaxWidth()
+                            .height(4.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(progress)
+                                .fillMaxHeight()
+                                .background(typeColor)
+                        )
+                    }
+                } else {
+                    // For LOADING, show animated progress bar
+                    val infiniteTransition = rememberInfiniteTransition(label = "loading")
+                    val animatedProgress by infiniteTransition.animateFloat(
+                        initialValue = 0f,
+                        targetValue = 1f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(1000, easing = LinearEasing)
+                        ),
+                        label = "loading_progress"
                     )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(4.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(animatedProgress)
+                                .fillMaxHeight()
+                                .background(typeColor)
+                        )
+                    }
                 }
 
                 // Content
@@ -184,14 +232,23 @@ fun Snacky(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-
-                    Icon(
-                        imageVector = snackyState.type.icon,
-                        contentDescription = null,
-                        tint = typeColor,
-                        modifier = Modifier.size(24.dp)
-                    )
-
+                    // Show CircularProgressIndicator for LOADING, Icon for others
+                    if (snackyState.type == SnackyType.LOADING) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = typeColor,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        snackyState.type.icon?.let { icon ->
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = null,
+                                tint = typeColor,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
 
                     Text(
                         text = snackyState.message,
@@ -278,7 +335,8 @@ fun SnackyWithScaffoldExample() {
                     scope.launch {
                         snackyHostState.show(
                             message = "Operation completed successfully!",
-                            type = SnackyType.SUCCESS
+                            type = SnackyType.SUCCESS,
+                            duration = SnackyDuration.SHORT
                         )
                     }
                 }) {
@@ -289,11 +347,12 @@ fun SnackyWithScaffoldExample() {
                     scope.launch {
                         snackyHostState.show(
                             message = "Something went wrong!",
-                            type = SnackyType.ERROR
+                            type = SnackyType.ERROR,
+                            duration = SnackyDuration.LONG
                         )
                     }
                 }) {
-                    Text("Show Error")
+                    Text("Show Error (Long)")
                 }
 
                 Button(onClick = {
@@ -301,7 +360,7 @@ fun SnackyWithScaffoldExample() {
                         snackyHostState.show(
                             message = "Here's some information for you",
                             type = SnackyType.INFO,
-                            duration = 5000L
+                            duration = SnackyDuration.LONG
                         )
                     }
                 }) {
@@ -341,5 +400,91 @@ fun SnackyTopExample() {
             hostState = snackyHostState,
             alignment = Alignment.TopCenter
         )
+    }
+}
+
+// Example 4: Loading Type - Manual Dismiss
+@Composable
+fun SnackyLoadingExample() {
+    val snackyHostState = rememberSnackyHostState()
+    val scope = rememberCoroutineScope()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
+        ) {
+            Button(onClick = {
+                scope.launch {
+                    // Show loading
+                    snackyHostState.show(
+                        message = "Loading data...",
+                        type = SnackyType.LOADING
+                    )
+
+                    // Simulate some work
+                    delay(3000)
+
+                    // Dismiss loading and show success
+                    snackyHostState.dismiss()
+                    delay(100) // Small delay for smooth transition
+                    snackyHostState.show(
+                        message = "Data loaded successfully!",
+                        type = SnackyType.SUCCESS,
+                        duration = SnackyDuration.SHORT
+                    )
+                }
+            }) {
+                Text("Show Loading")
+            }
+
+            Button(onClick = {
+                scope.launch {
+                    // Show loading
+                    snackyHostState.show(
+                        message = "Processing...",
+                        type = SnackyType.LOADING
+                    )
+
+                    // Simulate work that fails
+                    delay(2000)
+
+                    // Dismiss loading and show error
+                    snackyHostState.dismiss()
+                    delay(100)
+                    snackyHostState.show(
+                        message = "Failed to process!",
+                        type = SnackyType.ERROR,
+                        duration = SnackyDuration.LONG
+                    )
+                }
+            }) {
+                Text("Show Loading with Error")
+            }
+
+            Button(onClick = {
+                scope.launch {
+                    // Show infinite duration - stays until manually dismissed
+                    snackyHostState.show(
+                        message = "This stays forever until dismissed!",
+                        type = SnackyType.INFO,
+                        duration = SnackyDuration.INFINITE
+                    )
+                }
+            }) {
+                Text("Show Infinite")
+            }
+
+            Button(onClick = {
+                scope.launch {
+                    snackyHostState.dismiss()
+                }
+            }) {
+                Text("Dismiss Current Snacky")
+            }
+        }
+
+        SnackyHost(hostState = snackyHostState)
     }
 }

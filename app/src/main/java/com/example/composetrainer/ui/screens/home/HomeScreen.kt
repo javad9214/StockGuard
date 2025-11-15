@@ -107,8 +107,6 @@ fun HomeScreen(
             // Add product to current invoice
             invoiceViewModel.addToCurrentInvoice(product, 1)
 
-            // Check if product was added to invoice
-            val currentInvoiceItems = invoiceViewModel.currentInvoice.value
 
             // Navigate to invoice screen
             navController.navigate(Screen.Invoice.route)
