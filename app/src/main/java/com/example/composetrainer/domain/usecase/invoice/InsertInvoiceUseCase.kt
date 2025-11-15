@@ -6,6 +6,7 @@ import com.example.composetrainer.domain.model.InvoiceType
 import com.example.composetrainer.domain.model.InvoiceWithProducts
 import com.example.composetrainer.domain.model.StockMovementFactory
 import com.example.composetrainer.domain.model.recordSale
+import com.example.composetrainer.domain.model.toEntity
 import com.example.composetrainer.domain.model.updateInvoiceId
 import com.example.composetrainer.domain.repository.InvoiceProductRepository
 import com.example.composetrainer.domain.repository.InvoiceRepository
@@ -63,10 +64,14 @@ class InsertInvoiceUseCase @Inject constructor(
 
         // update product LastSaleDate
         invoiceWithProducts.products.forEach { product ->
-            Log.i(TAG, "insertSaleInvoice: ${product.lastSoldDate}")
-            val row = productRepository.updateProduct(product.copy(lastSoldDate = product.recordSale().lastSoldDate))
-            Log.i(TAG, "after insertSaleInvoice: ${product.recordSale().lastSoldDate}")
-            Log.i(TAG, "after insertSaleInvoice: row is  $row")
+            val updated = product.recordSale()
+
+            Log.i(TAG, "before: ${product.lastSoldDate}")
+            Log.i(TAG, "after: ${updated.lastSoldDate}")
+            Log.i(TAG, "entity after: ${updated.toEntity().lastSoldDate}")
+
+            val row = productRepository.updateProduct(updated)
+            Log.i(TAG, "rows updated: $row")
         }
 
 
