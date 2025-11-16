@@ -62,29 +62,22 @@ class InsertInvoiceUseCase @Inject constructor(
 
     private suspend fun insertSaleInvoice(invoiceWithProducts: InvoiceWithProducts) {
 
-        // update product LastSaleDate
-        invoiceWithProducts.products.forEach { product ->
-            val updated = product.recordSale()
-
-            Log.i(TAG, "before: ${product.lastSoldDate}")
-            Log.i(TAG, "after: ${updated.lastSoldDate}")
-            Log.i(TAG, "entity after: ${updated.toEntity().lastSoldDate}")
-
-            val row = productRepository.updateProduct(updated)
-            Log.i(TAG, "rows updated: $row")
+        // Update product LastSaleDate
+        val updatedProducts = invoiceWithProducts.products.map { product ->
+            product.recordSale()
         }
 
+     // Save the updated products with lastSoldDate
+        updatedProducts.forEach { updated ->
+            productRepository.updateProduct(updated)
+        }
 
-        // Decreasing Product Quantity
-        invoiceWithProducts.products.forEachIndexed { index, product  ->
+     // Decreasing Product Quantity using the UPDATED products
+        updatedProducts.forEachIndexed { index, updatedProduct  ->
             try {
-                decreaseStockUseCase.invoke(product, invoiceWithProducts.invoiceProducts[index].quantity.value)
+                decreaseStockUseCase.invoke(updatedProduct, invoiceWithProducts.invoiceProducts[index].quantity.value)
             } catch (e: Exception) {
-                Log.e(
-                    TAG,
-                    "invoke: Error processing DecreaseStockUseCase for item $index - ProductId: ${product.id}",
-                    e
-                )
+                Log.e(TAG, "invoke: Error processing DecreaseStockUseCase for item $index - ProductId: ${updatedProduct.id}", e)
                 throw e
             }
         }

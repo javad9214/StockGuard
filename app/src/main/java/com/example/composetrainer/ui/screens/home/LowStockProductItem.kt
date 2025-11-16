@@ -1,5 +1,6 @@
 package com.example.composetrainer.ui.screens.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -50,6 +51,8 @@ fun LowStockProductItem(
     val needsRestock = product.needsRestock()
     val recommendedQuantity = product.getRecommendedOrderQuantity()
     val daysSinceLastSold = product.getDaysSinceLastSold()
+    Log.i(TAG, "LowStockProductItem: daysSinceLastSold $daysSinceLastSold")
+    Log.i(TAG, "LowStockProductItem: lastSold ${product.lastSoldDate}")
 
     val (urgencyColor, urgencyLabel) = when (stockStatus) {
         StockStatus.OUT_OF_STOCK ->

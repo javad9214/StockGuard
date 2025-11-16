@@ -148,8 +148,8 @@ data class Product(
     }
 
     fun isDeadStock(): Boolean {
-        return lastSoldDate?.isBefore(LocalDateTime.now().minusMonths(6)) == true ||
-                (lastSoldDate == null && createdAt.isBefore(LocalDateTime.now().minusMonths(3)))
+        return lastSoldDate?.isBefore(LocalDateTime.now().minusMonths(3)) == true ||
+                (lastSoldDate == null && createdAt.isBefore(LocalDateTime.now().minusMonths(2)))
     }
 
     fun getDaysSinceLastSold(): Long? {
