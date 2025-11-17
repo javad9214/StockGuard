@@ -116,14 +116,21 @@ fun InvoiceProductItem(
                         )
                     )
 
+                    val priceToShow = if (invoiceType == InvoiceType.SALE) {
+                        product.price.amount
+                    } else {
+                        product.costPrice.amount
+                    }
+
                     Text(
-                        text = PriceValidator.formatPrice(product.price.amount.toString()),
+                        text = PriceValidator.formatPrice(priceToShow.toString()),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontFamily = BKoodak,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     )
+
 
                     Spacer(modifier = Modifier.weight(1f))
 
@@ -253,7 +260,12 @@ fun InvoiceProductItem(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.height(dimen(R.dimen.size_sm))
                         ) {
-                            val itemTotal = productWithQuantity.calculateTotalRevenue()
+                            val itemTotal = if (invoiceType == InvoiceType.SALE) {
+                                productWithQuantity.calculateTotalRevenue()
+                            } else {
+                                productWithQuantity.calculateTotalCost()
+                            }
+
                             Text(
                                 text = PriceValidator.formatPrice(itemTotal.amount.toString()),
                                 modifier = Modifier

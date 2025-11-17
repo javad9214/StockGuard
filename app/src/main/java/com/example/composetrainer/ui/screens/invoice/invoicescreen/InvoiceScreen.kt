@@ -47,6 +47,7 @@ import androidx.navigation.NavController
 import com.example.composetrainer.R
 import com.example.composetrainer.domain.model.InvoiceType
 import com.example.composetrainer.domain.model.calculateTotalAmount
+import com.example.composetrainer.domain.model.calculateTotalCost
 import com.example.composetrainer.domain.model.hasProducts
 import com.example.composetrainer.ui.components.barcodescanner.CompactBarcodeScanner
 import com.example.composetrainer.ui.components.util.SnackyDuration
@@ -306,7 +307,11 @@ fun InvoiceScreen(
 
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
             BottomTotalSection(
-                totalPrice = uiState.currentInvoice.calculateTotalAmount().amount,
+                totalPrice = if (uiState.currentInvoice.invoice.invoiceType == InvoiceType.SALE) {
+                    uiState.currentInvoice.calculateTotalAmount().amount
+                } else {
+                    uiState.currentInvoice.calculateTotalCost().amount
+                },
                 isLoading = uiState.isLoading,
                 hasItems = uiState.currentInvoice.products.isNotEmpty(),
                 onSubmit = {
