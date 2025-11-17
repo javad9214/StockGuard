@@ -57,7 +57,6 @@ import com.example.composetrainer.ui.navigation.Screen
 import com.example.composetrainer.ui.screens.component.NoBarcodeFoundDialog
 import com.example.composetrainer.ui.screens.invoice.productselection.AddProductToInvoice
 import com.example.composetrainer.ui.theme.Beirut_Medium
-import com.example.composetrainer.ui.viewmodels.InvoiceListViewModel
 import com.example.composetrainer.ui.viewmodels.InvoiceViewModel
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
 import com.example.composetrainer.ui.viewmodels.home.HomeViewModel
@@ -74,7 +73,6 @@ fun InvoiceScreen(
     onComplete: () -> Unit,
     onClose: () -> Unit,
     navController: NavController,
-    invoiceListViewModel: InvoiceListViewModel = hiltViewModel(),
     invoiceViewModel: InvoiceViewModel = hiltViewModel(),
     productsViewModel: ProductsViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel()

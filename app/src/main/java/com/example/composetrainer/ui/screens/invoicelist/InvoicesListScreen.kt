@@ -1,6 +1,5 @@
 package com.example.composetrainer.ui.screens.invoicelist
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,17 +12,26 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,10 +40,13 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.composetrainer.R
+import com.example.composetrainer.domain.model.InvoiceType
 import com.example.composetrainer.domain.model.InvoiceWithProducts
 import com.example.composetrainer.ui.theme.BComps
 import com.example.composetrainer.ui.theme.Beirut_Medium
+import com.example.composetrainer.ui.viewmodels.InvoiceListEvent
 import com.example.composetrainer.ui.viewmodels.InvoiceListViewModel
 import com.example.composetrainer.utils.dimen
 import com.example.composetrainer.utils.dimenTextSize
@@ -49,156 +60,344 @@ fun InvoicesListScreen(
     onCreateNew: () -> Unit,
     onInvoiceClick: (Long) -> Unit
 ) {
-    val invoices by invoiceListViewModel.invoices.collectAsState()
-    val isLoading by invoiceListViewModel.isLoading.collectAsState()
-    val errorMessage by invoiceListViewModel.errorMessage.collectAsState()
-    val sortNewestFirst by invoiceListViewModel.sortNewestFirst.collectAsState()
-    val isSelectionMode by invoiceListViewModel.isSelectionMode.collectAsState()
-    val selectedInvoices by invoiceListViewModel.selectedInvoices.collectAsState()
-    val showDeleteConfirmationDialog by invoiceListViewModel.showDeleteConfirmationDialog.collectAsState()
-
+    // Collect UI state using lifecycle-aware collector
+    val uiState by invoiceListViewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Show error messages as Snackbar (better UX than Toast)
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let { error ->
+            snackbarHostState.showSnackbar(error)
+            invoiceListViewModel.onEvent(InvoiceListEvent.ClearError)
+        }
+    }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()// or use WindowInsets.statusBars.asPaddingValues()
-        ) {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(start = dimen(R.dimen.space_6), end = dimen(R.dimen.space_2)),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
+                // Top bar with actions
+                InvoiceListTopBar(
+                    isSelectionMode = uiState.isSelectionMode,
+                    selectedCount = uiState.selectedInvoices.size,
+                    sortNewestFirst = uiState.sortNewestFirst,
+                    selectedTypeFilter = uiState.selectedTypeFilter,
+                    hasInvoices = uiState.filteredInvoices.isNotEmpty(),
+                    onEvent = invoiceListViewModel::onEvent
+                )
 
-                if (isSelectionMode) {
-                    Text(
-                        text = if (selectedInvoices.isEmpty()) str(R.string.select_invoices_to_delete)
-                        else str(R.string.selected_invoices_count).format(selectedInvoices.size),
-                        fontFamily = BComps,
-                        fontSize = dimenTextSize(R.dimen.text_size_lg)
-                    )
+                // Content area
+                Box(modifier = Modifier.weight(1f)) {
+                    when {
+                        uiState.isLoading && uiState.filteredInvoices.isEmpty() -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
 
-                    Row {
-                        // Delete button
-                        IconButton(
-                            onClick = {
-                                if (selectedInvoices.isNotEmpty()) {
-                                    invoiceListViewModel.showDeleteConfirmationDialog()
+                        uiState.filteredInvoices.isEmpty() -> {
+                            EmptyInvoicesState(
+                                hasFilter = uiState.selectedTypeFilter != null,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+
+                        else -> {
+                            InvoicesLazyList(
+                                invoiceWithProductsList = uiState.filteredInvoices,
+                                isSelectionMode = uiState.isSelectionMode,
+                                selectedInvoices = uiState.selectedInvoices,
+                                onInvoiceClick = { invoiceId ->
+                                    if (uiState.isSelectionMode) {
+                                        invoiceListViewModel.onEvent(
+                                            InvoiceListEvent.ToggleInvoiceSelection(invoiceId)
+                                        )
+                                    } else {
+                                        onInvoiceClick(invoiceId)
+                                    }
+                                },
+                                onDelete = { invoiceId ->
+                                    invoiceListViewModel.onEvent(
+                                        InvoiceListEvent.DeleteInvoice(invoiceId)
+                                    )
+                                },
+                                onLongClick = { invoiceId ->
+                                    if (!uiState.isSelectionMode) {
+                                        invoiceListViewModel.onEvent(InvoiceListEvent.ToggleSelectionMode)
+                                        invoiceListViewModel.onEvent(
+                                            InvoiceListEvent.ToggleInvoiceSelection(invoiceId)
+                                        )
+                                    }
                                 }
-                            },
-                            enabled = selectedInvoices.isNotEmpty()
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.delete_24px),
-                                contentDescription = str(R.string.delete),
-                                tint = if (selectedInvoices.isEmpty())
-                                    Color.Gray else MaterialTheme.colorScheme.error
                             )
-                        }
 
-                        // Cancel selection mode
-                        IconButton(onClick = { invoiceListViewModel.toggleSelectionMode() }) {
-                            Icon(
-                                Icons.Default.Close,
-                                contentDescription = str(R.string.cancel)
-                            )
-                        }
-                    }
-                } else {
-                    Text(
-                        str(R.string.sale_invoices),
-                        fontFamily = Beirut_Medium,
-                        fontSize = dimenTextSize(R.dimen.text_size_xl)
-                    )
-
-                    Row {
-                        // Long press hint
-                        if (invoices.isNotEmpty()) {
-                            IconButton(onClick = { invoiceListViewModel.toggleSelectionMode() }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.delete_24px),
-                                    contentDescription = str(R.string.delete)
+                            // Show loading indicator on top when refreshing
+                            if (uiState.isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .align(Alignment.TopCenter)
+                                        .padding(top = dimen(R.dimen.space_4))
                                 )
                             }
                         }
-
-                        IconButton(onClick = { invoiceListViewModel.toggleSortOrder() }) {
-                            Icon(
-                                Icons.Default.Sort,
-                                contentDescription = if (sortNewestFirst)
-                                    "Sort oldest to newest" else "Sort newest to oldest"
-                            )
-                        }
                     }
                 }
-
-
             }
 
-            Box(modifier = Modifier.weight(1f)) {
-                when {
-                    isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            // Snackbar for errors
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(dimen(R.dimen.space_4))
+            )
+        }
+    }
 
-                    errorMessage != null -> Toast.makeText(
-                        context,
-                        errorMessage,
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
+    // Delete confirmation dialog
+    if (uiState.showDeleteConfirmationDialog) {
+        DeleteConfirmationDialog(
+            selectedCount = uiState.selectedInvoices.size,
+            onConfirm = {
+                invoiceListViewModel.onEvent(InvoiceListEvent.DeleteSelectedInvoices)
+            },
+            onDismiss = {
+                invoiceListViewModel.onEvent(InvoiceListEvent.DismissDeleteConfirmation)
+            }
+        )
+    }
+}
 
-                    invoices.isEmpty() -> Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "No invoices available",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+@Composable
+private fun InvoiceListTopBar(
+    isSelectionMode: Boolean,
+    selectedCount: Int,
+    sortNewestFirst: Boolean,
+    selectedTypeFilter: InvoiceType?,
+    hasInvoices: Boolean,
+    onEvent: (InvoiceListEvent) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(start = dimen(R.dimen.space_6), end = dimen(R.dimen.space_2)),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (isSelectionMode) {
+            SelectionModeTopBar(
+                selectedCount = selectedCount,
+                onDelete = { onEvent(InvoiceListEvent.ShowDeleteConfirmation) },
+                onCancel = { onEvent(InvoiceListEvent.ToggleSelectionMode) }
+            )
+        } else {
+            NormalModeTopBar(
+                sortNewestFirst = sortNewestFirst,
+                selectedTypeFilter = selectedTypeFilter,
+                hasInvoices = hasInvoices,
+                onSort = { onEvent(InvoiceListEvent.ToggleSortOrder) },
+                onFilterChange = { type -> onEvent(InvoiceListEvent.FilterByType(type)) },
+                onDeleteMode = { onEvent(InvoiceListEvent.ToggleSelectionMode) }
+            )
+        }
+    }
+}
 
-                    else -> InvoicesLazyList(
-                        invoiceWithProductsList = invoices,
-                        onInvoiceClick = {
-                            if (isSelectionMode) {
-                                invoiceListViewModel.toggleInvoiceSelection(it)
-                            } else {
-                                onInvoiceClick(it)
-                            }
-                        },
-                        onDelete = invoiceListViewModel::deleteInvoice,
-                        onLongClick = {
-                            if (!isSelectionMode) {
-                                invoiceListViewModel.toggleSelectionMode()
-                                invoiceListViewModel.toggleInvoiceSelection(it)
-                            }
-                        },
-                        isSelectionMode = isSelectionMode,
-                        selectedInvoices = selectedInvoices
-                    )
+@Composable
+private fun SelectionModeTopBar(
+    selectedCount: Int,
+    onDelete: () -> Unit,
+    onCancel: () -> Unit
+) {
+    Text(
+        text = if (selectedCount == 0) str(R.string.select_invoices_to_delete)
+        else str(R.string.selected_invoices_count).format(selectedCount),
+        fontFamily = BComps,
+        fontSize = dimenTextSize(R.dimen.text_size_lg)
+    )
 
-                }
+    Row {
+        // Delete button
+        IconButton(
+            onClick = onDelete,
+            enabled = selectedCount > 0
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.delete_24px),
+                contentDescription = str(R.string.delete),
+                tint = if (selectedCount == 0) Color.Gray
+                else MaterialTheme.colorScheme.error
+            )
+        }
+
+        // Cancel selection mode
+        IconButton(onClick = onCancel) {
+            Icon(
+                Icons.Default.Close,
+                contentDescription = str(R.string.cancel)
+            )
+        }
+    }
+}
+
+@Composable
+private fun NormalModeTopBar(
+    sortNewestFirst: Boolean,
+    selectedTypeFilter: InvoiceType?,
+    hasInvoices: Boolean,
+    onSort: () -> Unit,
+    onFilterChange: (InvoiceType?) -> Unit,
+    onDeleteMode: () -> Unit
+) {
+    Text(
+        str(R.string.sale_invoices),
+        fontFamily = Beirut_Medium,
+        fontSize = dimenTextSize(R.dimen.text_size_xl)
+    )
+
+    Row {
+        // Filter button
+        InvoiceTypeFilterMenu(
+            selectedType = selectedTypeFilter,
+            onFilterChange = onFilterChange
+        )
+
+        // Delete mode button
+        if (hasInvoices) {
+            IconButton(onClick = onDeleteMode) {
+                Icon(
+                    painter = painterResource(id = R.drawable.delete_24px),
+                    contentDescription = str(R.string.delete)
+                )
             }
         }
 
-
+        // Sort button
+        IconButton(onClick = onSort) {
+            Icon(
+                Icons.Default.Sort,
+                contentDescription = if (sortNewestFirst)
+                    "Sort oldest to newest" else "Sort newest to oldest"
+            )
+        }
     }
+}
 
-    // Show delete confirmation dialog when needed
-    if (showDeleteConfirmationDialog) {
-        val context = LocalContext.current
+@Composable
+private fun InvoiceTypeFilterMenu(
+    selectedType: InvoiceType?,
+    onFilterChange: (InvoiceType?) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box {
+        IconButton(onClick = { expanded = true }) {
+            Icon(
+                Icons.Default.FilterList,
+                contentDescription = "Filter by type",
+                tint = if (selectedType != null)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        "All Types",
+                        color = if (selectedType == null)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.onSurface
+                    )
+                },
+                onClick = {
+                    onFilterChange(null)
+                    expanded = false
+                }
+            )
+
+            InvoiceType.entries.forEach { type ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            type.name,
+                            color = if (selectedType == type)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.onSurface
+                        )
+                    },
+                    onClick = {
+                        onFilterChange(type)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptyInvoicesState(
+    hasFilter: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = if (hasFilter)
+                "No invoices found for this filter"
+            else
+                "No invoices available",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        if (hasFilter) {
+            Text(
+                text = "Try changing the filter",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = dimen(R.dimen.space_2))
+            )
+        }
+    }
+}
+
+@Composable
+private fun DeleteConfirmationDialog(
+    selectedCount: Int,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
         AndroidAlertDialog.Builder(context)
             .setTitle(context.getString(R.string.delete_selected_invoices))
-            .setMessage(context.getString(R.string.are_you_sure_to_delete_selected_invoices))
+            .setMessage(
+                context.getString(R.string.are_you_sure_to_delete_selected_invoices)
+                    .format(selectedCount)
+            )
             .setPositiveButton(context.getString(R.string.delete)) { _, _ ->
-                invoiceListViewModel.deleteSelectedInvoices()
+                onConfirm()
             }
             .setNegativeButton(context.getString(R.string.cancel)) { _, _ ->
-                invoiceListViewModel.dismissDeleteConfirmationDialog()
+                onDismiss()
+            }
+            .setOnDismissListener {
+                onDismiss()
             }
             .show()
     }
@@ -207,15 +406,18 @@ fun InvoicesListScreen(
 @Composable
 private fun InvoicesLazyList(
     invoiceWithProductsList: List<InvoiceWithProducts>,
+    isSelectionMode: Boolean,
+    selectedInvoices: Set<Long>,
     onInvoiceClick: (Long) -> Unit,
     onDelete: (Long) -> Unit,
-    onLongClick: (Long) -> Unit = {},
-    isSelectionMode: Boolean = false,
-    selectedInvoices: Set<Long> = emptySet()
+    onLongClick: (Long) -> Unit
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(invoiceWithProductsList, key = { it.invoiceId.value }) { invoice ->
+            items(
+                items = invoiceWithProductsList,
+                key = { it.invoiceId.value }
+            ) { invoice ->
                 InvoiceItem(
                     invoiceWithProducts = invoice,
                     onClick = { onInvoiceClick(invoice.invoiceId.value) },

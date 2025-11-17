@@ -1,6 +1,5 @@
 package com.example.composetrainer.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,7 +25,6 @@ import androidx.navigation.navArgument
 import com.example.composetrainer.R
 import com.example.composetrainer.ui.components.CustomNavigationBar
 import com.example.composetrainer.ui.components.util.SnackyHost
-import com.example.composetrainer.ui.components.util.SnackyType
 import com.example.composetrainer.ui.components.util.rememberSnackyHostState
 import com.example.composetrainer.ui.navigation.BottomNavItem
 import com.example.composetrainer.ui.navigation.Routes
@@ -41,13 +39,11 @@ import com.example.composetrainer.ui.screens.productlist.ProductScreen
 import com.example.composetrainer.ui.screens.productlist.serverlist.ServerProductListScreen
 import com.example.composetrainer.ui.screens.setting.SettingScreen
 import com.example.composetrainer.ui.theme.ComposeTrainerTheme
-import com.example.composetrainer.ui.viewmodels.InvoiceListViewModel
 import com.example.composetrainer.ui.viewmodels.ProductsViewModel
 import com.example.composetrainer.ui.viewmodels.home.HomeViewModel
 import com.example.composetrainer.utils.str
 import com.example.login.ui.screens.LoginScreen
 import com.example.login.ui.screens.RegisterScreen
-import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen(
@@ -55,8 +51,6 @@ fun MainScreen(
     isDarkTheme: Boolean = false,
     onToggleTheme: () -> Unit = {}
 ) {
-    // Create a shared InvoiceViewModel instance
-    val sharedInvoiceListViewModel: InvoiceListViewModel = hiltViewModel()
 
     // Create a shared HomeViewModel instance for barcode scanning
     val sharedHomeViewModel: HomeViewModel = hiltViewModel()
@@ -216,7 +210,6 @@ fun MainScreen(
                             navController.popBackStack()
                         },
                         navController = navController,
-                        invoiceListViewModel = sharedInvoiceListViewModel,
                         homeViewModel = sharedHomeViewModel
                     )
                 }

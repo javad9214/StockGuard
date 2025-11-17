@@ -426,6 +426,7 @@ fun InvoiceWithProducts.toInvoiceSummary(): InvoiceSummary {
         customerName = null, // You might need to join with customer data
         totalAmount = invoice.totalAmount ?: calculateTotalAmount(),
         status = invoice.status,
+        invoiceType = invoice.invoiceType,
         productsCount = invoiceProducts.size
     )
 }
@@ -438,6 +439,7 @@ data class InvoiceSummary(
     val customerName: String?,
     val totalAmount: Money,
     val status: InvoiceStatus?,
+    val invoiceType: InvoiceType?,
     val productsCount: Int
 )
 
