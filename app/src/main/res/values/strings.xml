@@ -39,27 +39,29 @@
     <string name="products_sold_count">products sold count</string>
     <string name="profit">profit</string>
     <string name="total_amount">total amount</string>
-    <string name="units_sold">واحد فروخته شده</string>
-    <string name="total_revenue">مجموع درآمد</string>
-    <string name="in_stock">موجود</string>
-    <string name="stock_healthy">موجودی خوب</string>
-    <string name="stock_low">موجودی کم</string>
-    <string name="stock_critical">موجودی بحرانی</string>
-    <string name="units_available">واحد موجود</string>
+    <string name="units_sold">Units Sold</string>
+    <string name="total_revenue">Total Revenue</string>
+    <string name="in_stock">In Stock</string>
+    <string name="stock_healthy">Healthy Stock</string>
+    <string name="stock_low">Low Stock</string>
+    <string name="stock_critical">Critical Stock</string>
+    <string name="units_available">Units Available</string>
 
-    // Low Stock Products -->
-    <string name="critical">بحرانی</string>
-    <string name="low">کم</string>
-    <string name="current_stock">موجودی فعلی</string>
-    <string name="min_stock_level">حداقل موجودی</string>
-    <string name="reorder_cost">هزینه سفارش مجدد</string>
-    <string name="last_sold">آخرین فروش</string>
-    <string name="days_ago">روز پیش</string>
-    <string name="out_of_stock">ناموجود</string>
-    <string name="overstocked">موجودی زیاد</string>
-    <string name="units">واحد</string>
-    <string name="never_sold">هرگز فروخته نشده</string>
-    <string name="dead_stock_warning">کالای راکد - بیش از 6 ماه فروش نداشته</string>
+    <!-- Low Stock Products -->
+    <string name="low_stock_products">Low Stock Products</string>
+    <string name="critical">Critical</string>
+    <string name="low">Low</string>
+    <string name="current_stock">Current Stock</string>
+    <string name="min_stock_level">Minimum Stock Level</string>
+    <string name="reorder_cost">Reorder Cost</string>
+    <string name="last_sold">Last Sold</string>
+    <string name="days_ago">Days Ago</string>
+    <string name="out_of_stock">Out of Stock</string>
+    <string name="overstocked">Overstocked</string>
+    <string name="units">Units</string>
+    <string name="never_sold">Never Sold</string>
+    <string name="dead_stock_warning">Dead Stock - No Sales in Over 6 Months</string>
+
 
     <!-- Invoice -->
     <string name="sale_invoice">Sale Invoice</string>

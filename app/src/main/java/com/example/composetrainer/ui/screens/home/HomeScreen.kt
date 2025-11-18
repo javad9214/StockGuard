@@ -266,6 +266,16 @@ fun HomeScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
+
+            Text(
+                modifier = Modifier.padding(start = dimen(R.dimen.space_4)),
+                text = str(R.string.stock_low),
+                style = MaterialTheme.typography.bodyLarge,
+                fontFamily = Beirut_Medium,
+                fontSize = dimenTextSize(R.dimen.text_size_lg)
+            )
+
             Spacer(modifier = Modifier.height(dimen(R.dimen.space_8)))
 
             // Low Stock Products

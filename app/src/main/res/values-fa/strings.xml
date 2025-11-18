@@ -51,6 +51,7 @@
     <string name="units_available">واحد موجود</string>
 
     // Low Stock Products -->
+    <string name="low_stock_products">محصولات درحال اتمام </string>
     <string name="critical">بحرانی</string>
     <string name="low">کم</string>
     <string name="current_stock">موجودی فعلی</string>
