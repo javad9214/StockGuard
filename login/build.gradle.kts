@@ -89,7 +89,13 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.sandwich)
 
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.core)
+
+
+    implementation(libs.androidx.security.crypto)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

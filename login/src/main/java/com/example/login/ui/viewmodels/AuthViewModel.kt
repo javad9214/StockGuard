@@ -2,88 +2,67 @@ package com.example.login.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.login.domain.util.Resource
-import com.example.login.data.remote.dto.response.LoginResponse
-import com.example.login.data.remote.dto.response.RegisterResponse
+import com.example.login.data.remote.dto.request.LoginRequest
+import com.example.login.data.remote.dto.request.RegisterRequest
+import com.example.login.domain.model.AuthUiState
+import com.example.login.domain.model.Result
 import com.example.login.domain.usecase.LoginUseCase
 import com.example.login.domain.usecase.RegisterUseCase
-import com.example.login.data.local.CredentialsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val registerUseCase: RegisterUseCase,
-    private val credentialsManager: CredentialsManager
+    private val registerUseCase: RegisterUseCase
 ) : ViewModel() {
 
-    private val _loginState = MutableStateFlow<Resource<LoginResponse>?>(null)
-    val loginState: StateFlow<Resource<LoginResponse>?> = _loginState
+    private val _uiState = MutableStateFlow(AuthUiState())
+    val uiState: StateFlow<AuthUiState> = _uiState
 
-    private val _registerState = MutableStateFlow<Resource<RegisterResponse>?>(null)
-    val registerState: StateFlow<Resource<RegisterResponse>?> = _registerState
-
-    private val _autoLoginAvailable = MutableStateFlow<Boolean?>(null)
-    val autoLoginAvailable: StateFlow<Boolean?> = _autoLoginAvailable
-
-    private val _skipLogin = MutableStateFlow<Boolean>(true)
-    val skipLogin : StateFlow<Boolean> = _skipLogin
-
-    init {
-        _skipLogin.value = true
-        checkStoredCredentials()
-    }
-
-    private fun checkStoredCredentials() {
-        _autoLoginAvailable.value = credentialsManager.getCredentials() != null
-    }
-
-    fun login(phoneNumber: String, password: String, remember: Boolean = false) {
-        loginUseCase(phoneNumber, password).onEach { result ->
-            when (result) {
-                is Resource.Success -> {
-                    if (remember) {
-                        credentialsManager.saveCredentials(phoneNumber, password)
+    fun login(phone: String, password: String) {
+        viewModelScope.launch {
+            loginUseCase(LoginRequest(phone, password)).collectLatest { result ->
+                when (result) {
+                    is Result.Loading -> {
+                        _uiState.value = AuthUiState(isLoading = true)
+                    }
+                    is Result.Success -> {
+                        _uiState.value = AuthUiState(data = result.data)
+                    }
+                    is Result.Error -> {
+                        _uiState.value = AuthUiState(errorMessage = result.message)
                     }
                 }
-                is Resource.Error -> {
-                    credentialsManager.saveCredentials(phoneNumber, password) //skip fr now
-                   // credentialsManager.clearCredentials()
-                }
-                else -> {}
             }
-            _loginState.value = result
-        }.launchIn(viewModelScope)
-    }
-
-    fun register(phoneNumber: String, password: String, fullName: String) {
-        registerUseCase(phoneNumber, password, fullName).onEach { result ->
-            _registerState.value = result
-        }.launchIn(viewModelScope)
-    }
-
-    fun attemptAutoLogin() {
-        credentialsManager.getCredentials()?.let { (phone, password) ->
-            login(phone, password, true)
         }
     }
 
-    fun clearLoginState() {
-        _loginState.value = null
-    }
-
-    fun clearRegisterState() {
-        _registerState.value = null
-    }
-
-    fun logout() {
-        credentialsManager.clearCredentials()
-        _autoLoginAvailable.value = false
+    fun register(fullName: String, phone: String, password: String) {
+        viewModelScope.launch {
+            registerUseCase(
+                RegisterRequest(
+                    fullName = fullName,
+                    phoneNumber = phone,
+                    password = password
+                )
+            ).collectLatest { result ->
+                when (result) {
+                    is Result.Loading -> {
+                        _uiState.value = AuthUiState(isLoading = true)
+                    }
+                    is Result.Success -> {
+                        _uiState.value = AuthUiState(data = result.data)
+                    }
+                    is Result.Error -> {
+                        _uiState.value = AuthUiState(errorMessage = result.message)
+                    }
+                }
+            }
+        }
     }
 }

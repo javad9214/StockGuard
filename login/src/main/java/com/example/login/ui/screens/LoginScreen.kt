@@ -14,9 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.LocalAutofillHighlightColor
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
@@ -50,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.login.R
-import com.example.login.domain.util.Resource
 import com.example.login.ui.viewmodels.AuthViewModel
 
 @Composable
@@ -59,43 +56,21 @@ fun LoginScreen(
     onRegisterClick: () -> Unit = {}
 ) {
     val viewModel: AuthViewModel = hiltViewModel()
-    val loginState by viewModel.loginState.collectAsState()
-    val autoLoginAvailable by viewModel.autoLoginAvailable.collectAsState()
-    val skipLogin by viewModel.skipLogin.collectAsState()
-    var rememberMe by remember { mutableStateOf(false) }
-
-
-    LaunchedEffect(skipLogin) {
-        onLoginSuccess()
-    }
-
-    LaunchedEffect(autoLoginAvailable) {
-        if (autoLoginAvailable == true) {
-            viewModel.attemptAutoLogin()
-        }
-    }
-
-    LaunchedEffect(loginState) {
-        loginState?.let {
-            when (it) {
-                is Resource.Success -> {
-                    onLoginSuccess()
-                    viewModel.clearLoginState()
-                }
-                is Resource.Error -> {
-                    // Skip for now
-                    onLoginSuccess()
-                    viewModel.clearLoginState()
-                }
-                is Resource.Loading -> {}
-            }
-        }
-    }
+    val uiState by viewModel.uiState.collectAsState()
 
     var phoneNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    val isLoading = loginState is Resource.Loading
+    var rememberMe by remember { mutableStateOf(false) }
+
+    val isLoading = uiState.isLoading
+
+    // Navigate ONLY on success
+    LaunchedEffect(uiState.data) {
+        if (uiState.data != null) {
+            onLoginSuccess()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -111,11 +86,10 @@ fun LoginScreen(
             colors = CardDefaults.elevatedCardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
-            elevation = CardDefaults.elevatedCardElevation(
-                defaultElevation = 8.dp
-            ),
+            elevation = CardDefaults.elevatedCardElevation(8.dp),
             shape = RoundedCornerShape(24.dp)
         ) {
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -123,7 +97,8 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                // Welcome Text
+
+                // Header
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -147,14 +122,14 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Phone Number Input
+                // Phone Input
                 OutlinedTextField(
                     value = phoneNumber,
                     onValueChange = { phoneNumber = it },
                     label = { Text(stringResource(R.string.phone_number)) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
                     enabled = !isLoading,
+                    singleLine = true,
                     leadingIcon = {
                         Row(
                             modifier = Modifier
@@ -165,11 +140,7 @@ fun LoginScreen(
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Iran Flag - You'll need to add a flag drawable
-                            Text(
-                                text = "🇮🇷",
-                                fontSize = 18.sp
-                            )
+                            Text(text = "🇮🇷", fontSize = 18.sp)
                             Text(
                                 text = "+98",
                                 style = MaterialTheme.typography.bodyMedium.copy(
@@ -181,7 +152,7 @@ fun LoginScreen(
                     },
                     trailingIcon = {
                         Icon(
-                            painter = painterResource(R.drawable.visibility_24px), // Replace with phone icon
+                            painter = painterResource(R.drawable.visibility_24px),
                             contentDescription = "Phone",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -191,10 +162,7 @@ fun LoginScreen(
                         imeAction = ImeAction.Next
                     ),
                     shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                    )
+                    colors = OutlinedTextFieldDefaults.colors()
                 )
 
                 // Password Input
@@ -211,7 +179,7 @@ fun LoginScreen(
                         PasswordVisualTransformation(),
                     leadingIcon = {
                         Icon(
-                            painter = painterResource(R.drawable.visibility_off_24px), // Replace with lock icon
+                            painter = painterResource(R.drawable.visibility_off_24px),
                             contentDescription = "Password",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -225,43 +193,34 @@ fun LoginScreen(
                                     else
                                         R.drawable.visibility_24px
                                 ),
-                                contentDescription = if (passwordVisible)
-                                    "Hide password"
-                                else
-                                    "Show password",
+                                contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     },
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Phone,
+                        keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
                     ),
                     shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                    )
+                    colors = OutlinedTextFieldDefaults.colors()
                 )
 
                 // Error Message
-                loginState?.let {
-                    if (it is Resource.Error) {
-                        Text(
-                            text = it.message ?: "An error occurred",
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall,
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                uiState.errorMessage?.let {
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Remember Me Checkbox
+                // Remember Me
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Checkbox(
@@ -270,25 +229,22 @@ fun LoginScreen(
                     )
                     Text(
                         text = stringResource(R.string.remember_me),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
 
                 // Login Button
                 Button(
                     onClick = {
-                        viewModel.login(phoneNumber, password, rememberMe)
+                        viewModel.login(phoneNumber, password)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    enabled = !isLoading && phoneNumber.isNotEmpty() && password.isNotEmpty(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                    )
+                    enabled = !isLoading &&
+                            phoneNumber.isNotEmpty() &&
+                            password.isNotEmpty(),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
@@ -306,7 +262,7 @@ fun LoginScreen(
                     }
                 }
 
-                // Sign Up Button
+                // Register Button
                 TextButton(
                     onClick = onRegisterClick,
                     modifier = Modifier.fillMaxWidth(),

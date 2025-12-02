@@ -3,6 +3,7 @@ package com.example.login.di
 import com.example.login.data.remote.api.ApiAuthService
 import com.example.login.data.repository.AuthRepositoryImpl
 import com.example.login.data.repository.LoginRepositoryImpl
+import com.example.login.data.repository.TokenManager
 import com.example.login.domain.repository.AuthRepository
 import com.example.login.domain.repository.LoginRepository
 import com.example.login.domain.usecase.LoginUseCase
@@ -21,13 +22,14 @@ object LoginModule {
     @Singleton
     fun provideLoginRepository(): LoginRepository = LoginRepositoryImpl()
 
-    @Provides
     @Singleton
+    @Provides
     fun provideAuthRepository(
-        apiAuthService: ApiAuthService
-    ): AuthRepository = AuthRepositoryImpl(
-        apiAuthService
-    )
+        apiService: ApiAuthService,
+        tokenManager: TokenManager
+    ): AuthRepository {
+        return AuthRepositoryImpl(apiService, tokenManager)
+    }
 
     @Provides
     @Singleton

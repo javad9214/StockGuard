@@ -34,7 +34,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.login.domain.util.Resource
 import com.example.login.R
 
 import com.example.login.ui.viewmodels.AuthViewModel
@@ -45,29 +44,19 @@ fun RegisterScreen(
     onNavigateToLogin: () -> Unit = {}
 ) {
     val viewModel: AuthViewModel = hiltViewModel()
-    val registerState by viewModel.registerState.collectAsState()
-
-    LaunchedEffect(registerState) {
-        registerState?.let {
-            when (it) {
-                is Resource.Success -> {
-                    onNavigateToLogin()
-                    viewModel.clearRegisterState()
-                }
-                is Resource.Error -> {
-                    // No side-effect here; UI shows the error message
-                }
-                is Resource.Loading -> {
-                    // No side-effect here; UI shows the loading state
-                }
-            }
-        }
-    }
+    val uiState by viewModel.uiState.collectAsState()
 
     var fullName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    // Navigate on success
+    LaunchedEffect(uiState.data) {
+        if (uiState.data != null) {
+            onNavigateToLogin()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -93,12 +82,11 @@ fun RegisterScreen(
         },
         bottomBar = {
             Button(
-                onClick = { viewModel.register(phoneNumber, password, fullName) },
+                onClick = { viewModel.register(fullName, phoneNumber, password) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                shape = MaterialTheme.shapes.medium,
-                enabled = registerState !is Resource.Loading
+                enabled = !uiState.isLoading
             ) {
                 Text(
                     text = stringResource(R.string.register_button),
@@ -107,6 +95,7 @@ fun RegisterScreen(
             }
         }
     ) { padding ->
+
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -115,6 +104,7 @@ fun RegisterScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             // Full Name
             OutlinedTextField(
                 value = fullName,
@@ -147,10 +137,14 @@ fun RegisterScreen(
                 singleLine = true,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
-                    val image = if (passwordVisible)
-                        R.drawable.visibility_off_24px else R.drawable.visibility_24px
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(painter = painterResource(image), contentDescription = null)
+                        Icon(
+                            painter = painterResource(
+                                if (passwordVisible) R.drawable.visibility_off_24px
+                                else R.drawable.visibility_24px
+                            ),
+                            contentDescription = null
+                        )
                     }
                 },
                 keyboardOptions = KeyboardOptions(
@@ -161,13 +155,14 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            registerState?.let {
-                when (it) {
-                    is Resource.Loading -> Text("Registering...", color = MaterialTheme.colorScheme.primary)
-                    is Resource.Error -> Text("Error: ${it.message}", color = MaterialTheme.colorScheme.error)
-                    is Resource.Success -> {} // handled in LaunchedEffect
-                }
+            when {
+                uiState.isLoading ->
+                    Text("Registering...", color = MaterialTheme.colorScheme.primary)
+
+                uiState.errorMessage != null ->
+                    Text("Error: ${uiState.errorMessage}", color = MaterialTheme.colorScheme.error)
             }
         }
     }
 }
+
