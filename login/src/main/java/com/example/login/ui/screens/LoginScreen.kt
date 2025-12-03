@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.login.R
+import com.example.login.ui.theme.BNazanin
+import com.example.login.ui.theme.Beirut_Medium
 import com.example.login.ui.viewmodels.AuthViewModel
 
 @Composable
@@ -110,12 +113,14 @@ fun LoginScreen(
                             fontSize = 32.sp
                         ),
                         textAlign = TextAlign.Center,
+                        fontFamily = Beirut_Medium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = stringResource(R.string.login_subtitle),
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
+                        fontFamily = BNazanin,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -130,7 +135,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !isLoading,
                     singleLine = true,
-                    leadingIcon = {
+                    trailingIcon = {
                         Row(
                             modifier = Modifier
                                 .padding(start = 8.dp)
@@ -140,19 +145,24 @@ fun LoginScreen(
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(text = "🇮🇷", fontSize = 18.sp)
+                            Icon(
+                                modifier = Modifier.size(dimensionResource(id = R.dimen.size_sm)),
+                                painter = painterResource(R.drawable.iran),
+                                contentDescription = "iran_flag",
+                            )
                             Text(
                                 text = "+98",
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.SemiBold
                                 ),
+                                fontFamily = BNazanin,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     },
-                    trailingIcon = {
+                    leadingIcon = {
                         Icon(
-                            painter = painterResource(R.drawable.visibility_24px),
+                            painter = painterResource(R.drawable.mobile),
                             contentDescription = "Phone",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -179,7 +189,7 @@ fun LoginScreen(
                         PasswordVisualTransformation(),
                     leadingIcon = {
                         Icon(
-                            painter = painterResource(R.drawable.visibility_off_24px),
+                            painter = painterResource(R.drawable.key),
                             contentDescription = "Password",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -189,9 +199,9 @@ fun LoginScreen(
                             Icon(
                                 painter = painterResource(
                                     if (passwordVisible)
-                                        R.drawable.visibility_off_24px
+                                        R.drawable.eye_slash
                                     else
-                                        R.drawable.visibility_24px
+                                        R.drawable.eye
                                 ),
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -199,7 +209,7 @@ fun LoginScreen(
                         }
                     },
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
+                        keyboardType = KeyboardType.NumberPassword,
                         imeAction = ImeAction.Done
                     ),
                     shape = RoundedCornerShape(12.dp),

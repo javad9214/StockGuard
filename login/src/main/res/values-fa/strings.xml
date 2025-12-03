@@ -13,5 +13,6 @@
     <string name="register_subtitle">برای شروع ثبت نام کنید</string>
     <string name="register_button">ثبت نام</string>
     <string name="full_name">نام و نام خانوادگی</string>
+    <string name="already_have_account">حساب کاربری دارید؟ وارد شوید</string>
 </resources>
 

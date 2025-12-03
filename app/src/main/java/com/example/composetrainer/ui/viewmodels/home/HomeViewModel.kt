@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composetrainer.domain.model.Product
 import com.example.composetrainer.domain.usecase.product.GetProductByBarcodeUseCase
-import com.example.composetrainer.utils.populatedbfortest.ProductImporter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +12,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val productImporter: ProductImporter,
     private val getProductByBarcodeUseCase: GetProductByBarcodeUseCase
 ): ViewModel() {
 
@@ -31,14 +29,6 @@ class HomeViewModel @Inject constructor(
 
     private val _detectedBarcode = MutableStateFlow<String?>(null)
     val detectedBarcode: StateFlow<String?> = _detectedBarcode
-
-    fun importProducts() {
-        viewModelScope.launch {
-            productImporter.importFromJsonWithProgress().collect {
-                _progress.value = it
-            }
-        }
-    }
 
     fun searchProductByBarcode(barcode: String) {
         _isLoading.value = true

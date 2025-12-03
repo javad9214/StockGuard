@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="stroke_dimen_xs">1dp</dimen>
+    <dimen name="stroke_dimen_sm">2dp</dimen>
+    <dimen name="button_padding">10dp</dimen>
+
+
+    <!-- radius -->
+    <dimen name="radius_xs">8dp</dimen>
+    <dimen name="radius_sm">10dp</dimen>
+    <dimen name="radius_md">12dp</dimen>
+    <dimen name="radius_lg">14dp</dimen>
+    <dimen name="radius_xl">16dp</dimen>
+    <dimen name="radius_xxl">24dp</dimen>
+    <dimen name="radius_3xl">32dp</dimen>
+    <dimen name="radius_circle">500dp</dimen>
+
+
+    <!-- spacing -->
+    <!-- used for margins and paddings -->
+    <dimen name="space_base">4dp</dimen>
+    <dimen name="space_none">0dp</dimen>
+    <dimen name="space_1">@dimen/space_base</dimen>
+    <dimen name="space_2">8dp</dimen> <!-- 4dp * 2 -->
+    <dimen name="space_3">12dp</dimen> <!-- 4dp * 3 -->
+    <dimen name="space_4">16dp</dimen> <!-- 4dp * 4 -->
+    <dimen name="space_5">20dp</dimen> <!-- 4dp * 5 -->
+    <dimen name="space_6">24dp</dimen> <!-- 4dp * 6 -->
+    <dimen name="space_7">32dp</dimen> <!-- 4dp * 8 -->
+    <dimen name="space_8">40dp</dimen> <!-- 4dp * 10 -->
+    <dimen name="space_9">48dp</dimen> <!-- 4dp * 12 -->
+    <dimen name="space_10">56dp</dimen> <!-- 4dp * 14 -->
+    <dimen name="space_11">64dp</dimen> <!-- 4dp * 16 -->
+    <dimen name="space_12">72dp</dimen> <!-- 4dp * 18 -->
+    <dimen name="space_13">80dp</dimen> <!-- 4dp * 20 -->
+    <dimen name="space_14">100dp</dimen> <!-- 4dp * 25 -->
+
+
+    <!-- text-sizes -->
+    <dimen name="text_size_xxs">8sp</dimen>
+    <dimen name="text_size_xs">12sp</dimen>
+    <dimen name="text_size_sm">14sp</dimen>
+    <dimen name="text_size_md">16sp</dimen>
+    <dimen name="text_size_lg">18sp</dimen>
+    <dimen name="text_size_xl">20sp</dimen>
+    <dimen name="text_size_xxl">22sp</dimen>
+    <dimen name="text_size_3xl">24sp</dimen>
+    <dimen name="text_size_4xl">26sp</dimen>
+
+    <!-- sizes -->
+    <dimen name="size_xxs">8dp</dimen>
+    <dimen name="size_xs">16dp</dimen> <!-- 8dp * 2 -->
+    <dimen name="size_sm">24dp</dimen> <!-- 8dp * 3 -->
+    <dimen name="size_md">32dp</dimen> <!-- 8dp * 4 -->
+    <dimen name="size_lg">40dp</dimen> <!-- 8dp * 5 -->
+    <dimen name="size_xl">48dp</dimen> <!-- 8dp * 6 -->
+    <dimen name="size_xxl">56dp</dimen> <!-- 8dp * 7 -->
+    <dimen name="size_3xl">64dp</dimen> <!-- 8dp * 8 -->
+    <dimen name="size_4xl">80dp</dimen> <!-- 8dp * 10 -->
+    <dimen name="size_5xl">96dp</dimen> <!-- 8dp * 12 -->
+    <dimen name="size_6xl">144dp</dimen> <!-- 8dp * 18 -->
+    <dimen name="size_7xl">200dp</dimen> <!-- 8dp * 25 -->
+    <dimen name="size_8xl">320dp</dimen> <!-- 8dp * 40 -->
+    <dimen name="size_9xl">360dp</dimen> <!-- 8dp * 45 -->
+    <dimen name="size_10xl">400dp</dimen> <!-- 8dp * 50 -->
+</resources>

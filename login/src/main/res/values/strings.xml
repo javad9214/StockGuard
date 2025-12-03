@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+
     <string name="login_title">Welcome Back!</string>
     <string name="login_subtitle">Sign in to continue</string>
     <string name="phone_number">Phone Number</string>
@@ -8,10 +10,12 @@
     <string name="remember_me">Remember Me</string>
     <string name="no_account">Don\'t have an account? Sign Up</string>
 
+
     <!-- Registration strings -->
     <string name="register_title">Create Account</string>
     <string name="register_subtitle">Sign up to get started</string>
     <string name="register_button">Sign Up</string>
     <string name="full_name">Full Name</string>
+    <string name="already_have_account">Already have an account? Login</string>
 </resources>
 
