@@ -2,7 +2,6 @@ package com.example.composetrainer.data.remote.datasource
 
 import com.example.composetrainer.data.remote.api.ApiServiceVersion
 import com.example.composetrainer.data.remote.dto.response.AppVersionResponseDto
-
 import com.skydoves.sandwich.ApiResponse
 import javax.inject.Inject
 
@@ -14,10 +13,10 @@ class VersionRemoteDataSource @Inject constructor(
 ) {
 
     /**
-     * Fetch version information for Android platform
+     * Fetch version information for Android platform (PUBLIC endpoint)
      */
     suspend fun getAndroidVersion(): ApiResponse<AppVersionResponseDto> {
-        return apiService.getVersionByPlatform(ApiServiceVersion.PLATFORM_ANDROID)
+        return apiService.getAndroidVersion()
     }
 
     /**

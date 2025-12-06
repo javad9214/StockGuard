@@ -1,5 +1,6 @@
 package com.example.composetrainer.data.remote.api
 
+
 import com.example.composetrainer.data.remote.dto.response.AppVersionResponseDto
 import com.skydoves.sandwich.ApiResponse
 import retrofit2.http.GET
@@ -11,13 +12,20 @@ import retrofit2.http.Path
 interface ApiServiceVersion {
 
     /**
-     * Get version configuration for a specific platform
-     * GET /api/version/admin/{platform}
+     * Get version configuration for Android (PUBLIC - No auth required)
+     * GET /api/version/android
+     */
+    @GET(ApiConstants.API + "version/android")
+    suspend fun getAndroidVersion(): ApiResponse<AppVersionResponseDto>
+
+    /**
+     * Get version configuration for a specific platform (PUBLIC - No auth required)
+     * GET /api/version/{platform}
      *
-     * @param platform "ANDROID" or "IOS"
+     * @param platform "android" or "ios"
      * @return AppVersionResponseDto with version information
      */
-    @GET(ApiConstants.API + "version/admin/{platform}")
+    @GET(ApiConstants.API + "version/{platform}")
     suspend fun getVersionByPlatform(
         @Path("platform") platform: String
     ): ApiResponse<AppVersionResponseDto>
@@ -30,7 +38,7 @@ interface ApiServiceVersion {
     suspend fun getAllVersions(): ApiResponse<List<AppVersionResponseDto>>
 
     companion object {
-        const val PLATFORM_ANDROID = "ANDROID"
-        const val PLATFORM_IOS = "IOS"
+        const val PLATFORM_ANDROID = "android"  // lowercase for public API
+        const val PLATFORM_IOS = "ios"
     }
 }
