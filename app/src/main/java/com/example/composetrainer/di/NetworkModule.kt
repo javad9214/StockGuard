@@ -3,6 +3,7 @@ package com.example.composetrainer.di
 import com.example.composetrainer.data.remote.api.ApiConstants
 import com.example.composetrainer.data.remote.api.ApiServiceMainProduct
 import com.example.composetrainer.data.remote.api.ApiServiceVersion
+import com.example.composetrainer.data.remote.interceptor.AuthInterceptor
 import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -25,12 +26,15 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(
+        authInterceptor: AuthInterceptor
+    ): OkHttpClient {
         return OkHttpClient.Builder()
             .connectTimeout(300, TimeUnit.SECONDS)  // Connection timeout
             .readTimeout(300, TimeUnit.SECONDS)     // Read timeout
             .writeTimeout(300, TimeUnit.SECONDS)    // Write timeout
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(authInterceptor)
             .build()
     }
 
