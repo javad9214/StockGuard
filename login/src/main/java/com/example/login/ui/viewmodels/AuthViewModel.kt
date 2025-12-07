@@ -8,6 +8,7 @@ import com.example.login.domain.model.AuthUiState
 import com.example.login.domain.model.Result
 import com.example.login.domain.repository.AuthRepository
 import com.example.login.domain.usecase.LoginUseCase
+import com.example.login.domain.usecase.LogoutUseCase
 import com.example.login.domain.usecase.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val registerUseCase: RegisterUseCase,
+    private val logoutUseCase: LogoutUseCase,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -70,5 +72,14 @@ class AuthViewModel @Inject constructor(
 
     suspend fun isLoggedIn(): Boolean {
         return authRepository.isLoggedIn()
+    }
+
+
+    fun logout() {
+        viewModelScope.launch {
+            logoutUseCase()
+            // Reset UI state after logout
+            _uiState.value = AuthUiState()
+        }
     }
 }

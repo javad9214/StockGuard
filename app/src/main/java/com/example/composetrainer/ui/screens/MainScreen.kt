@@ -282,7 +282,14 @@ fun MainScreen(
                         },
                         isDarkTheme = isDarkTheme,
                         onToggleTheme = onToggleTheme,
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
+                        onLogout = {
+                            // Logout and navigate to login
+                            authViewModel.logout()
+                            navController.navigate(Routes.LOGIN) {
+                                popUpTo(0) { inclusive = true } // Clear all back stack
+                            }
+                        }
                     )
                 }
 

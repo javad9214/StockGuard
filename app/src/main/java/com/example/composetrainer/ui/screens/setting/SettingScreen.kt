@@ -46,6 +46,7 @@ fun SettingScreen(
     onToggleTheme: () -> Unit = {},
     isDarkTheme: Boolean = false,
     onNavigateBack: () -> Unit,
+    onLogout: () -> Unit = {},
     settingViewModel: SettingViewModel = hiltViewModel(),
 ) {
 
@@ -115,6 +116,8 @@ fun SettingScreen(
 
             SettingsVersionSection()
 
+            LogoutSection(onLogoutClick = onLogout)
+
         }
 
         Text(
@@ -133,4 +136,3 @@ fun SettingScreen(
 }
 
 const val SETTING_SCREEN_TAG = "SettingScreen"
-

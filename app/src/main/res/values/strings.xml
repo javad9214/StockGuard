@@ -201,4 +201,11 @@
     <string name="add_product_button">Add Product</string>
     <string name="save_changes_button">Save Changes</string>
 
+    <!-- Logout Strings -->
+    <string name="logout">خروج از حساب</string>
+    <string name="account">حساب کاربری</string>
+    <string name="logout_confirmation_title">خروج از حساب کاربری؟</string>
+    <string name="logout_confirmation_message">آیا مطمئن هستید که می‌خواهید از حساب کاربری خود خارج شوید؟</string>
+
+
 </resources>
