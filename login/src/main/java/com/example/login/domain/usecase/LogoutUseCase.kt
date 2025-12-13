@@ -9,6 +9,6 @@ class LogoutUseCase @Inject constructor(
     private val repository: AuthRepository
 ) {
     suspend operator fun invoke() {
-        repository.clearToken()
+        repository.clearTokens()
     }
 }

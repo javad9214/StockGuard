@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,6 +53,8 @@ import com.example.login.R
 import com.example.login.ui.theme.BNazanin
 import com.example.login.ui.theme.Beirut_Medium
 import com.example.login.ui.viewmodels.AuthViewModel
+import com.example.login.util.PhoneValidator
+import com.example.login.util.toLocalizedMessage
 
 @Composable
 fun LoginScreen(
@@ -65,6 +68,8 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
+    var phoneError by remember { mutableStateOf<String?>(null) }
+    var showPhoneError by remember { mutableStateOf(false) }
 
     val isLoading = uiState.isLoading
 
@@ -127,53 +132,91 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Phone Input
-                OutlinedTextField(
-                    value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
-                    label = { Text(stringResource(R.string.phone_number)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !isLoading,
-                    singleLine = true,
-                    trailingIcon = {
-                        Row(
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .padding(horizontal = 10.dp, vertical = 6.dp),
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                // Phone Input with Validation
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = phoneNumber,
+                        onValueChange = { input ->
+                            // Filter: only digits, max 10 chars
+                            val filtered = PhoneValidator.filterInput(input)
+                            phoneNumber = filtered
+
+                            // Real-time validation
+                            if (filtered.isNotEmpty()) {
+                                val validation = PhoneValidator.validate(filtered)
+                                phoneError = validation.getErrorMessage()?.toLocalizedMessage { resId ->
+                                    // This will be replaced by stringResource in actual usage
+                                    ""
+                                }
+                                showPhoneError = !validation.isValid() && filtered.length >= 10
+                            } else {
+                                phoneError = null
+                                showPhoneError = false
+                            }
+                        },
+                        label = { Text(stringResource(R.string.phone_number)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !isLoading,
+                        singleLine = true,
+                        isError = showPhoneError,
+                        supportingText = {
+                            if (showPhoneError && phoneError != null) {
+                                Text(
+                                    text = phoneError!!,
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            } else {
+                                Text(
+                                    text = stringResource(R.string.phone_hint),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        },
+                        trailingIcon = {
+                            Row(
+                                modifier = Modifier
+                                    .padding(start = 8.dp)
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(dimensionResource(id = R.dimen.size_sm)),
+                                    painter = painterResource(R.drawable.iran),
+                                    contentDescription = "iran_flag",
+                                    tint = Color.Unspecified
+                                )
+                                Text(
+                                    text = "+98",
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        fontWeight = FontWeight.SemiBold
+                                    ),
+                                    fontFamily = BNazanin,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        },
+                        leadingIcon = {
                             Icon(
-                                modifier = Modifier.size(dimensionResource(id = R.dimen.size_sm)),
-                                painter = painterResource(R.drawable.iran),
-                                contentDescription = "iran_flag",
+                                painter = painterResource(R.drawable.mobile),
+                                contentDescription = "Phone",
+                                tint = if (showPhoneError)
+                                    MaterialTheme.colorScheme.error
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            Text(
-                                text = "+98",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontWeight = FontWeight.SemiBold
-                                ),
-                                fontFamily = BNazanin,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.mobile),
-                            contentDescription = "Phone",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Phone,
-                        imeAction = ImeAction.Next
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors()
-                )
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors()
+                    )
+                }
 
                 // Password Input
                 OutlinedTextField(
@@ -209,14 +252,14 @@ fun LoginScreen(
                         }
                     },
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.NumberPassword,
+                        keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
                     ),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors()
                 )
 
-                // Error Message
+                // Error Message from API
                 uiState.errorMessage?.let {
                     Text(
                         text = it,
@@ -246,14 +289,21 @@ fun LoginScreen(
                 // Login Button
                 Button(
                     onClick = {
-                        viewModel.login(phoneNumber, password)
+                        // Final validation before login
+                        val validation = PhoneValidator.validate(phoneNumber)
+                        if (validation.isValid()) {
+                            viewModel.login(phoneNumber, password)
+                        } else {
+                            showPhoneError = true
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
                     enabled = !isLoading &&
-                            phoneNumber.isNotEmpty() &&
-                            password.isNotEmpty(),
+                            phoneNumber.length == 10 &&
+                            password.isNotEmpty() &&
+                            !showPhoneError,
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     if (isLoading) {

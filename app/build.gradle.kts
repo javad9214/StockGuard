@@ -25,8 +25,8 @@ android {
         applicationId = "com.example.composetrainer"
         minSdk = 26
         targetSdk = 36
-        versionCode = 15
-        versionName = "0.8.2"
+        versionCode = 16
+        versionName = "0.10.0"
 
         // Add BASE_URL from local.properties
         buildConfigField("String", "BASE_URL", "\"${localProperties["BASE_URL"]}\"")

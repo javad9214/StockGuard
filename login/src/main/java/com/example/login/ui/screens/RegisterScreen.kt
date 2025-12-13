@@ -52,6 +52,8 @@ import com.example.login.R
 import com.example.login.ui.theme.BNazanin
 import com.example.login.ui.theme.Beirut_Medium
 import com.example.login.ui.viewmodels.AuthViewModel
+import com.example.login.util.PhoneValidator
+import com.example.login.util.toLocalizedMessage
 
 @Composable
 fun RegisterScreen(
@@ -64,8 +66,12 @@ fun RegisterScreen(
     var phoneNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var phoneError by remember { mutableStateOf<String?>(null) }
+    var showPhoneError by remember { mutableStateOf(false) }
 
     val isLoading = uiState.isLoading
+
+    val phoneErrorMsg = stringResource(R.string.error_phone_starts_with_zero)
 
     // Navigate on success
     LaunchedEffect(uiState.data) {
@@ -135,7 +141,7 @@ fun RegisterScreen(
                     singleLine = true,
                     leadingIcon = {
                         Icon(
-                            painter = painterResource(R.drawable.mobile), // Replace with person icon if available
+                            painter = painterResource(R.drawable.mobile),
                             contentDescription = "Full Name",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -148,56 +154,102 @@ fun RegisterScreen(
                     colors = OutlinedTextFieldDefaults.colors()
                 )
 
-                // Phone Input
-                OutlinedTextField(
-                    value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
-                    label = { Text(stringResource(R.string.phone_number)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !isLoading,
-                    singleLine = true,
-                    trailingIcon = {
-                        Row(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .padding(horizontal = 10.dp, vertical = 6.dp),
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                // Phone Input with Validation
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = phoneNumber,
+                        onValueChange = { input ->
+                            // Filter: only digits, max 10 chars
+                            val filtered = PhoneValidator.filterInput(input)
+                            phoneNumber = filtered
+                            // Real-time validation
+                            if (filtered.isNotEmpty()) {
+                                val validation = PhoneValidator.validate(filtered)
+                                when {
 
-                            Text(
-                                modifier = Modifier.padding(start = 4.dp),
-                                text = "98+",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontWeight = FontWeight.SemiBold
-                                ),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-
+                                    filtered.startsWith("0") -> {
+                                        phoneError = phoneErrorMsg
+                                        showPhoneError = true
+                                    }
+                                    !validation.isValid() && filtered.length >= 10 -> {
+                                        phoneError = validation.getErrorMessage()?.toLocalizedMessage { resId ->
+                                            // This will be replaced by actual stringResource
+                                            ""
+                                        }
+                                        showPhoneError = true
+                                    }
+                                    else -> {
+                                        phoneError = null
+                                        showPhoneError = false
+                                    }
+                                }
+                            } else {
+                                phoneError = null
+                                showPhoneError = false
+                            }
+                        },
+                        label = { Text(stringResource(R.string.phone_number)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !isLoading,
+                        singleLine = true,
+                        isError = showPhoneError,
+                        supportingText = {
+                            if (showPhoneError && phoneError != null) {
+                                Text(
+                                    text = phoneError!!,
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            } else {
+                                Text(
+                                    text = stringResource(R.string.phone_hint),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        },
+                        trailingIcon = {
+                            Row(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    modifier = Modifier.padding(start = 4.dp),
+                                    text = "98+",
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        fontWeight = FontWeight.SemiBold
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Icon(
+                                    modifier = Modifier.size(dimensionResource(id = R.dimen.size_sm)),
+                                    painter = painterResource(R.drawable.iran),
+                                    contentDescription = "iran_flag",
+                                    tint = Color.Unspecified
+                                )
+                            }
+                        },
+                        leadingIcon = {
                             Icon(
-                                modifier = Modifier.size(dimensionResource(id = R.dimen.size_sm)),
-                                painter = painterResource(R.drawable.iran),
-                                contentDescription = "iran_flag",
-                                tint = Color.Unspecified
+                                painter = painterResource(R.drawable.mobile),
+                                contentDescription = "Phone",
+                                tint = if (showPhoneError)
+                                    MaterialTheme.colorScheme.error
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant
                             )
-
-                        }
-                    },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.mobile),
-                            contentDescription = "Phone",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Phone,
-                        imeAction = ImeAction.Next
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors()
-                )
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors()
+                    )
+                }
 
                 // Password Input
                 OutlinedTextField(
@@ -233,14 +285,14 @@ fun RegisterScreen(
                         }
                     },
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.NumberPassword,
+                        keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
                     ),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors()
                 )
 
-                // Error Message
+                // Error Message from API
                 uiState.errorMessage?.let {
                     Text(
                         text = it,
@@ -255,15 +307,22 @@ fun RegisterScreen(
                 // Register Button
                 Button(
                     onClick = {
-                        viewModel.register(fullName, phoneNumber, password)
+                        // Final validation before register
+                        val validation = PhoneValidator.validate(phoneNumber)
+                        if (validation.isValid()) {
+                            viewModel.register(fullName, phoneNumber, password)
+                        } else {
+                            showPhoneError = true
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
                     enabled = !isLoading &&
                             fullName.isNotEmpty() &&
-                            phoneNumber.isNotEmpty() &&
-                            password.isNotEmpty(),
+                            phoneNumber.length == 10 &&
+                            password.isNotEmpty() &&
+                            !showPhoneError,
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     if (isLoading) {

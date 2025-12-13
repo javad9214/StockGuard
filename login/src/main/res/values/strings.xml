@@ -17,5 +17,14 @@
     <string name="register_button">Sign Up</string>
     <string name="full_name">Full Name</string>
     <string name="already_have_account">Already have an account? Login</string>
+
+    <!-- Phone Validation Errors -->
+    <string name="error_phone_empty">Phone number is required</string>
+    <string name="error_phone_starts_with_zero">Phone number should not start with 0</string>
+    <string name="error_phone_invalid_chars">Only numbers are allowed</string>
+    <string name="error_phone_too_short">Phone number must be 10 digits</string>
+    <string name="error_phone_too_long">Phone number cannot exceed 10 digits</string>
+    <string name="error_phone_invalid_start">Phone number must start with 9</string>
+    <string name="phone_hint">Example: 9121234567</string>
 </resources>
 
