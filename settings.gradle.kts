@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ComposeTrainer"
+rootProject.name = "YarAnbar"
 include(":app")
 include(":login")

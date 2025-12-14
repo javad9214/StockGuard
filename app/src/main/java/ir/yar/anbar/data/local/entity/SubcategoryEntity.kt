@@ -1,0 +1,17 @@
+package ir.yar.anbar.data.local.entity
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "subcategories")
+data class SubcategoryEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val name: String,
+    val categoryId: Int, // FK to CategoryEntity
+    val icon: String? = null,
+    val description: String? = null,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis(),
+    val isDeleted: Boolean = false
+)
