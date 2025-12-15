@@ -16,27 +16,29 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.screens.component.JetpackComposeBasicColumnChart
+import ir.yar.anbar.ui.screens.component.vicochart.DailySalesChart
 import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.viewmodels.AnalyzeViewModel
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.str
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalyzeScreen(
     modifier: Modifier = Modifier,
     viewModel: AnalyzeViewModel = hiltViewModel()
 ) {
     val modelProducer = remember { CartesianChartModelProducer() }
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -61,8 +63,13 @@ fun AnalyzeScreen(
 
         Spacer(modifier = Modifier.height(dimen(R.dimen.space_5)))
 
+        // Daily Sales Chart
+        DailySalesChart(
+            dailySalesData = uiState.dailySalesChartData,
+            modelProducer = modelProducer,
+            modifier = Modifier.padding(horizontal = dimen(R.dimen.space_4))
+        )
 
-        JetpackComposeBasicColumnChart(modelProducer)
     }
 
 }
