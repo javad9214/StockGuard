@@ -43,6 +43,7 @@
     <string name="total_revenue">Total Revenue</string>
     <string name="in_stock">In Stock</string>
     <string name="stock_healthy">Healthy Stock</string>
+    <string name="stock_running_out">Stock Running Out</string>
     <string name="stock_low">Low Stock</string>
     <string name="stock_critical">Critical Stock</string>
     <string name="units_available">Units Available</string>
@@ -186,7 +187,7 @@
     <string name="Tap_to_start_scanning">Tap to Start Scanning</string>
     <string name="invoice_created_successfully">invoice created successfully</string>
     <string name="finalizing_invoice">Finalizing Invoice</string>
-    
+
     <!-- Barcode Scanner View -->
     <string name="barcode_position">Place the product barcode inside the frame!</string>
 
@@ -207,5 +208,67 @@
     <string name="logout_confirmation_title">خروج از حساب کاربری؟</string>
     <string name="logout_confirmation_message">آیا مطمئن هستید که می‌خواهید از حساب کاربری خود خارج شوید؟</string>
 
+
+    <!-- Version Update Dialog -->
+    <string name="update_available">Update Available</string>
+    <string name="update_required">Update Required</string>
+    <string name="update_available_message">A new version is available with improvements and bug fixes.</string>
+    <string name="update_required_message">A new version is required to continue using the app.</string>
+    <string name="current_version">Current Version</string>
+    <string name="latest_version">Latest Version</string>
+    <string name="whats_new">What\'s New</string>
+    <string name="whats_new_compact">What\'s New:</string>
+    <string name="update_now">Update Now</string>
+    <string name="update">Update</string>
+    <string name="skip">Skip</string>
+    <string name="update_icon">Update Icon</string>
+    <string name="arrow">Arrow</string>
+    <string name="current">Current</string>
+    <string name="latest">Latest</string>
+
+    <!-- Version Check -->
+    <string name="checking_for_updates">Checking for updates...</string>
+    <string name="no_updates_available">No updates available</string>
+    <string name="update_check_failed">Failed to check for updates</string>
+    <string name="check_for_updates">Check for Updates</string>
+
+    <!-- Version Info -->
+    <string name="app_version">App Version</string>
+    <string name="version_code">Version Code</string>
+    <string name="build_number">Build Number</string>
+    <string name="last_update_check">Last update check</string>
+    <string name="never">Never</string>
+
+    <!-- Update Actions -->
+    <string name="download_update">Download Update</string>
+    <string name="install_update">Install Update</string>
+    <string name="later">Later</string>
+    <string name="remind_me_later">Remind Me Later</string>
+
+    <!-- Update Status Messages -->
+    <string name="downloading_update">Downloading update...</string>
+    <string name="update_downloaded">Update downloaded successfully</string>
+    <string name="update_download_failed">Failed to download update</string>
+    <string name="installing_update">Installing update...</string>
+    <string name="update_installed">Update installed successfully</string>
+    <string name="update_installation_failed">Failed to install update</string>
+
+    <!-- Update Permissions -->
+    <string name="update_permission_required">Permission required to install updates</string>
+    <string name="grant_permission">Grant Permission</string>
+
+    <!-- Release Notes -->
+    <string name="release_notes">Release Notes</string>
+    <string name="view_release_notes">View Release Notes</string>
+    <string name="no_release_notes">No release notes available</string>
+
+    <!-- Update Settings -->
+    <string name="update_settings">Update Settings</string>
+    <string name="auto_update">Auto Update</string>
+    <string name="auto_update_description">Automatically download and install updates</string>
+    <string name="update_over_wifi_only">Update over Wi-Fi only</string>
+    <string name="update_over_wifi_description">Only download updates when connected to Wi-Fi</string>
+    <string name="check_updates_on_startup">Check updates on startup</string>
+    <string name="check_updates_startup_description">Automatically check for updates when app starts</string>
 
 </resources>

@@ -19,14 +19,12 @@ android {
     namespace = "ir.yar.anbar"
     compileSdk = 36
 
-
-
     defaultConfig {
         applicationId = "ir.yar.anbar"
         minSdk = 26
         targetSdk = 36
-        versionCode = 18
-        versionName = "0.12.0"
+        versionCode = 19
+        versionName = "0.12.1"
 
         // Add BASE_URL from local.properties
         buildConfigField("String", "BASE_URL", "\"${localProperties["BASE_URL"]}\"")
@@ -39,34 +37,56 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            // Configure APK output naming
+            applicationVariants.all {
+                outputs.all {
+                    val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+                    val variantName = name
+                    val versionName = defaultConfig.versionName ?: "1.0"
+                    val versionCode = defaultConfig.versionCode ?: 1
+
+                    output.outputFileName = "StockGuardApp_v${versionName}.apk"
+                }
+            }
+        }
+
+        debug {
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = "17"
     }
+
     buildFeatures {
         buildConfig = true
         compose = true
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 
-    // Check if we have a RAW resources file to store our sound file
     sourceSets {
         getByName("main") {
             res.srcDirs("src/main/res")
@@ -75,7 +95,6 @@ android {
 }
 
 dependencies {
-
     // Include the Login module
     implementation(project(":login"))
 
@@ -107,6 +126,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
     implementation(libs.sandwich)
+
     // Room
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)

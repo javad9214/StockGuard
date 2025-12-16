@@ -270,13 +270,13 @@ fun HomeScreen(
 
             Text(
                 modifier = Modifier.padding(start = dimen(R.dimen.space_4)),
-                text = str(R.string.stock_low),
+                text = str(R.string.stock_running_out),
                 style = MaterialTheme.typography.bodyLarge,
                 fontFamily = Beirut_Medium,
                 fontSize = dimenTextSize(R.dimen.text_size_lg)
             )
 
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_8)))
+            Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
             // Low Stock Products
             LazyRow {

@@ -46,6 +46,7 @@
     <string name="total_revenue">مجموع درآمد</string>
     <string name="in_stock">موجود</string>
     <string name="stock_healthy">موجودی خوب</string>
+    <string name="stock_running_out">موجودی رو به اتمام</string>
     <string name="stock_low">موجودی کم</string>
     <string name="stock_critical">موجودی بحرانی</string>
     <string name="units_available">واحد موجود</string>
@@ -211,5 +212,68 @@
     <string name="account">حساب کاربری</string>
     <string name="logout_confirmation_title">خروج از حساب کاربری؟</string>
     <string name="logout_confirmation_message">آیا مطمئن هستید که می‌خواهید از حساب کاربری خود خارج شوید؟</string>
+
+
+    <!-- Version Update Dialog -->
+    <string name="update_available">به‌روزرسانی موجود است</string>
+    <string name="update_required">به‌روزرسانی الزامی</string>
+    <string name="update_available_message">نسخه جدیدی با بهبودها و رفع اشکالات موجود است.</string>
+    <string name="update_required_message">نسخه جدید برای ادامه استفاده از برنامه لازم است.</string>
+    <string name="current_version">نسخه فعلی</string>
+    <string name="latest_version">آخرین نسخه</string>
+    <string name="whats_new">چه چیزی جدید است</string>
+    <string name="whats_new_compact">موارد جدید:</string>
+    <string name="update_now">اکنون به‌روزرسانی کنید</string>
+    <string name="update">به‌روزرسانی</string>
+    <string name="skip">رد کردن</string>
+    <string name="update_icon">آیکون به‌روزرسانی</string>
+    <string name="arrow">فلش</string>
+    <string name="current">فعلی</string>
+    <string name="latest">جدید</string>
+
+    <!-- Version Check -->
+    <string name="checking_for_updates">در حال بررسی به‌روزرسانی‌ها...</string>
+    <string name="no_updates_available">به‌روزرسانی جدیدی موجود نیست</string>
+    <string name="update_check_failed">بررسی به‌روزرسانی با خطا مواجه شد</string>
+    <string name="check_for_updates">بررسی به‌روزرسانی‌ها</string>
+
+    <!-- Version Info -->
+    <string name="app_version">نسخه برنامه</string>
+    <string name="version_code">کد نسخه</string>
+    <string name="build_number">شماره ساخت</string>
+    <string name="last_update_check">آخرین بررسی به‌روزرسانی</string>
+    <string name="never">هرگز</string>
+
+    <!-- Update Actions -->
+    <string name="download_update">دانلود به‌روزرسانی</string>
+    <string name="install_update">نصب به‌روزرسانی</string>
+    <string name="later">بعداً</string>
+    <string name="remind_me_later">بعداً یادآوری کن</string>
+
+    <!-- Update Status Messages -->
+    <string name="downloading_update">در حال دانلود به‌روزرسانی...</string>
+    <string name="update_downloaded">به‌روزرسانی با موفقیت دانلود شد</string>
+    <string name="update_download_failed">دانلود به‌روزرسانی با خطا مواجه شد</string>
+    <string name="installing_update">در حال نصب به‌روزرسانی...</string>
+    <string name="update_installed">به‌روزرسانی با موفقیت نصب شد</string>
+    <string name="update_installation_failed">نصب به‌روزرسانی با خطا مواجه شد</string>
+
+    <!-- Update Permissions -->
+    <string name="update_permission_required">مجوز برای نصب به‌روزرسانی‌ها نیاز است</string>
+    <string name="grant_permission">اعطای مجوز</string>
+
+    <!-- Release Notes -->
+    <string name="release_notes">یادداشت‌های انتشار</string>
+    <string name="view_release_notes">مشاهده یادداشت‌های انتشار</string>
+    <string name="no_release_notes">یادداشت انتشاری موجود نیست</string>
+
+    <!-- Update Settings -->
+    <string name="update_settings">تنظیمات به‌روزرسانی</string>
+    <string name="auto_update">به‌روزرسانی خودکار</string>
+    <string name="auto_update_description">دانلود و نصب خودکار به‌روزرسانی‌ها</string>
+    <string name="update_over_wifi_only">فقط از طریق Wi-Fi به‌روزرسانی شود</string>
+    <string name="update_over_wifi_description">فقط در صورت اتصال به Wi-Fi به‌روزرسانی دانلود شود</string>
+    <string name="check_updates_on_startup">بررسی به‌روزرسانی در شروع برنامه</string>
+    <string name="check_updates_startup_description">بررسی خودکار به‌روزرسانی‌ها هنگام راه‌اندازی برنامه</string>
 
 </resources>

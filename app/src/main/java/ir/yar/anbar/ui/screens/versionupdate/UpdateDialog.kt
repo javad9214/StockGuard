@@ -1,6 +1,5 @@
 package ir.yar.anbar.ui.screens.versionupdate
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,16 +29,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import ir.yar.anbar.R
 import ir.yar.anbar.data.remote.dto.response.UpdateStatus
+import ir.yar.anbar.ui.theme.BKoodak
+import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
+import ir.yar.anbar.utils.dimen
+import ir.yar.anbar.utils.dimenTextSize
+import ir.yar.anbar.utils.str
 
 /**
  * Update Dialog Component
- * Shows app update information and actions
+ * Shows app update information and actions with Persian support
  */
 @Composable
 fun UpdateDialog(
@@ -69,8 +72,8 @@ fun UpdateDialog(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp),
-            shape = RoundedCornerShape(24.dp),
+                .padding(dimen(R.dimen.space_6)),
+            shape = RoundedCornerShape(dimen(R.dimen.radius_3xl)),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
@@ -79,108 +82,118 @@ fun UpdateDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp),
+                    .padding(dimen(R.dimen.space_6)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Icon/Image
                 Icon(
                     painter = painterResource(R.drawable.ic_launcher_foreground),
-                    contentDescription = "Update Icon",
-                    modifier = Modifier.size(80.dp),
+                    contentDescription = str(R.string.update_icon),
+                    modifier = Modifier.size(dimen(R.dimen.size_4xl)),
                     tint = MaterialTheme.colorScheme.primary
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_4)))
 
                 // Title
                 Text(
-                    text = if (isForceUpdate) "Update Required" else "Update Available",
+                    text = if (isForceUpdate)
+                        str(R.string.update_required)
+                    else
+                        str(R.string.update_available),
                     style = MaterialTheme.typography.headlineSmall.copy(
                         fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp
+                        fontFamily = Beirut_Medium
                     ),
+                    fontSize = dimenTextSize(R.dimen.text_size_3xl),
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
                 // Subtitle
                 Text(
                     text = if (isForceUpdate) {
-                        "Please update to continue using the app"
+                        str(R.string.update_required_message)
                     } else {
-                        "A new version is available with improvements"
+                        str(R.string.update_available_message)
                     },
                     style = MaterialTheme.typography.bodyMedium,
+                    fontFamily = Beirut_Medium,
+                    fontSize = dimenTextSize(R.dimen.text_size_md),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_5)))
 
                 // Version Info
                 VersionInfoRow(
-                    label = "Current Version",
+                    label = str(R.string.current_version),
                     version = currentVersion,
                     isOld = true
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
                 Icon(
-                    painter = painterResource(R.drawable.ic_launcher_foreground), // Use arrow down icon
-                    contentDescription = "Arrow",
-                    modifier = Modifier.size(24.dp),
+                    painter = painterResource(R.drawable.ic_launcher_foreground),
+                    contentDescription = str(R.string.arrow),
+                    modifier = Modifier.size(dimen(R.dimen.size_sm)),
                     tint = MaterialTheme.colorScheme.primary
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
                 VersionInfoRow(
-                    label = "Latest Version",
+                    label = str(R.string.latest_version),
                     version = latestVersion,
                     isOld = false
                 )
 
                 // Release Notes
                 if (!releaseNotes.isNullOrBlank()) {
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(dimen(R.dimen.space_5)))
                     HorizontalDivider()
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(dimen(R.dimen.space_4)))
 
                     Text(
-                        text = "What's New",
+                        text = str(R.string.whats_new),
                         style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = Beirut_Medium
                         ),
+                        fontSize = dimenTextSize(R.dimen.text_size_xl),
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
                     // Scrollable release notes
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(120.dp)
+                            .height(dimen(R.dimen.size_6xl))
                             .verticalScroll(rememberScrollState())
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(12.dp)
+                                shape = RoundedCornerShape(dimen(R.dimen.radius_md))
                             )
-                            .padding(12.dp)
+                            .padding(dimen(R.dimen.space_3))
                     ) {
                         Text(
                             text = releaseNotes,
                             style = MaterialTheme.typography.bodyMedium,
+                            fontFamily = Beirut_Medium,
+                            fontSize = dimenTextSize(R.dimen.text_size_sm),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            lineHeight = 20.sp
+                            lineHeight = dimenTextSize(R.dimen.text_size_xl)
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_6)))
 
                 // Buttons
                 if (isForceUpdate) {
@@ -189,37 +202,41 @@ fun UpdateDialog(
                         onClick = onUpdateClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(12.dp),
+                            .height(dimen(R.dimen.size_xl)),
+                        shape = RoundedCornerShape(dimen(R.dimen.radius_md)),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
                         )
                     ) {
                         Text(
-                            text = "Update Now",
+                            text = str(R.string.update_now),
                             style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.SemiBold
-                            )
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = Beirut_Medium
+                            ),
+                            fontSize = dimenTextSize(R.dimen.text_size_xl)
                         )
                     }
                 } else {
                     // Update and Skip buttons for optional update
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_3))
                     ) {
                         OutlinedButton(
                             onClick = onSkipClick,
                             modifier = Modifier
                                 .weight(1f)
-                                .height(52.dp),
-                            shape = RoundedCornerShape(12.dp)
+                                .height(dimen(R.dimen.size_xl)),
+                            shape = RoundedCornerShape(dimen(R.dimen.radius_md))
                         ) {
                             Text(
-                                text = "Skip",
+                                text = str(R.string.skip),
                                 style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.Medium
-                                )
+                                    fontWeight = FontWeight.Medium,
+                                    fontFamily = Beirut_Medium
+                                ),
+                                fontSize = dimenTextSize(R.dimen.text_size_xl)
                             )
                         }
 
@@ -227,14 +244,16 @@ fun UpdateDialog(
                             onClick = onUpdateClick,
                             modifier = Modifier
                                 .weight(1f)
-                                .height(52.dp),
-                            shape = RoundedCornerShape(12.dp)
+                                .height(dimen(R.dimen.size_xl)),
+                            shape = RoundedCornerShape(dimen(R.dimen.radius_md))
                         ) {
                             Text(
-                                text = "Update",
+                                text = str(R.string.update),
                                 style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.SemiBold
-                                )
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = Beirut_Medium
+                                ),
+                                fontSize = dimenTextSize(R.dimen.text_size_xl)
                             )
                         }
                     }
@@ -261,23 +280,27 @@ private fun VersionInfoRow(
                     MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
                 else
                     MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(dimen(R.dimen.radius_md))
             )
-            .padding(16.dp),
+            .padding(dimen(R.dimen.space_4)),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
+            fontFamily = Beirut_Medium,
+            fontSize = dimenTextSize(R.dimen.text_size_md),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Text(
             text = version,
             style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontFamily = BKoodak
             ),
+            fontSize = dimenTextSize(R.dimen.text_size_lg),
             color = if (isOld)
                 MaterialTheme.colorScheme.error
             else
@@ -294,7 +317,7 @@ fun UpdateDialogPreview() {
             currentVersion = "1.0.0 (10)",
             latestVersion = "1.2.0 (12)",
             updateStatus = UpdateStatus.UPDATE_AVAILABLE,
-            releaseNotes = "• Bug fixes\n• Performance improvements\n• New features added\n• UI enhancements",
+            releaseNotes = "• رفع اشکالات\n• بهبود عملکرد\n• افزودن قابلیت‌های جدید\n• بهبود رابط کاربری",
             onUpdateClick = {},
             onSkipClick = {},
             onDismiss = {}
@@ -310,7 +333,7 @@ fun UpdateDialogForceUpdatePreview() {
             currentVersion = "1.0.0 (10)",
             latestVersion = "2.0.0 (20)",
             updateStatus = UpdateStatus.UPDATE_REQUIRED,
-            releaseNotes = "• Critical security update\n• Major bug fixes\n• Breaking changes",
+            releaseNotes = "• به‌روزرسانی امنیتی مهم\n• رفع اشکالات اساسی\n• تغییرات مهم",
             onUpdateClick = {},
             onSkipClick = {},
             onDismiss = {}
