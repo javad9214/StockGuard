@@ -2,6 +2,7 @@ package ir.yar.anbar.data.local.dao
 
 import androidx.room.*
 import ir.yar.anbar.data.local.entity.ProductSalesSummaryEntity
+import ir.yar.anbar.data.local.entity.subentities.DailySalesEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -46,4 +47,17 @@ interface ProductSalesSummaryDao {
 
     @Update
     suspend fun update(summary: ProductSalesSummaryEntity)
+
+    @Query("""
+    SELECT 
+        date,
+        SUM(totalRevenue) as totalRevenue,
+        SUM(totalCost) as totalCost
+    FROM product_sales_summary
+    WHERE date BETWEEN :startDate AND :endDate
+    GROUP BY date
+    ORDER BY date ASC
+""")
+    fun getDailySalesBetween(startDate: Long, endDate: Long): Flow<List<DailySalesEntity>>
+
 }

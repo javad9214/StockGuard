@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.yar.anbar.domain.model.AnalyticsData
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductSalesSummary
+import ir.yar.anbar.domain.model.analyze.DailySalesData
 import ir.yar.anbar.domain.usecase.analytics.GetAnalyticsDataUseCase
 import ir.yar.anbar.domain.usecase.analytics.GetTotalSoldPriceUseCase
 import ir.yar.anbar.domain.usecase.analytics.GetTotalProfitPriceUseCase
@@ -152,8 +153,3 @@ data class AnalyzeUiState(
     val error: String? = null
 )
 
-data class DailySalesData(
-    val date: LocalDate,
-    val sales: Long,
-    val profit: Long
-)

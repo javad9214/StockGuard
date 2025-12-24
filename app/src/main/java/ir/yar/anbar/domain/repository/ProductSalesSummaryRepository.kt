@@ -2,6 +2,7 @@ package ir.yar.anbar.domain.repository
 
 import ir.yar.anbar.data.local.entity.ProductSalesSummaryEntity
 import ir.yar.anbar.domain.model.ProductSalesSummary
+import ir.yar.anbar.ui.viewmodels.DailySalesData
 import kotlinx.coroutines.flow.Flow
 
 interface ProductSalesSummaryRepository {
@@ -19,4 +20,6 @@ interface ProductSalesSummaryRepository {
     ): Flow<List<ProductSalesSummary>>
 
     suspend fun getByProductAndDate(productId: Long, date: Long): ProductSalesSummaryEntity?
+
+    fun getDailySalesBetween(startDate: Long, endDate: Long): Flow<List<DailySalesData>>
 }
