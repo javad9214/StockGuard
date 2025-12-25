@@ -2,7 +2,7 @@ package ir.yar.anbar.domain.repository
 
 import ir.yar.anbar.data.local.entity.ProductSalesSummaryEntity
 import ir.yar.anbar.domain.model.ProductSalesSummary
-import ir.yar.anbar.ui.viewmodels.DailySalesData
+import ir.yar.anbar.domain.model.analyze.DailySalesData
 import kotlinx.coroutines.flow.Flow
 
 interface ProductSalesSummaryRepository {

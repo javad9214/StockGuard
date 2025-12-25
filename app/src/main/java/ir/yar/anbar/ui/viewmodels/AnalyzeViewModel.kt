@@ -9,8 +9,7 @@ import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductSalesSummary
 import ir.yar.anbar.domain.model.analyze.DailySalesData
 import ir.yar.anbar.domain.usecase.analytics.GetAnalyticsDataUseCase
-import ir.yar.anbar.domain.usecase.analytics.GetTotalSoldPriceUseCase
-import ir.yar.anbar.domain.usecase.analytics.GetTotalProfitPriceUseCase
+import ir.yar.anbar.domain.usecase.analytics.GetDailySalesBreakdownUseCase
 import ir.yar.anbar.domain.usecase.sales.GetTopSellingProductsUseCase
 import ir.yar.anbar.utils.dateandtime.TimeRange
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,15 +17,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class AnalyzeViewModel @Inject constructor(
     private val getAnalyticsDataUseCase: GetAnalyticsDataUseCase,
     private val getTopSellingProductsUseCase: GetTopSellingProductsUseCase,
-    private val getTotalSoldPriceUseCase: GetTotalSoldPriceUseCase,
-    private val getTotalProfitPriceUseCase: GetTotalProfitPriceUseCase
+    private val getDailySalesBreakdownUseCase: GetDailySalesBreakdownUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AnalyzeUiState())
@@ -93,17 +90,14 @@ class AnalyzeViewModel @Inject constructor(
     private fun loadDailySalesData() {
         viewModelScope.launch {
             try {
-                // Get last 7 days of sales data
-                getTotalSoldPriceUseCase(TimeRange.THIS_WEEK).collect { totalSales ->
-                    getTotalProfitPriceUseCase(TimeRange.THIS_WEEK).collect { totalProfit ->
-                        // Transform data for chart
-                        val chartData = transformToChartData(totalSales, totalProfit)
-                        _uiState.update {
-                            it.copy(
-                                dailySalesChartData = chartData,
-                                error = null
-                            )
-                        }
+                // Get real daily breakdown for last 7 days
+                getDailySalesBreakdownUseCase(TimeRange.THIS_WEEK).collect { dailySales ->
+                    Log.d(TAG, "Daily sales data loaded: ${dailySales.size} days")
+                    _uiState.update {
+                        it.copy(
+                            dailySalesChartData = dailySales,
+                            error = null
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -113,20 +107,6 @@ class AnalyzeViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    private fun transformToChartData(totalSales: Long, totalProfit: Long): List<DailySalesData> {
-        // This is temporary - we'll get real daily breakdown data later
-        // For now, create sample data for the last 7 days
-        val today = LocalDate.now()
-        return (0 until 7).map { daysAgo ->
-            val date = today.minusDays(daysAgo.toLong())
-            DailySalesData(
-                date = date,
-                sales = if (daysAgo == 0) totalSales else 0L, // Simplified for now
-                profit = if (daysAgo == 0) totalProfit else 0L
-            )
-        }.reversed()
     }
 
     fun onTimeRangeChanged(timeRange: TimeRange) {
@@ -152,4 +132,3 @@ data class AnalyzeUiState(
     val isLoading: Boolean = false,
     val error: String? = null
 )
-

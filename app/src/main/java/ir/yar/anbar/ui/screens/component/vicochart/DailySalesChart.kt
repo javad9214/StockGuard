@@ -16,10 +16,9 @@ import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
-import ir.yar.anbar.ui.viewmodels.DailySalesData
+import ir.yar.anbar.domain.model.analyze.DailySalesData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun DailySalesChart(
@@ -33,7 +32,7 @@ fun DailySalesChart(
     LaunchedEffect(dailySalesData) {
         withContext(Dispatchers.Default) {
             if (dailySalesData.isEmpty()) {
-                // Show sample data if no real data available
+                // Show empty state
                 modelProducer.runTransaction {
                     columnSeries {
                         series(
@@ -47,7 +46,8 @@ fun DailySalesChart(
                     columnSeries {
                         series(
                             x = dailySalesData.indices.map { it + 1 },
-                            y = dailySalesData.map { it.sales / 1000.0 } // Convert to thousands
+                            // Convert from cents to dollars (divide by 100) and then to thousands
+                            y = dailySalesData.map { it.totalRevenue / 100000.0 }
                         )
                     }
                 }
