@@ -1,14 +1,15 @@
 package ir.yar.anbar.di
 
-import ir.yar.anbar.data.remote.api.ApiConstants
-import ir.yar.anbar.data.remote.api.ApiServiceMainProduct
-import ir.yar.anbar.data.remote.api.ApiServiceVersion
-import ir.yar.anbar.data.remote.interceptor.AuthInterceptor
 import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import ir.yar.anbar.data.remote.api.ApiConstants
+import ir.yar.anbar.data.remote.api.ApiServiceMainProduct
+import ir.yar.anbar.data.remote.api.ApiServiceVersion
+import ir.yar.anbar.data.remote.interceptor.AuthInterceptor
+import ir.yar.login.data.remote.interceptor.TokenAuthenticator
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -27,14 +28,16 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        authInterceptor: AuthInterceptor
+        authInterceptor: AuthInterceptor,
+        tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .connectTimeout(300, TimeUnit.SECONDS)  // Connection timeout
             .readTimeout(300, TimeUnit.SECONDS)     // Read timeout
             .writeTimeout(300, TimeUnit.SECONDS)    // Write timeout
-            .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(authInterceptor)
+            .authenticator(tokenAuthenticator)
             .build()
     }
 
