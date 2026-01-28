@@ -1,7 +1,7 @@
 package ir.yar.anbar.domain.model
 
 
-import ir.yar.anbar.data.local.entity.ProductEntity
+import ir.yar.anbar.data.local.entity.UserProductEntity
 import ir.yar.anbar.data.remote.dto.ProductDto
 import ir.yar.anbar.domain.model.type.Money
 import java.math.BigDecimal
@@ -287,7 +287,7 @@ enum class PriceCategory {
 }
 
 // Mapping Extension Functions
-fun ProductEntity.toDomain(): Product {
+fun UserProductEntity.toDomain(): Product {
     return Product(
         id = ProductId(id),
         name = ProductName(name),
@@ -326,8 +326,8 @@ fun ProductEntity.toDomain(): Product {
     )
 }
 
-fun Product.toEntity(): ProductEntity {
-    return ProductEntity(
+fun Product.toEntity(): UserProductEntity {
+    return UserProductEntity(
         id = id.value,
         name = name.value,
         barcode = barcode?.value,

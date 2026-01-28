@@ -3,7 +3,7 @@ package ir.yar.anbar.data.repository
 
 import ir.yar.anbar.data.local.dao.InvoiceDao
 import ir.yar.anbar.data.local.dao.InvoiceProductDao
-import ir.yar.anbar.data.local.dao.ProductDao
+import ir.yar.anbar.data.local.dao.UserProductDao
 import ir.yar.anbar.data.local.relation.InvoiceWithProductsRelation
 import ir.yar.anbar.domain.model.Invoice
 import ir.yar.anbar.domain.model.InvoiceWithProducts
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class InvoiceRepoImpl @Inject constructor(
     val invoiceDao: InvoiceDao,
     private val invoiceProductDao: InvoiceProductDao,
-    private val productDao: ProductDao
+    private val userProductDao: UserProductDao
 ) : InvoiceRepository {
 
     override suspend fun createInvoice(invoice: Invoice): Long {
