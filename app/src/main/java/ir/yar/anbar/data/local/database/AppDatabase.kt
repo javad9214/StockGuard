@@ -40,7 +40,7 @@ import ir.yar.anbar.data.local.entity.SupplierEntity
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun productDao(): UserProductDao
+    abstract fun userProductDao(): UserProductDao
     abstract fun invoiceDao(): InvoiceDao
     abstract fun invoiceProductDao(): InvoiceProductDao
     abstract fun categoryDao(): CategoryDao

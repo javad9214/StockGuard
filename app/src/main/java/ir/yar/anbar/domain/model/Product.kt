@@ -85,43 +85,43 @@ data class Product(
 
     // Pricing & Profitability
     fun hasCompletePricing(): Boolean {
-        return price != null && costPrice != null
+        return true
     }
 
     fun getProfit(): Money? {
         return if (hasCompletePricing()) {
-            Money(price!!.amount - costPrice!!.amount)
+            Money(price.amount - costPrice.amount)
         } else null
     }
 
     fun getProfitMargin(): BigDecimal {
-        if (!hasCompletePricing() || price!!.amount == 0L) return BigDecimal.ZERO
+        if (!hasCompletePricing() || price.amount == 0L) return BigDecimal.ZERO
 
         val profit = getProfit()!!.amount
         return BigDecimal(profit)
-            .divide(BigDecimal(price!!.amount), 4, RoundingMode.HALF_UP)
+            .divide(BigDecimal(price.amount), 4, RoundingMode.HALF_UP)
             .multiply(BigDecimal(100))
     }
 
     fun getMarkupPercentage(): BigDecimal {
-        if (!hasCompletePricing() || costPrice!!.amount == 0L) return BigDecimal.ZERO
+        if (!hasCompletePricing() || costPrice.amount == 0L) return BigDecimal.ZERO
 
         val profit = getProfit()!!.amount
         return BigDecimal(profit)
-            .divide(BigDecimal(costPrice!!.amount), 4, RoundingMode.HALF_UP)
+            .divide(BigDecimal(costPrice.amount), 4, RoundingMode.HALF_UP)
             .multiply(BigDecimal(100))
     }
 
     fun isProfitable(): Boolean {
-        return getProfit()?.amount ?: 0L > 0L
+        return (getProfit()?.amount ?: 0L) > 0L
     }
 
     fun isLossProduct(): Boolean {
-        return getProfit()?.amount ?: 0L < 0L
+        return (getProfit()?.amount ?: 0L) < 0L
     }
 
     fun getPriceCategory(): PriceCategory {
-        val priceAmount = price?.amount ?: return PriceCategory.UNKNOWN
+        val priceAmount = price.amount
         return when {
             priceAmount == 0L -> PriceCategory.FREE
             priceAmount <= 1000L -> PriceCategory.BUDGET // $10.00
@@ -165,7 +165,7 @@ data class Product(
 
     // Business Rules
     fun canBeSold(): Boolean {
-        return isActive && isInStock() && price != null
+        return isActive && isInStock()
     }
 
     fun requiresAttention(): Boolean {
@@ -188,7 +188,7 @@ data class Product(
     }
 
     fun hasTags(): Boolean {
-        return tags != null && tags!!.tagList.isNotEmpty()
+        return tags != null && tags.tagList.isNotEmpty()
     }
 
     fun hasSupplier(): Boolean {
@@ -197,11 +197,11 @@ data class Product(
 
     // Formatting helpers
     fun getFormattedPrice(): String {
-        return price?.let { "$${it.toDisplayAmount()}" } ?: "Price not set"
+        return price.let { "$${it.toDisplayAmount()}" }
     }
 
     fun getFormattedCostPrice(): String {
-        return costPrice?.let { "$${it.toDisplayAmount()}" } ?: "Cost not set"
+        return costPrice.let { "$${it.toDisplayAmount()}" }
     }
 
     fun getStockDisplayText(): String {
@@ -290,10 +290,10 @@ enum class PriceCategory {
 fun UserProductEntity.toDomain(): Product {
     return Product(
         id = ProductId(id),
-        name = ProductName(name),
+        name = ProductName(customName ?: name), // Use customName if exists, fallback to name
         barcode = barcode?.let { Barcode(it) },
-        price = price?.let { Money(it) } ?: Money(0),
-        costPrice = costPrice?.let { Money(it) } ?: Money(0),
+        price = Money(price),
+        costPrice = Money(costPrice),
         description = description?.let { ProductDescription(it) },
         image = image?.let { ProductImage(it) },
         subcategoryId = subcategoryId?.let { SubcategoryId(it) },
@@ -329,8 +329,11 @@ fun UserProductEntity.toDomain(): Product {
 fun Product.toEntity(): UserProductEntity {
     return UserProductEntity(
         id = id.value,
+        serverId = null, // Add this
+        catalogProductId = null, // Add this
         name = name.value,
         barcode = barcode?.value,
+        customName = null, // Add this
         price = price.amount,
         costPrice = costPrice.amount,
         description = description?.value,
@@ -345,6 +348,7 @@ fun Product.toEntity(): UserProductEntity {
         tags = tags?.value,
         lastSoldDate = lastSoldDate?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli(),
         date = date.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+        syncStatus = "SYNCED", // Add this
         synced = synced,
         createdAt = createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
         updatedAt = updatedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
@@ -410,9 +414,7 @@ fun Product.toDto(): ProductDto {
         maxStockLevel = maxStockLevel?.value,
         isActive = isActive,
         tags = tags?.value,
-        lastSoldDate = lastSoldDate?.let {
-            it.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        },
+        lastSoldDate = lastSoldDate?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli(),
         date = date.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
         createdAt = createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
         updatedAt = updatedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
