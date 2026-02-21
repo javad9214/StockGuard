@@ -2,7 +2,8 @@ package ir.yar.anbar.domain.model
 
 
 import ir.yar.anbar.data.local.entity.UserProductEntity
-import ir.yar.anbar.data.remote.dto.ProductDto
+import ir.yar.anbar.data.remote.dto.CatalogProductDto
+import ir.yar.anbar.data.remote.dto.CatalogStatus
 import ir.yar.anbar.domain.model.type.Money
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -357,68 +358,39 @@ fun Product.toEntity(): UserProductEntity {
 }
 
 // DTO to Domain Mapping
-fun ProductDto.toDomain(): Product {
+// CatalogProductMapper.kt
+
+fun CatalogProductDto.toDomain(): Product {
     return Product(
         id = ProductId(id),
         name = ProductName(name),
         barcode = barcode?.let { Barcode(it) },
-        price = price?.let { Money(it) } ?: Money(0),
-        costPrice = costPrice?.let { Money(it) } ?: Money(0),
         description = description?.let { ProductDescription(it) },
-        image = image?.let { ProductImage(it) },
-        subcategoryId = subcategoryId?.let { SubcategoryId(it) },
-        supplierId = supplierId?.let { SupplierId(it) },
-        unit = unit?.let { ProductUnit(it) },
-        stock = StockQuantity(stock),
-        minStockLevel = minStockLevel?.let { StockQuantity(it) },
-        maxStockLevel = maxStockLevel?.let { StockQuantity(it) },
-        isActive = isActive,
-        tags = tags?.let { ProductTags(it) },
-        lastSoldDate = lastSoldDate?.let {
-            LocalDateTime.ofInstant(
-                Instant.ofEpochMilli(it),
-                ZoneId.systemDefault()
-            )
-        },
-        date = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(date),
-            ZoneId.systemDefault()
-        ),
-        synced = true, // Assuming DTOs from API are synced
-        createdAt = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(createdAt),
-            ZoneId.systemDefault()
-        ),
-        updatedAt = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(updatedAt),
-            ZoneId.systemDefault()
-        )
-    )
-}
+        image = imageUrl?.let { ProductImage(it) },
 
-// Domain to DTO Mapping
-fun Product.toDto(): ProductDto {
-    return ProductDto(
-        id = id.value,
-        name = name.value,
-        barcode = barcode?.value,
-        price = price.amount,
-        costPrice = costPrice.amount,
-        description = description?.value,
-        image = image?.value,
-        subcategoryId = subcategoryId?.value,
-        supplierId = supplierId?.value,
-        unit = unit?.value,
-        stock = stock.value,
-        minStockLevel = minStockLevel?.value,
-        maxStockLevel = maxStockLevel?.value,
-        isActive = isActive,
-        tags = tags?.value,
-        lastSoldDate = lastSoldDate?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli(),
-        date = date.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-        createdAt = createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-        updatedAt = updatedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-        isDeleted = false // Assuming active products are not deleted
+        // Catalog has no selling/cost price — default to zero or map suggestedPrice as needed
+        price = suggestedPrice?.let { Money(it) } ?: Money(0),
+        costPrice = Money(0),
+
+        subcategoryId = subcategoryId?.let { SubcategoryId(it) },
+        supplierId = null, // Catalog has no supplier concept
+
+        unit = unit?.let { ProductUnit(it) },
+
+        // Catalog has no local stock data
+        stock = StockQuantity(0),
+        minStockLevel = null,
+        maxStockLevel = null,
+
+        isActive = status == CatalogStatus.VERIFIED,
+        tags = tags?.let { ProductTags(it) },
+        lastSoldDate = null, // Not part of catalog
+
+        date = LocalDateTime.parse(createdAt),
+        createdAt = LocalDateTime.parse(createdAt),
+        updatedAt = LocalDateTime.parse(updatedAt),
+
+        synced = true,
     )
 }
 

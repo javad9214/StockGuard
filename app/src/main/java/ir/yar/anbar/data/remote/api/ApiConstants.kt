@@ -9,4 +9,6 @@ object ApiConstants {
 
     const val API = "api/"
 
+    const val CATALOG = "catalog/"
+
 }

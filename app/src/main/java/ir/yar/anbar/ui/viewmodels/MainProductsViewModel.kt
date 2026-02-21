@@ -146,12 +146,6 @@ class MainProductsViewModel @Inject constructor(
         }
     }
 
-    fun addNewProductToRemote(product: Product) {
-        viewModelScope.launch {
-            addNewProductToMainServerUseCase(product).collect{ resource ->
-                _createState.value = resource
-            }
-        }
-    }
+
 
 }
