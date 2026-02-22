@@ -23,8 +23,8 @@ android {
         applicationId = "ir.yar.anbar"
         minSdk = 26
         targetSdk = 36
-        versionCode = 23
-        versionName = "0.12.5"
+        versionCode = 24
+        versionName = "0.12.6"
 
         // Add BASE_URL from local.properties
         buildConfigField("String", "BASE_URL", "\"${localProperties["BASE_URL"]}\"")
@@ -35,23 +35,31 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(System.getenv("KEYSTORE_FILE") ?: "")
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+
+            signingConfig = signingConfigs.getByName("release")
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
 
-            // Configure APK output naming
             applicationVariants.all {
                 outputs.all {
                     val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-                    val variantName = name
                     val versionName = defaultConfig.versionName ?: "1.0"
-                    val versionCode = defaultConfig.versionCode ?: 1
-
                     output.outputFileName = "StockGuardApp_v${versionName}.apk"
                 }
             }
