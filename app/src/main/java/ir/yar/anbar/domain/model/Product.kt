@@ -1,8 +1,9 @@
 package ir.yar.anbar.domain.model
 
 
-import ir.yar.anbar.data.local.entity.ProductEntity
-import ir.yar.anbar.data.remote.dto.ProductDto
+import ir.yar.anbar.data.local.entity.UserProductEntity
+import ir.yar.anbar.data.remote.dto.CatalogProductDto
+import ir.yar.anbar.data.remote.dto.CatalogStatus
 import ir.yar.anbar.domain.model.type.Money
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -85,43 +86,43 @@ data class Product(
 
     // Pricing & Profitability
     fun hasCompletePricing(): Boolean {
-        return price != null && costPrice != null
+        return true
     }
 
     fun getProfit(): Money? {
         return if (hasCompletePricing()) {
-            Money(price!!.amount - costPrice!!.amount)
+            Money(price.amount - costPrice.amount)
         } else null
     }
 
     fun getProfitMargin(): BigDecimal {
-        if (!hasCompletePricing() || price!!.amount == 0L) return BigDecimal.ZERO
+        if (!hasCompletePricing() || price.amount == 0L) return BigDecimal.ZERO
 
         val profit = getProfit()!!.amount
         return BigDecimal(profit)
-            .divide(BigDecimal(price!!.amount), 4, RoundingMode.HALF_UP)
+            .divide(BigDecimal(price.amount), 4, RoundingMode.HALF_UP)
             .multiply(BigDecimal(100))
     }
 
     fun getMarkupPercentage(): BigDecimal {
-        if (!hasCompletePricing() || costPrice!!.amount == 0L) return BigDecimal.ZERO
+        if (!hasCompletePricing() || costPrice.amount == 0L) return BigDecimal.ZERO
 
         val profit = getProfit()!!.amount
         return BigDecimal(profit)
-            .divide(BigDecimal(costPrice!!.amount), 4, RoundingMode.HALF_UP)
+            .divide(BigDecimal(costPrice.amount), 4, RoundingMode.HALF_UP)
             .multiply(BigDecimal(100))
     }
 
     fun isProfitable(): Boolean {
-        return getProfit()?.amount ?: 0L > 0L
+        return (getProfit()?.amount ?: 0L) > 0L
     }
 
     fun isLossProduct(): Boolean {
-        return getProfit()?.amount ?: 0L < 0L
+        return (getProfit()?.amount ?: 0L) < 0L
     }
 
     fun getPriceCategory(): PriceCategory {
-        val priceAmount = price?.amount ?: return PriceCategory.UNKNOWN
+        val priceAmount = price.amount
         return when {
             priceAmount == 0L -> PriceCategory.FREE
             priceAmount <= 1000L -> PriceCategory.BUDGET // $10.00
@@ -165,7 +166,7 @@ data class Product(
 
     // Business Rules
     fun canBeSold(): Boolean {
-        return isActive && isInStock() && price != null
+        return isActive && isInStock()
     }
 
     fun requiresAttention(): Boolean {
@@ -188,7 +189,7 @@ data class Product(
     }
 
     fun hasTags(): Boolean {
-        return tags != null && tags!!.tagList.isNotEmpty()
+        return tags != null && tags.tagList.isNotEmpty()
     }
 
     fun hasSupplier(): Boolean {
@@ -197,11 +198,11 @@ data class Product(
 
     // Formatting helpers
     fun getFormattedPrice(): String {
-        return price?.let { "$${it.toDisplayAmount()}" } ?: "Price not set"
+        return price.let { "$${it.toDisplayAmount()}" }
     }
 
     fun getFormattedCostPrice(): String {
-        return costPrice?.let { "$${it.toDisplayAmount()}" } ?: "Cost not set"
+        return costPrice.let { "$${it.toDisplayAmount()}" }
     }
 
     fun getStockDisplayText(): String {
@@ -287,13 +288,13 @@ enum class PriceCategory {
 }
 
 // Mapping Extension Functions
-fun ProductEntity.toDomain(): Product {
+fun UserProductEntity.toDomain(): Product {
     return Product(
         id = ProductId(id),
-        name = ProductName(name),
+        name = ProductName(customName ?: name), // Use customName if exists, fallback to name
         barcode = barcode?.let { Barcode(it) },
-        price = price?.let { Money(it) } ?: Money(0),
-        costPrice = costPrice?.let { Money(it) } ?: Money(0),
+        price = Money(price),
+        costPrice = Money(costPrice),
         description = description?.let { ProductDescription(it) },
         image = image?.let { ProductImage(it) },
         subcategoryId = subcategoryId?.let { SubcategoryId(it) },
@@ -326,11 +327,14 @@ fun ProductEntity.toDomain(): Product {
     )
 }
 
-fun Product.toEntity(): ProductEntity {
-    return ProductEntity(
+fun Product.toEntity(): UserProductEntity {
+    return UserProductEntity(
         id = id.value,
+        serverId = null, // Add this
+        catalogProductId = null, // Add this
         name = name.value,
         barcode = barcode?.value,
+        customName = null, // Add this
         price = price.amount,
         costPrice = costPrice.amount,
         description = description?.value,
@@ -345,6 +349,7 @@ fun Product.toEntity(): ProductEntity {
         tags = tags?.value,
         lastSoldDate = lastSoldDate?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli(),
         date = date.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+        syncStatus = "SYNCED", // Add this
         synced = synced,
         createdAt = createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
         updatedAt = updatedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
@@ -353,70 +358,39 @@ fun Product.toEntity(): ProductEntity {
 }
 
 // DTO to Domain Mapping
-fun ProductDto.toDomain(): Product {
+// CatalogProductMapper.kt
+
+fun CatalogProductDto.toDomain(): Product {
     return Product(
         id = ProductId(id),
         name = ProductName(name),
         barcode = barcode?.let { Barcode(it) },
-        price = price?.let { Money(it) } ?: Money(0),
-        costPrice = costPrice?.let { Money(it) } ?: Money(0),
         description = description?.let { ProductDescription(it) },
-        image = image?.let { ProductImage(it) },
-        subcategoryId = subcategoryId?.let { SubcategoryId(it) },
-        supplierId = supplierId?.let { SupplierId(it) },
-        unit = unit?.let { ProductUnit(it) },
-        stock = StockQuantity(stock),
-        minStockLevel = minStockLevel?.let { StockQuantity(it) },
-        maxStockLevel = maxStockLevel?.let { StockQuantity(it) },
-        isActive = isActive,
-        tags = tags?.let { ProductTags(it) },
-        lastSoldDate = lastSoldDate?.let {
-            LocalDateTime.ofInstant(
-                Instant.ofEpochMilli(it),
-                ZoneId.systemDefault()
-            )
-        },
-        date = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(date),
-            ZoneId.systemDefault()
-        ),
-        synced = true, // Assuming DTOs from API are synced
-        createdAt = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(createdAt),
-            ZoneId.systemDefault()
-        ),
-        updatedAt = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(updatedAt),
-            ZoneId.systemDefault()
-        )
-    )
-}
+        image = imageUrl?.let { ProductImage(it) },
 
-// Domain to DTO Mapping
-fun Product.toDto(): ProductDto {
-    return ProductDto(
-        id = id.value,
-        name = name.value,
-        barcode = barcode?.value,
-        price = price.amount,
-        costPrice = costPrice.amount,
-        description = description?.value,
-        image = image?.value,
-        subcategoryId = subcategoryId?.value,
-        supplierId = supplierId?.value,
-        unit = unit?.value,
-        stock = stock.value,
-        minStockLevel = minStockLevel?.value,
-        maxStockLevel = maxStockLevel?.value,
-        isActive = isActive,
-        tags = tags?.value,
-        lastSoldDate = lastSoldDate?.let {
-            it.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        },
-        date = date.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-        createdAt = createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-        updatedAt = updatedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-        isDeleted = false // Assuming active products are not deleted
+        // Catalog has no selling/cost price — default to zero or map suggestedPrice as needed
+        price = suggestedPrice?.let { Money(it) } ?: Money(0),
+        costPrice = Money(0),
+
+        subcategoryId = subcategoryId?.let { SubcategoryId(it) },
+        supplierId = null, // Catalog has no supplier concept
+
+        unit = unit?.let { ProductUnit(it) },
+
+        // Catalog has no local stock data
+        stock = StockQuantity(0),
+        minStockLevel = null,
+        maxStockLevel = null,
+
+        isActive = status == CatalogStatus.VERIFIED,
+        tags = tags?.let { ProductTags(it) },
+        lastSoldDate = null, // Not part of catalog
+
+        date = LocalDateTime.parse(createdAt),
+        createdAt = LocalDateTime.parse(createdAt),
+        updatedAt = LocalDateTime.parse(updatedAt),
+
+        synced = true,
     )
 }
 

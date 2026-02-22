@@ -21,10 +21,9 @@ interface InvoiceDao {
     @Query("SELECT * FROM invoices ORDER BY invoiceNumber DESC")
     fun getAllInvoices(): Flow<List<InvoiceEntity>>
 
-    // Get the last invoice (used to generate the next numberId)
     @Query("SELECT * FROM invoices ORDER BY invoiceNumber DESC LIMIT 1")
     suspend fun getLastInvoice(): InvoiceEntity?
-    
+
     @Transaction
     @Query("SELECT * FROM invoices WHERE id = :invoiceId")
     fun getInvoiceWithProducts(invoiceId: Long): Flow<InvoiceWithProductsRelation>
@@ -37,14 +36,12 @@ interface InvoiceDao {
     @Query("SELECT * FROM invoices ORDER BY createdAt ASC")
     fun getAllInvoiceWithProductsOldestFirst(): Flow<List<InvoiceWithProductsRelation>>
 
-
-    // Analytics queries
     @Query(
         """
         SELECT COALESCE(SUM(p.price * ip.quantity), 0) as totalSales
         FROM invoices AS i
         INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
-        INNER JOIN products AS p ON ip.productId = p.id
+        INNER JOIN user_products AS p ON ip.productId = p.id
         WHERE strftime('%Y-%m', datetime(i.invoiceDate / 1000, 'unixepoch')) = :yearMonth
     """
     )
@@ -76,7 +73,7 @@ interface InvoiceDao {
                SUM(p.price * ip.quantity) as totalSales
         FROM invoices AS i
         INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
-        INNER JOIN products AS p ON ip.productId = p.id
+        INNER JOIN user_products AS p ON ip.productId = p.id
         WHERE strftime('%Y-%m', datetime(i.invoiceDate / 1000, 'unixepoch')) = :yearMonth
         GROUP BY p.id, p.name
         ORDER BY totalQuantity DESC
@@ -85,13 +82,12 @@ interface InvoiceDao {
     )
     suspend fun getTopSellingProductsForMonth(yearMonth: String): List<TopSellingProduct>
 
-
     @Query(
         """
     SELECT COALESCE(SUM((p.price - p.costPrice) * ip.quantity), 0) AS totalProfit
     FROM invoices AS i
     INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
-    INNER JOIN products AS p ON ip.productId = p.id
+    INNER JOIN user_products AS p ON ip.productId = p.id
     WHERE i.invoiceDate BETWEEN :startDate AND :endDate
     """
     )
@@ -102,7 +98,7 @@ interface InvoiceDao {
     SELECT COALESCE(SUM(p.price * ip.quantity), 0) as totalSales
     FROM invoices AS i
     INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
-    INNER JOIN products AS p ON ip.productId = p.id
+    INNER JOIN user_products AS p ON ip.productId = p.id
     WHERE i.invoiceDate BETWEEN :startDate AND :endDate
     """
     )
@@ -116,7 +112,6 @@ interface InvoiceDao {
     )
     fun getTotalInvoicesBetweenDates(startDate: Long, endDate: Long): Flow<Int>
 
-    // Debug queries
     @Query("SELECT * FROM invoices ORDER BY createdAt DESC LIMIT 5")
     suspend fun getRecentInvoicesForDebug(): List<InvoiceEntity>
 

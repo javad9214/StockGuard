@@ -23,8 +23,8 @@ android {
         applicationId = "ir.yar.anbar"
         minSdk = 26
         targetSdk = 36
-        versionCode = 21
-        versionName = "0.12.3"
+        versionCode = 23
+        versionName = "0.12.5"
 
         // Add BASE_URL from local.properties
         buildConfigField("String", "BASE_URL", "\"${localProperties["BASE_URL"]}\"")

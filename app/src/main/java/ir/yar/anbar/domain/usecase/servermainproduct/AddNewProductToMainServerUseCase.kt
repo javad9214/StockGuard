@@ -8,10 +8,4 @@ import javax.inject.Inject
 
 class AddNewProductToMainServerUseCase @Inject constructor(
     private val repository: ServerMainProductRepository
-) {
-
-    suspend operator fun invoke(product: Product): Flow<Resource<Long>> {
-        return repository.createProduct(product)
-    }
-
-}
+)

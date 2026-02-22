@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChatHistoryState">
+    <option name="chatSessions" value="{&quot;89b1f2c9-c0b0-40d1-adfc-1502d1a840e3&quot;:{&quot;id&quot;:&quot;89b1f2c9-c0b0-40d1-adfc-1502d1a840e3&quot;,&quot;name&quot;:&quot;Building and Debugging a Project: Fixing Build Errors&quot;,&quot;timestamp&quot;:1770466920726,&quot;messages&quot;:[{&quot;role&quot;:&quot;user&quot;,&quot;content&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;\u003cuser_query\u003e\ntry to build and run the project and fix the errors and issues that occurs\n\u003c/user_query\u003e&quot;}]},{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:[]}]}}" />
+  </component>
+</project>
