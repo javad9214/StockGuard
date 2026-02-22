@@ -23,9 +23,9 @@ interface ApiServiceMainProduct {
     @GET(ApiConstants.API + ApiConstants.CATALOG + "products/search")
     suspend fun searchProducts(
         @Query("query") query: String,
-        @Query("page") page: Int,
-        @Query("size") size: Int
-    ):  ApiResponse<PagedResponseDto<CatalogProductDto>>
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 20
+    ): ApiResponse<PagedResponseDto<CatalogProductDto>>
 
     @POST("products")
     suspend fun createProduct(@Body product: CatalogProductDto): ApiResponse<ApiResponseDto<Long>>

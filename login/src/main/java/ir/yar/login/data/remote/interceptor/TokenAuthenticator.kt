@@ -16,6 +16,12 @@ class TokenAuthenticator @Inject constructor(
 ) : Authenticator {
 
     override fun authenticate(route: Route?, response: Response): Request? {
+
+        if (response.request.url.encodedPath.contains("/auth/refresh")) {
+            runBlocking { tokenManager.clearTokens() }
+            return null
+        }
+
         // If response is 401, try to refresh token
         if (response.code == 401) {
             synchronized(this) {
