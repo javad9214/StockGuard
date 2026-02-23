@@ -24,7 +24,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 24
-        versionName = "0.12.6"
+        versionName = "0.12.7"
 
         // Add BASE_URL from local.properties
         buildConfigField("String", "BASE_URL", "\"${localProperties["BASE_URL"]}\"")
@@ -36,11 +36,15 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = file(System.getenv("KEYSTORE_FILE") ?: "")
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
-            keyAlias = System.getenv("KEY_ALIAS")
-            keyPassword = System.getenv("KEY_PASSWORD")
+        val keystorePath = System.getenv("KEYSTORE_FILE")
+
+        if (!keystorePath.isNullOrEmpty()) {
+            create("release") {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
         }
     }
 
@@ -49,7 +53,9 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
 
-            signingConfig = signingConfigs.getByName("release")
+            signingConfigs.findByName("release")?.let {
+                signingConfig = it
+            }
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
