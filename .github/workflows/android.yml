@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +25,11 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
-      - name: Deploy to Server
+      - name: Get APK version
+        id: get_version
+        run: echo "VERSION_NAME=$(./gradlew -q printVersionName)" >> $GITHUB_ENV
+
+      - name: Upload Release APK to Server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -33,6 +37,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            echo "Connected successfully"
-            pwd
-            ls -la
+            APK_NAME="StockGuardApp_v${VERSION_NAME}.apk"
+            echo "Uploading $APK_NAME..."
+            scp -P ${{ secrets.SERVER_PORT }} ./app/build/outputs/apk/release/$APK_NAME ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}
+            echo "Upload complete!"
