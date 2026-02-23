@@ -3,4 +3,9 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">127.0.0.1</domain>
     </domain-config>
+
+    <!-- Allow cleartext to the specific backend IP used in logs -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">217.66.199.24</domain>
+    </domain-config>
 </network-security-config>

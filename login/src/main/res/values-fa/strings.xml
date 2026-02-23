@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_title">خوش آمدید!</string>
+    <string name="login_subtitle">برای ادامه وارد شوید</string>
+    <string name="phone_number">شماره تلفن</string>
+    <string name="password">رمز عبور</string>
+    <string name="login_button">ورود</string>
+    <string name="remember_me">مرا به خاطر بسپار</string>
+    <string name="no_account">حساب کاربری ندارید؟ ثبت نام کنید</string>
+
+    <!-- Registration strings -->
+    <string name="register_title">ایجاد حساب کاربری</string>
+    <string name="register_subtitle">برای شروع ثبت نام کنید</string>
+    <string name="register_button">ثبت نام</string>
+    <string name="full_name">نام و نام خانوادگی</string>
+    <string name="already_have_account">حساب کاربری دارید؟ وارد شوید</string>
+
+    <!-- خطاهای اعتبارسنجی شماره تلفن -->
+    <string name="error_phone_empty">شماره موبایل الزامی است</string>
+    <string name="error_phone_starts_with_zero">شماره موبایل نباید با صفر شروع شود</string>
+    <string name="error_phone_invalid_chars">فقط اعداد مجاز هستند</string>
+    <string name="error_phone_too_short">شماره موبایل باید ۱۰ رقم باشد</string>
+    <string name="error_phone_too_long">شماره موبایل نمی‌تواند بیشتر از ۱۰ رقم باشد</string>
+    <string name="error_phone_invalid_start">شماره موبایل باید با ۹ شروع شود</string>
+    <string name="phone_hint">مثال: 9121234567</string>
+
+</resources>
+

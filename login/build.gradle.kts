@@ -6,18 +6,24 @@ plugins {
     id("dagger.hilt.android.plugin")
 }
 
+
+
 android {
-    namespace = "com.example.login"
-    compileSdk = 35
+    namespace = "ir.yar.anbar.login"
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
+
+
+        buildConfigField("String", "BASE_URL", "\"https://mjavadserver.ir\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 
@@ -58,6 +64,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("androidx.compose.material3:material3:1.1.2")
 
     // Navigation
     implementation(libs.navigation.compose)
@@ -66,6 +73,24 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
+
+
+    // Network
+    implementation(libs.gson)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.adapter.rxjava2)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+    implementation(libs.sandwich)
+
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.core)
+
+
+    implementation(libs.androidx.security.crypto)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

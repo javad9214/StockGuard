@@ -8,15 +8,18 @@ plugins {
 }
 
 android {
-    namespace = "com.example.composetrainer"
+    namespace = "ir.yar.anbar"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.composetrainer"
+        applicationId = "ir.yar.anbar"
         minSdk = 26
         targetSdk = 36
-        versionCode = 11
-        versionName = "0.4.4"
+        versionCode = 24
+        versionName = "0.12.7"
+
+
+        buildConfigField("String", "BASE_URL", "\"https://mjavadserver.ir\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -24,35 +27,72 @@ android {
         }
     }
 
+    signingConfigs {
+        val keystorePath = System.getenv("KEYSTORE_FILE")
+
+        if (!keystorePath.isNullOrEmpty()) {
+            create("release") {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+
+            signingConfigs.findByName("release")?.let {
+                signingConfig = it
+            }
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            applicationVariants.all {
+                outputs.all {
+                    val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+                    val versionName = defaultConfig.versionName ?: "1.0"
+                    output.outputFileName = "StockGuardApp_v${versionName}.apk"
+                }
+            }
+        }
+
+        debug {
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = "17"
     }
+
     buildFeatures {
+        buildConfig = true
         compose = true
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 
-    // Check if we have a RAW resources file to store our sound file
     sourceSets {
         getByName("main") {
             res.srcDirs("src/main/res")
@@ -61,7 +101,6 @@ android {
 }
 
 dependencies {
-
     // Include the Login module
     implementation(project(":login"))
 
@@ -85,8 +124,14 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 
-
-    implementation (libs.gson)
+    // Network
+    implementation(libs.gson)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.adapter.rxjava2)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+    implementation(libs.sandwich)
 
     // Room
     implementation(libs.room.runtime)
@@ -108,6 +153,15 @@ dependencies {
     // ACRA
     implementation(libs.acra.http)
     implementation(libs.acra.core)
+
+    // Vico
+    implementation(libs.vico.core)
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
+
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.core)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

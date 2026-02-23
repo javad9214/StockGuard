@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960"
+    android:tint="?attr/colorControlNormal">
+
+    <!-- Circle/arc -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M200,480Q200,586 269,665Q338,744 443,758Q459,760 469.5,772Q480,784 480,800Q480,817 465.5,828Q451,839 433,837Q298,820 209,718.5Q120,617 120,480Q120,344 208.5,242.5Q297,141 432,123Q451,121 465.5,131.5Q480,142 480,160Q480,176 469.5,188Q459,200 443,202Q338,216 269,295Q200,374 200,480Z"/>
+
+    <!-- Arrow pointing into the arc (from right side inward) -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M720,480 L640,400
+                          Q628,388 628,372Q628,356 640,344Q652,332 668,332Q684,332 696,344L800,448
+                          Q812,460 812,480Q812,500 800,512L696,616
+                          Q684,628 668,628Q652,628 640,616Q628,604 628,588Q628,572 640,560L720,480Z"/>
+</vector>
+
+
+
+

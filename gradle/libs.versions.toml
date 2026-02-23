@@ -1,5 +1,5 @@
 [versions]
-agp = "8.8.0"
+agp = "8.11.2"
 kotlin = "2.1.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -21,6 +21,14 @@ camerax = "1.4.2"
 mlkit-barcode = "17.3.0"
 gson = "2.13.1"
 acra = "5.8.1"
+retrofit = "2.11.0"
+okhttp = "4.12.0"
+sandwich = "2.0.8"
+adapter-rxjava2 = "2.6.2"
+converter-gson = "3.0.0"
+vico = "2.3.6"
+datastore = "1.1.1"
+security_crypto = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +47,13 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "nav" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converter-gson" }
+adapter-rxjava2 = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "adapter-rxjava2" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
+sandwich = { module = "com.github.skydoves:sandwich-retrofit", version.ref = "sandwich" }
+
 
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
@@ -65,8 +80,21 @@ androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "
 # ML Kit Barcode Scanning
 google-mlkit-barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkit-barcode" }
 
+
+# Vico Chart
+vico-core = { module = "com.patrykandpatrick.vico:core", version.ref = "vico" }
+vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico" }
+vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
+
+# ACRA
 acra-http = { module = "ch.acra:acra-http", version.ref = "acra" }
 acra-core = { module = "ch.acra:acra-core", version.ref = "acra" }
+
+# Datastore
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+androidx-datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "datastore" }
+
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "security_crypto" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

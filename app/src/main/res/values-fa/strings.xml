@@ -1,22 +1,70 @@
 <resources>
-    <string name="app_name">ComposeTrainer</string>
+    <string name="app_name">یارانبار</string>
+
+
+    <!-- General -->
+    <string name="retry">تلاش مجدد</string>
 
     <!-- Home -->
     <string name="welcomeToHomeScreen">Welcome To Yar Anbar</string>
     <string name="Hello">سـلام !</string>
     <string name="daily_message">روزت بخیر</string>
-    <string name="today">امـروز</string>
+
     <string name="total_profit">مجموع سود</string>
     <string name="total_invoice_registered">تعداد کل فاکتورهای ثبت شده</string>
     <string name="most_sold_products">پرفروش ترین محصولات</string>
     <string name="most_profitable_products">پرسـودترین محصولات</string>
     <string name="running_out_products">موجودی درحال اتمام</string>
 
+    <!-- Setting -->
+    <string name="setting">تنظیمات</string>
+    <string name="select_currency">انتخاب واحد پولی</string>
+    <string name="rial">ریال</string>
+    <string name="toman">تومان</string>
+    <string name="select_theme">انتخاب تم برنامه</string>
+    <string name="dark">تاریک</string>
+    <string name="light">روشن</string>
+    <string name="system_default">پیش فرض سیستم</string>
+    <string name="stock_runout_limit">حد هشدار اتمام موجودی</string>
+
+
+    <!-- DATES -->
+    <string name="today">امـروز</string>
+    <string name="yesterday">دیروز</string>
+    <string name="this_week">این هفته</string>
+    <string name="last_week">هفته گذشته</string>
+    <string name="this_month">این ماه</string>
+    <string name="last_month">ماه گذشته</string>
+    <string name="this_year">امسال</string>
+    <string name="last_year">سال گذشته</string>
+
     <!-- Most Sold Products -->
     <string name="products_sold_count">تعداد فروخته شده</string>
     <string name="profit">سـود</string>
     <string name="total_amount">مبلغ کل</string>
+    <string name="units_sold">واحد فروخته شده</string>
+    <string name="total_revenue">مجموع درآمد</string>
+    <string name="in_stock">موجود</string>
+    <string name="stock_healthy">موجودی خوب</string>
+    <string name="stock_running_out">موجودی رو به اتمام</string>
+    <string name="stock_low">موجودی کم</string>
+    <string name="stock_critical">موجودی بحرانی</string>
+    <string name="units_available">واحد موجود</string>
 
+    // Low Stock Products -->
+    <string name="low_stock_products">محصولات درحال اتمام </string>
+    <string name="critical">بحرانی</string>
+    <string name="low">کم</string>
+    <string name="current_stock">موجودی فعلی</string>
+    <string name="min_stock_level">حداقل موجودی</string>
+    <string name="reorder_cost">هزینه سفارش مجدد</string>
+    <string name="last_sold">آخرین فروش</string>
+    <string name="days_ago">روز پیش</string>
+    <string name="out_of_stock">ناموجود</string>
+    <string name="overstocked">موجودی زیاد</string>
+    <string name="units">واحد</string>
+    <string name="never_sold">هرگز فروخته نشده</string>
+    <string name="dead_stock_warning">کالای راکد - بیش از 6 ماه فروش نداشته</string>
 
     <!-- Invoice -->
     <string name="sale_invoice">فاکتور فروش</string>
@@ -24,9 +72,14 @@
     <string name="submit">ثبت</string>
     <string name="finalize_factor">نهایی سازی</string>
     <string name="buyer">خریدار</string>
+    <string name="seller">فروشنده</string>
     <string name="unknown">ناشناخته</string>
     <string name="add_product">افزودن محصول</string>
     <string name="invoice_number">شماره فاکتور</string>
+    <string name="purchase_invoice">فاکتور خرید </string>
+    <string name="scan_barcode">اسکن بارکد</string>
+    <string name="choose_from_list"> انتخاب از لیست</string>
+    <string name="no_products_added_yet">هنوز هیچ‌ محصولی به فاکتور اضافه نگردیده است!</string>
 
     <!-- Invoice List -->
     <string name="sale_invoices">فاکتور های فروش</string>
@@ -43,10 +96,12 @@
     <string name="product_total">مبلغ جزء</string>
     <string name="invoice_total_amount">مبلغ کل فاکتور</string>
     <string name="product_not_found">محصول ناشناخته</string>
+    <string name="goods">کالا</string>
+    <string name="show_details">مشاهده جزییات </string>
 
     <!-- Delete Dialog -->
     <string name="Delete_invoice">حذف فاکتور</string>
-    <string name="are_you_sure_to_delete_this_invoice">"آیا مطمئن هستید که می‌خواهید این فاکتور را حذف کنید؟"</string>
+    <string name="are_you_sure_to_delete_this_invoice">آیا مطمئن هستید که می‌خواهید این فاکتور را حذف کنید؟</string>
     <string name="delete">حذف</string>
     <string name="cancel">انصراف</string>
     <string name="delete_selected_invoices">حذف فاکتورهای انتخاب شده</string>
@@ -56,14 +111,14 @@
     <string name="no_invoices_selected">هیچ فاکتوری انتخاب نشده است</string>
     <string name="selected_invoices_count">انتخاب شده: %d</string>
     <string name="no_products_added">هنوز محصولی اضافه نشده است</string>
-
+    <string name="number_of_good">تعداد اقلام</string>
 
     <!-- Product Screen -->
     <string name="products">محصولات</string>
+    <string name="myProducts">محصولات من</string>
 
     <!-- Product Item -->
     <string name="price">قیمت</string>
-    <string name="toman">تـومان</string>
 
     <!-- Product Screen -->
     <string name="product_details">جزئیات محصول</string>
@@ -78,6 +133,14 @@
     <string name="search">جستجو</string>
     <string name="ok">باشه</string>
 
+    <!-- Product Item -->
+    <string name="buy">خرید</string>
+    <string name="sale">فروش</string>
+    <string name="edit">ویرایش</string>
+    <string name="disable">غیرفعال کردن</string>
+    <string name="enable">فعال کردن</string>
+    <string name="are_you_sure_you_want_to_delete_this_product">آیا مطمئن هستید که می‌خواهید این محصول را حذف کنید؟</string>
+    <string name="product_is_deleted_successfully">محصول با موفقیت حذف گردید</string>
     <!-- Product Selection -->
     <string name="select_product">انتخاب محصول</string>
     <string name="stock">موجودی</string>
@@ -91,6 +154,23 @@
     <string name="clear_search">پاک کردن جستجو</string>
     <string name="search_product">جستجوی محصول...</string>
     <string name="confirm">تایید</string>
+
+    <!-- Product Details -->
+    <string name="products_name">نام محصول</string>
+    <string name="Barcode">بارکد</string>
+
+
+    <!-- Alert Dialog -->
+    <string name="no_product_with_barcode">هیچ محصولی با این بارکد : </string>
+    <string name="not_found">یافت نشد!</string>
+    <string name="add_as_new_product">افزودن به عنوان محصول جدید </string>
+
+    <!-- Server Main Products  -->
+    <string name="total_products_list">لیست تمامی محصولات</string>
+    <string name="add_to_my_products">افزودن به محصولات من</string>
+    <string name="suggestion_price">قیمت پیشنهادی</string>
+    <string name="no_product_found">هیچ محصولی یافت نگردید!</string>
+    <string name="product_added"> افزوده شد</string>
 
     <!-- Analyze Screen -->
     <string name="sales_analyse">تحلیل فروش</string>
@@ -109,18 +189,91 @@
     <string name="invoice_creation">ایجاد فاکتور</string>
     <string name="customer_name">نام مشتری</string>
     <string name="save_invoice">ذخیره فاکتور</string>
-
+    <string name="Tap_to_start_scanning">برای شروع اسکن ضربه بزنید</string>
+    <string name="invoice_created_successfully">فاکتور با موفقیت ثبت گردید!</string>
+    <string name="finalizing_invoice">درحال نهایی سازی فاکتور ...</string>
+    
     <!-- Barcode Scanner View -->
-    <string name="barcode_position">Position barcode within frame</string>
-
+    <string name="barcode_position">موقعیت بارکد در داخل قاب</string>
+    <string name="no_product_found_with_barcode">محصولی با بارکد مورد نظر یافت نشد !</string>
     <!-- Add Product Bottom Sheet -->
     <string name="add_product_title">افزودن محصول</string>
     <string name="edit_product_title">ویرایش محصول</string>
     <string name="product_name">نام محصول</string>
-    <string name="barcode_optional">بارکد (اختیاری)</string>
-    <string name="price_optional">قیمت (اختیاری)</string>
+    <string name="barcode_optional">بارکد</string>
+    <string name="cost_price">قیمت خرید</string>
+    <string name="sale_price">قیمت فروش</string>
     <string name="category_id_optional">شناسه دسته‌بندی (اختیاری)</string>
     <string name="add_product_button">افزودن محصول</string>
     <string name="save_changes_button">ذخیره تغییرات</string>
+
+    <!-- Logout Strings -->
+    <string name="logout">خروج از حساب</string>
+    <string name="account">حساب کاربری</string>
+    <string name="logout_confirmation_title">خروج از حساب کاربری؟</string>
+    <string name="logout_confirmation_message">آیا مطمئن هستید که می‌خواهید از حساب کاربری خود خارج شوید؟</string>
+
+
+    <!-- Version Update Dialog -->
+    <string name="update_available">به‌روزرسانی موجود است</string>
+    <string name="update_required">به‌روزرسانی الزامی</string>
+    <string name="update_available_message">نسخه جدیدی با بهبودها و رفع اشکالات موجود است.</string>
+    <string name="update_required_message">نسخه جدید برای ادامه استفاده از برنامه لازم است.</string>
+    <string name="current_version">نسخه فعلی</string>
+    <string name="latest_version">آخرین نسخه</string>
+    <string name="whats_new">چه چیزی جدید است</string>
+    <string name="whats_new_compact">موارد جدید:</string>
+    <string name="update_now">اکنون به‌روزرسانی کنید</string>
+    <string name="update">به‌روزرسانی</string>
+    <string name="skip">رد کردن</string>
+    <string name="update_icon">آیکون به‌روزرسانی</string>
+    <string name="arrow">فلش</string>
+    <string name="current">فعلی</string>
+    <string name="latest">جدید</string>
+
+    <!-- Version Check -->
+    <string name="checking_for_updates">در حال بررسی به‌روزرسانی‌ها...</string>
+    <string name="no_updates_available">به‌روزرسانی جدیدی موجود نیست</string>
+    <string name="update_check_failed">بررسی به‌روزرسانی با خطا مواجه شد</string>
+    <string name="check_for_updates">بررسی به‌روزرسانی‌ها</string>
+
+    <!-- Version Info -->
+    <string name="app_version">نسخه برنامه</string>
+    <string name="version_code">کد نسخه</string>
+    <string name="build_number">شماره ساخت</string>
+    <string name="last_update_check">آخرین بررسی به‌روزرسانی</string>
+    <string name="never">هرگز</string>
+
+    <!-- Update Actions -->
+    <string name="download_update">دانلود به‌روزرسانی</string>
+    <string name="install_update">نصب به‌روزرسانی</string>
+    <string name="later">بعداً</string>
+    <string name="remind_me_later">بعداً یادآوری کن</string>
+
+    <!-- Update Status Messages -->
+    <string name="downloading_update">در حال دانلود به‌روزرسانی...</string>
+    <string name="update_downloaded">به‌روزرسانی با موفقیت دانلود شد</string>
+    <string name="update_download_failed">دانلود به‌روزرسانی با خطا مواجه شد</string>
+    <string name="installing_update">در حال نصب به‌روزرسانی...</string>
+    <string name="update_installed">به‌روزرسانی با موفقیت نصب شد</string>
+    <string name="update_installation_failed">نصب به‌روزرسانی با خطا مواجه شد</string>
+
+    <!-- Update Permissions -->
+    <string name="update_permission_required">مجوز برای نصب به‌روزرسانی‌ها نیاز است</string>
+    <string name="grant_permission">اعطای مجوز</string>
+
+    <!-- Release Notes -->
+    <string name="release_notes">یادداشت‌های انتشار</string>
+    <string name="view_release_notes">مشاهده یادداشت‌های انتشار</string>
+    <string name="no_release_notes">یادداشت انتشاری موجود نیست</string>
+
+    <!-- Update Settings -->
+    <string name="update_settings">تنظیمات به‌روزرسانی</string>
+    <string name="auto_update">به‌روزرسانی خودکار</string>
+    <string name="auto_update_description">دانلود و نصب خودکار به‌روزرسانی‌ها</string>
+    <string name="update_over_wifi_only">فقط از طریق Wi-Fi به‌روزرسانی شود</string>
+    <string name="update_over_wifi_description">فقط در صورت اتصال به Wi-Fi به‌روزرسانی دانلود شود</string>
+    <string name="check_updates_on_startup">بررسی به‌روزرسانی در شروع برنامه</string>
+    <string name="check_updates_startup_description">بررسی خودکار به‌روزرسانی‌ها هنگام راه‌اندازی برنامه</string>
 
 </resources>
