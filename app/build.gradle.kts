@@ -1,6 +1,3 @@
-import java.util.Properties
-import java.io.FileInputStream
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -8,11 +5,6 @@ plugins {
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
     id("com.google.devtools.ksp")
-}
-
-
-val localProperties = Properties().apply {
-    load(FileInputStream(rootProject.file("local.properties")))
 }
 
 android {
@@ -23,11 +15,11 @@ android {
         applicationId = "ir.yar.anbar"
         minSdk = 26
         targetSdk = 36
-        versionCode = 23
-        versionName = "0.12.5"
+        versionCode = 24
+        versionName = "0.12.7"
 
-        // Add BASE_URL from local.properties
-        buildConfigField("String", "BASE_URL", "\"${localProperties["BASE_URL"]}\"")
+
+        buildConfigField("String", "BASE_URL", "\"https://mjavadserver.ir\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -35,23 +27,37 @@ android {
         }
     }
 
+    signingConfigs {
+        val keystorePath = System.getenv("KEYSTORE_FILE")
+
+        if (!keystorePath.isNullOrEmpty()) {
+            create("release") {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+
+            signingConfigs.findByName("release")?.let {
+                signingConfig = it
+            }
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
 
-            // Configure APK output naming
             applicationVariants.all {
                 outputs.all {
                     val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-                    val variantName = name
                     val versionName = defaultConfig.versionName ?: "1.0"
-                    val versionCode = defaultConfig.versionCode ?: 1
-
                     output.outputFileName = "StockGuardApp_v${versionName}.apk"
                 }
             }
