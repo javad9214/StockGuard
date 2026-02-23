@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,19 +25,29 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
-      - name: Get APK version
+      - name: Get APK Version Name
         id: get_version
-        run: echo "VERSION_NAME=$(./gradlew -q printVersionName)" >> $GITHUB_ENV
+        run: |
+          VERSION_NAME=$(./gradlew -q printVersionName)
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
 
-      - name: Upload Release APK to Server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT }}
-          script: |
-            APK_NAME="StockGuardApp_v${VERSION_NAME}.apk"
-            echo "Uploading $APK_NAME..."
-            scp -P ${{ secrets.SERVER_PORT }} ./app/build/outputs/apk/release/$APK_NAME ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}
-            echo "Upload complete!"
+      - name: Upload APK to Server
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_PORT: ${{ secrets.SERVER_PORT }}
+          SERVER_PATH: ${{ secrets.SERVER_PATH }}
+        run: |
+          APK_NAME="StockGuardApp_v${VERSION_NAME}.apk"
+          echo "Uploading $APK_NAME to $SERVER_HOST:$SERVER_PATH ..."
+          scp -i <(echo "$SSH_PRIVATE_KEY") -P $SERVER_PORT ./app/build/outputs/apk/release/$APK_NAME $SERVER_USER@$SERVER_HOST:$SERVER_PATH
+          echo "Upload complete!"
+
+          echo "Post-upload: Copy, remove old symlink, create new symlink..."
+          ssh -i <(echo "$SSH_PRIVATE_KEY") -p $SERVER_PORT $SERVER_USER@$SERVER_HOST << 'EOF'
+            cp "$SERVER_PATH/$APK_NAME" /var/www/stockguard-update/
+            rm -f /var/www/stockguard-update/stockguard-latest.apk
+            ln -s "/var/www/stockguard-update/$APK_NAME" /var/www/stockguard-update/stockguard-latest.apk
+          EOF
+          echo "Server update done!"
