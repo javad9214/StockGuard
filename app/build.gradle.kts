@@ -1,6 +1,3 @@
-import java.util.Properties
-import java.io.FileInputStream
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -8,11 +5,6 @@ plugins {
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
     id("com.google.devtools.ksp")
-}
-
-
-val localProperties = Properties().apply {
-    load(FileInputStream(rootProject.file("local.properties")))
 }
 
 android {
@@ -26,8 +18,8 @@ android {
         versionCode = 24
         versionName = "0.12.7"
 
-        // Add BASE_URL from local.properties
-        buildConfigField("String", "BASE_URL", "\"${localProperties["BASE_URL"]}\"")
+
+        buildConfigField("String", "BASE_URL", "https://mjavadserver.ir")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
