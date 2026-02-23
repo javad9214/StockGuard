@@ -57,14 +57,4 @@ jobs:
           scp -P $SERVER_PORT "$RELEASE_APK" \
             $SERVER_USER@$SERVER_HOST:$SERVER_PATH
 
-          echo "Running remote update commands..."
-
-          ssh -p $SERVER_PORT $SERVER_USER@$SERVER_HOST << EOF
-            set -e
-            cp "$SERVER_PATH/$APK_NAME" /var/www/stockguard-update/
-            rm -f /var/www/stockguard-update/stockguard-latest.apk
-            ln -s "/var/www/stockguard-update/$APK_NAME" /var/www/stockguard-update/stockguard-latest.apk
-            echo "✅ Symlink updated successfully"
-          EOF
-
           echo "🚀 Deployment completed successfully!"
