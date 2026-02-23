@@ -1,6 +1,3 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -9,9 +6,7 @@ plugins {
     id("dagger.hilt.android.plugin")
 }
 
-val localProperties = Properties().apply {
-    load(FileInputStream(rootProject.file("local.properties")))
-}
+
 
 android {
     namespace = "ir.yar.anbar.login"
@@ -20,8 +15,8 @@ android {
     defaultConfig {
         minSdk = 26
 
-        // Add BASE_URL from local.properties
-        buildConfigField("String", "BASE_URL", "\"${localProperties["BASE_URL"]}\"")
+
+        buildConfigField("String", "BASE_URL", "https://mjavadserver.ir")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
