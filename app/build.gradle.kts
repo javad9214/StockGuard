@@ -19,7 +19,7 @@ android {
         versionName = "0.12.7"
 
 
-        buildConfigField("String", "BASE_URL", "https://mjavadserver.ir")
+        buildConfigField("String", "BASE_URL", "\"https://mjavadserver.ir\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

@@ -16,7 +16,7 @@ android {
         minSdk = 26
 
 
-        buildConfigField("String", "BASE_URL", "https://mjavadserver.ir")
+        buildConfigField("String", "BASE_URL", "\"https://mjavadserver.ir\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
