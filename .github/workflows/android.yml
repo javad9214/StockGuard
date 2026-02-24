@@ -18,43 +18,10 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+          cache: gradle   # ✅ enables built-in Gradle caching
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
       - name: Build Release APK
-        run: ./gradlew assembleRelease
-
-      - name: Deploy APK to Server
-        env:
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_PORT: ${{ secrets.SERVER_PORT }}
-          SERVER_PATH: ${{ secrets.SERVER_PATH }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
-          set -e
-
-          echo "Locating generated APK..."
-          RELEASE_APK=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
-
-          if [ -z "$RELEASE_APK" ]; then
-            echo "❌ APK not found!"
-            exit 1
-          fi
-
-          APK_NAME=$(basename "$RELEASE_APK")
-          echo "✅ Found APK: $APK_NAME"
-
-          echo "Setting up SSH..."
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
-          ssh-keyscan -p $SERVER_PORT $SERVER_HOST >> ~/.ssh/known_hosts
-
-          echo "Uploading APK to $SERVER_PATH ..."
-          scp -P $SERVER_PORT "$RELEASE_APK" \
-            $SERVER_USER@$SERVER_HOST:$SERVER_PATH
-
-          echo "🚀 Deployment completed successfully!"
+        run: ./gradlew assembleRelease --configuration-cache --build-cache --parallel
