@@ -27,7 +27,7 @@ jobs:
 
       - name: Decode Keystore
         run: |
-          echo "${{ secrets.KEY_STORE_FILE }}" | base64 --decode > keystore.jks
+          echo "${{ secrets.KEYSTORE_FILE }}" | base64 --decode > keystore.jks
           echo "KEYSTORE_FILE=$PWD/keystore.jks" >> $GITHUB_ENV
 
       - name: Verify keystore file size
