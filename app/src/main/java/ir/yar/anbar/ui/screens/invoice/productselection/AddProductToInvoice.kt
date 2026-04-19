@@ -38,7 +38,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
-import ir.yar.anbar.ui.components.BottomSheetDragHandle
+import ir.yar.anbar.ui.components.customnavbars.BottomSheetDragHandle
 import ir.yar.anbar.ui.theme.BHoma
 import ir.yar.anbar.ui.viewmodels.InvoiceViewModel
 import ir.yar.anbar.ui.viewmodels.ProductsViewModel

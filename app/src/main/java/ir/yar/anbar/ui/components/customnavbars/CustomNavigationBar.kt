@@ -1,4 +1,4 @@
-package ir.yar.anbar.ui.components
+package ir.yar.anbar.ui.components.customnavbars
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
