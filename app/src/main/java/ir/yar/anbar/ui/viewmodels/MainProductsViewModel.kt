@@ -10,12 +10,15 @@ import ir.yar.anbar.domain.usecase.servermainproduct.GetAllMainProductsUseCase
 import ir.yar.anbar.domain.usecase.servermainproduct.GetSearchedMainProductsUseCase
 import ir.yar.anbar.ui.screens.productlist.ProductsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import ir.yar.anbar.domain.model.ProductId
+import ir.yar.anbar.domain.model.type.Money
 import ir.yar.anbar.domain.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -146,6 +149,32 @@ class MainProductsViewModel @Inject constructor(
         }
     }
 
+
+    fun addProductWithPrices(product: Product, salePrice: Long, costPrice: Long) {
+        viewModelScope.launch {
+            try {
+                val productToAdd = product.copy(
+                    price = Money(salePrice),
+                    costPrice = Money(costPrice),
+                    id = ProductId(0), // Reset ID for local database
+                    synced = false,
+                    createdAt = LocalDateTime.now(),
+                    updatedAt = LocalDateTime.now()
+                )
+
+                addProductToLocalDatabase(productToAdd)
+
+                // Optional: Show success message
+                _uiState.update {
+                    it.copy(error = null)
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(error = "خطا در افزودن محصول: ${e.message}")
+                }
+            }
+        }
+    }
 
 
 }

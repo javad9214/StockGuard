@@ -249,7 +249,7 @@ fun ServerProductItem(
 
 // ── Reusable Thumbnail ────────────────────────────────────────────────────────
 @Composable
-private fun ProductThumbnail(
+fun ProductThumbnail(
     imageUrl: String?,
     modifier: Modifier = Modifier
 ) {

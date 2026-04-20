@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
+import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.ui.components.barcodescanner.BarcodeScannerView
 import ir.yar.anbar.ui.screens.component.EmptyState
 import ir.yar.anbar.ui.theme.BMitra
@@ -62,7 +63,8 @@ fun ServerProductListScreen(
     val listState = rememberLazyListState()
     // Barcode scanner state
     var showBarcodeScannerView by remember { mutableStateOf(false) }
-
+    var showPriceBottomSheet by remember { mutableStateOf(false) }
+    var selectedProduct by remember { mutableStateOf<Product?>(null) }
 
     LaunchedEffect(listState) {
         snapshotFlow {
@@ -76,6 +78,26 @@ fun ServerProductListScreen(
                 mainProductsViewModel.loadMoreProducts()
             }
         }
+    }
+
+    // Price Bottom Sheet
+    if (showPriceBottomSheet && selectedProduct != null) {
+        AddProductPriceBottomSheet(
+            product = selectedProduct!!,
+            onDismiss = {
+                showPriceBottomSheet = false
+                selectedProduct = null
+            },
+            onSave = { salePrice, costPrice ->
+                mainProductsViewModel.addProductWithPrices(
+                    product = selectedProduct!!,
+                    salePrice = salePrice,
+                    costPrice = costPrice
+                )
+                showPriceBottomSheet = false
+                selectedProduct = null
+            }
+        )
     }
 
     // Show barcode scanner when activated - moved outside to fix layering
@@ -210,11 +232,13 @@ fun ServerProductListScreen(
                             ) { product ->
                                 ServerProductItem(
                                     product = product,
-                                    onProductClick = { },
+                                    onProductClick = {
+                                        selectedProduct = product
+                                        showPriceBottomSheet = true
+                                    },
                                     onAdd = {
-                                        mainProductsViewModel.addProductToLocalDatabase(
-                                            product
-                                        )
+                                        selectedProduct = product
+                                        showPriceBottomSheet = true
                                     },
                                     onEdit = { },
                                     onDelete = { },
