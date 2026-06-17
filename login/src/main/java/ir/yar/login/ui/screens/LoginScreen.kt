@@ -1,45 +1,26 @@
 package ir.yar.login.ui.screens
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -71,9 +52,10 @@ fun LoginScreen(
     var phoneError by remember { mutableStateOf<String?>(null) }
     var showPhoneError by remember { mutableStateOf(false) }
 
+    val passwordFocusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     val isLoading = uiState.isLoading
 
-    // Navigate ONLY on success
     LaunchedEffect(uiState.data) {
         if (uiState.data != null) {
             onLoginSuccess()
@@ -84,7 +66,7 @@ fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(24.dp),
+            .padding(horizontal = 24.dp),
         contentAlignment = Alignment.Center
     ) {
         ElevatedCard(
@@ -94,28 +76,26 @@ fun LoginScreen(
             colors = CardDefaults.elevatedCardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
-            elevation = CardDefaults.elevatedCardElevation(8.dp),
-            shape = RoundedCornerShape(24.dp)
+            elevation = CardDefaults.elevatedCardElevation(4.dp),
+            shape = RoundedCornerShape(20.dp)
         ) {
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(32.dp),
+                    .padding(28.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-
                 // Header
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.login_title),
                         style = MaterialTheme.typography.headlineLarge.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 32.sp
+                            fontSize = 28.sp
                         ),
                         textAlign = TextAlign.Center,
                         fontFamily = Beirut_Medium,
@@ -123,31 +103,26 @@ fun LoginScreen(
                     )
                     Text(
                         text = stringResource(R.string.login_subtitle),
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                         fontFamily = BNazanin,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                // Phone Input with Validation
+                // Phone Input
                 Column(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
                         value = phoneNumber,
                         onValueChange = { input ->
-                            // Filter: only digits, max 10 chars
                             val filtered = PhoneValidator.filterInput(input)
                             phoneNumber = filtered
 
-                            // Real-time validation
                             if (filtered.isNotEmpty()) {
                                 val validation = PhoneValidator.validate(filtered)
-                                phoneError = validation.getErrorMessage()?.toLocalizedMessage { resId ->
-                                    // This will be replaced by stringResource in actual usage
-                                    ""
-                                }
+                                phoneError = validation.getErrorMessage()?.toLocalizedMessage { "" }
                                 showPhoneError = !validation.isValid() && filtered.length >= 10
                             } else {
                                 phoneError = null
@@ -160,61 +135,80 @@ fun LoginScreen(
                         singleLine = true,
                         isError = showPhoneError,
                         supportingText = {
-                            if (showPhoneError && phoneError != null) {
+                            AnimatedVisibility(
+                                visible = showPhoneError && phoneError != null,
+                                enter = fadeIn() + expandVertically(),
+                                exit = fadeOut() + shrinkVertically()
+                            ) {
                                 Text(
-                                    text = phoneError!!,
+                                    text = phoneError ?: "",
                                     color = MaterialTheme.colorScheme.error,
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            } else {
-                                Text(
-                                    text = stringResource(R.string.phone_hint),
                                     style = MaterialTheme.typography.bodySmall
                                 )
                             }
                         },
                         trailingIcon = {
-                            Row(
-                                modifier = Modifier
-                                    .padding(start = 8.dp)
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                                    .padding(horizontal = 10.dp, vertical = 6.dp),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                            Surface(
+                                modifier = Modifier.padding(end = 8.dp),
+                                shape = RoundedCornerShape(8.dp),
                             ) {
-                                Icon(
-                                    modifier = Modifier.size(dimensionResource(id = R.dimen.size_sm)),
-                                    painter = painterResource(R.drawable.iran),
-                                    contentDescription = "iran_flag",
-                                    tint = Color.Unspecified
-                                )
-                                Text(
-                                    text = "+98",
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontWeight = FontWeight.SemiBold
-                                    ),
-                                    fontFamily = BNazanin,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+
+
+                                    VerticalDivider(
+                                        modifier = Modifier
+                                            .height(24.dp)
+                                            .padding(horizontal = 4.dp),
+                                        thickness = 1.dp,
+                                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                    )
+
+
+                                    Text(
+                                        text = "+98",
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.SemiBold
+                                        ),
+                                        fontFamily = FontFamily.SansSerif,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+
+                                    Icon(
+                                        modifier = Modifier.size(dimensionResource(id = R.dimen.size_sm)),
+                                        painter = painterResource(R.drawable.iran),
+                                        contentDescription = null,
+                                        tint = Color.Unspecified
+                                    )
+
+                                }
                             }
                         },
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(R.drawable.mobile),
-                                contentDescription = "Phone",
+                                contentDescription = null,
                                 tint = if (showPhoneError)
                                     MaterialTheme.colorScheme.error
                                 else
-                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                    MaterialTheme.colorScheme.primary
                             )
                         },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Next
                         ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { passwordFocusRequester.requestFocus() }
+                        ),
                         shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors()
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                        )
                     )
                 }
 
@@ -223,7 +217,9 @@ fun LoginScreen(
                     value = password,
                     onValueChange = { password = it },
                     label = { Text(stringResource(R.string.password)) },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(passwordFocusRequester),
                     singleLine = true,
                     enabled = !isLoading,
                     visualTransformation = if (passwordVisible)
@@ -233,20 +229,20 @@ fun LoginScreen(
                     leadingIcon = {
                         Icon(
                             painter = painterResource(R.drawable.key),
-                            contentDescription = "Password",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     },
                     trailingIcon = {
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        IconButton(
+                            onClick = { passwordVisible = !passwordVisible },
+                            modifier = Modifier.size(24.dp)
+                        ) {
                             Icon(
                                 painter = painterResource(
-                                    if (passwordVisible)
-                                        R.drawable.eye_slash
-                                    else
-                                        R.drawable.eye
+                                    if (passwordVisible) R.drawable.eye_slash else R.drawable.eye
                                 ),
-                                contentDescription = null,
+                                contentDescription = if (passwordVisible) "Hide password" else "Show password",
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -255,41 +251,74 @@ fun LoginScreen(
                         keyboardType = KeyboardType.NumberPassword,
                         imeAction = ImeAction.Done
                     ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                            val validation = PhoneValidator.validate(phoneNumber)
+                            if (validation.isValid() && password.isNotEmpty()) {
+                                viewModel.login(phoneNumber, password)
+                            }
+                        }
+                    ),
                     shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors()
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                    )
                 )
 
-                // Error Message from API
-                uiState.errorMessage?.let {
+                // Error Message
+                AnimatedVisibility(
+                    visible = uiState.errorMessage != null,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.errorContainer
+                    ) {
+                        Text(
+                            text = uiState.errorMessage ?: "",
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            style = MaterialTheme.typography.bodySmall,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
+                }
+
+                // Remember Me
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Checkbox(
+                        checked = rememberMe,
+                        onCheckedChange = { rememberMe = it },
+                        enabled = !isLoading
+                    )
                     Text(
-                        text = it,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.Center
+                        text = stringResource(R.string.remember_me),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Remember Me
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = rememberMe,
-                        onCheckedChange = { rememberMe = it }
-                    )
-                    Text(
-                        text = stringResource(R.string.remember_me),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-
                 // Login Button
+                val buttonScale by animateFloatAsState(
+                    targetValue = if (isLoading) 0.95f else 1f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                )
+
                 Button(
                     onClick = {
-                        // Final validation before login
                         val validation = PhoneValidator.validate(phoneNumber)
                         if (validation.isValid()) {
                             viewModel.login(phoneNumber, password)
@@ -299,24 +328,30 @@ fun LoginScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
+                        .height(52.dp)
+                        .scale(buttonScale),
                     enabled = !isLoading &&
                             phoneNumber.length == 10 &&
                             password.isNotEmpty() &&
                             !showPhoneError,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 2.dp,
+                        pressedElevation = 6.dp
+                    )
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
+                            modifier = Modifier.size(22.dp),
                             color = MaterialTheme.colorScheme.onPrimary,
-                            strokeWidth = 2.dp
+                            strokeWidth = 2.5.dp
                         )
                     } else {
                         Text(
                             text = stringResource(R.string.login_button),
                             style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.SemiBold
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp
                             )
                         )
                     }

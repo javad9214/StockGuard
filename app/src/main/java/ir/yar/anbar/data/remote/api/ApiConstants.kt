@@ -5,8 +5,10 @@ import ir.yar.anbar.BuildConfig
 
 object ApiConstants {
 
-    const val BASE_URL = BuildConfig.BASE_URL
+    const val BASE_URL_DOMAIN = BuildConfig.BASE_URL
 
+    const val BASE_URL = "http://188.75.89.14:22015/"
+    
     const val API = "api/"
 
     const val CATALOG = "catalog/"

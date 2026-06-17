@@ -212,6 +212,10 @@
     <!-- Version Update Dialog -->
     <string name="update_available">Update Available</string>
     <string name="update_required">Update Required</string>
+    <string name="up_to_date">Up to Date</string>
+    <string name="app_information">App Information</string>
+    <string name="check_for_updates">Check for Updates</string>
+    <string name="new_version_available">New version %s is available</string>
     <string name="update_available_message">A new version is available with improvements and bug fixes.</string>
     <string name="update_required_message">A new version is required to continue using the app.</string>
     <string name="current_version">Current Version</string>
@@ -230,7 +234,6 @@
     <string name="checking_for_updates">Checking for updates...</string>
     <string name="no_updates_available">No updates available</string>
     <string name="update_check_failed">Failed to check for updates</string>
-    <string name="check_for_updates">Check for Updates</string>
 
     <!-- Version Info -->
     <string name="app_version">App Version</string>
