@@ -1,6 +1,18 @@
 <resources>
     <string name="app_name">یارانبار</string>
 
+    <!-- Version Section -->
+    <string name="app_information">اطلاعات برنامه</string>
+    <string name="current_version">نسخه فعلی</string>
+    <string name="latest_version">آخرین نسخه</string>
+    <string name="update_available">به‌روزرسانی موجود است</string>
+    <string name="update_required">به‌روزرسانی ضروری</string>
+    <string name="up_to_date">به‌روز است</string>
+    <string name="update_now">به‌روزرسانی کنید</string>
+    <string name="update">به‌روزرسانی</string>
+    <string name="whats_new">تغییرات جدید</string>
+    <string name="new_version_available">نسخه جدید %s موجود است</string>
+
 
     <!-- General -->
     <string name="retry">تلاش مجدد</string>
@@ -215,16 +227,9 @@
 
 
     <!-- Version Update Dialog -->
-    <string name="update_available">به‌روزرسانی موجود است</string>
-    <string name="update_required">به‌روزرسانی الزامی</string>
     <string name="update_available_message">نسخه جدیدی با بهبودها و رفع اشکالات موجود است.</string>
     <string name="update_required_message">نسخه جدید برای ادامه استفاده از برنامه لازم است.</string>
-    <string name="current_version">نسخه فعلی</string>
-    <string name="latest_version">آخرین نسخه</string>
-    <string name="whats_new">چه چیزی جدید است</string>
     <string name="whats_new_compact">موارد جدید:</string>
-    <string name="update_now">اکنون به‌روزرسانی کنید</string>
-    <string name="update">به‌روزرسانی</string>
     <string name="skip">رد کردن</string>
     <string name="update_icon">آیکون به‌روزرسانی</string>
     <string name="arrow">فلش</string>

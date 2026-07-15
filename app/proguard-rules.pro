@@ -33,6 +33,8 @@
 -dontwarn retrofit2.KotlinExtensions
 -dontwarn retrofit2.KotlinExtensions$*
 
+-dontwarn com.google.auto.service.AutoService
+
 -if interface * { @retrofit2.http.* <methods>; }
 -keep,allowobfuscation interface <1>
 
@@ -193,3 +195,13 @@
 -keepattributes Exceptions
 -keepattributes Signature
 -renamesourcefileattribute SourceFile
+
+# Enums داخل DTO
+-keepclassmembers enum ir.yar.anbar.data.remote.dto.** {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Generic Type برای PagedResponseDto<T>
+-keepattributes Signature
+-keepattributes *Annotation*

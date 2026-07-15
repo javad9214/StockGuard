@@ -1,12 +1,14 @@
 package ir.yar.anbar.data.remote.dto.response
 
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
 /**
  * Response DTO for app version information
  * Matches the backend AppVersionResponseDTO
  */
+@Keep
 data class AppVersionResponseDto(
     @SerializedName("id")
     val id: Long,

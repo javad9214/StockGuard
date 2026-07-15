@@ -39,6 +39,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -111,7 +113,7 @@ fun AddProduct(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // Header with title and close button
-            TopBar(
+            AddProductTopBar(
                 isEditMode = isEditMode,
                 onNavigateBack = onNavigateBack
             )
@@ -198,8 +200,8 @@ fun AddProduct(
 }
 
 @Composable
-private fun TopBar(
-    isEditMode: Boolean,
+public fun AddProductTopBar(
+    isEditMode: Boolean = false,
     onNavigateBack: () -> Unit
 ) {
     Row(
@@ -304,12 +306,13 @@ private fun BarcodeField(
 }
 
 @Composable
-private fun PriceField(
+ fun PriceField(
     value: String,
     onValueChange: (String) -> Unit,
     label: Int,
     iconRes: Int,
-    colorScheme: Color
+    colorScheme: Color,
+    focusRequester: FocusRequester = FocusRequester()
 ) {
     OutlinedTextField(
         value = value,
@@ -340,7 +343,7 @@ private fun PriceField(
                 )
             }
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Number
         ),
@@ -388,10 +391,11 @@ private fun SubcategoryField(
 }
 
 @Composable
-private fun SaveButton(
-    isEditMode: Boolean,
+fun SaveButton(
+    modifier: Modifier = Modifier,
+    isEditMode: Boolean = false,
     onSave: () -> Unit,
-    modifier: Modifier = Modifier
+    enabled: Boolean = true
 ) {
     Button(
         onClick = onSave,
@@ -402,7 +406,8 @@ private fun SaveButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
-        )
+        ),
+        enabled = enabled
     ) {
         Text(
             modifier = Modifier.padding(vertical = dimen(R.dimen.space_1)),

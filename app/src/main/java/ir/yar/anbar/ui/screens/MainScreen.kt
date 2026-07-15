@@ -28,7 +28,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.components.CustomNavigationBar
+import ir.yar.anbar.ui.components.customnavbars.CustomNavigationBar
 import ir.yar.anbar.ui.components.util.SnackyHost
 import ir.yar.anbar.ui.components.util.rememberSnackyHostState
 import ir.yar.anbar.ui.navigation.Routes

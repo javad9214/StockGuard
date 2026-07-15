@@ -1,4 +1,4 @@
-package ir.yar.anbar.ui.components
+package ir.yar.anbar.ui.components.customnavbars
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
