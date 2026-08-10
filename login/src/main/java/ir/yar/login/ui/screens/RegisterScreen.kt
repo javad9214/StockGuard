@@ -20,11 +20,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -193,6 +197,10 @@ fun RegisterScreen(
                         enabled = !isLoading,
                         singleLine = true,
                         isError = showPhoneError,
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(
+                            fontFamily = FontFamily.SansSerif,
+                            fontWeight = FontWeight.SemiBold
+                        ),
                         supportingText = {
                             if (showPhoneError && phoneError != null) {
                                 Text(
@@ -208,28 +216,43 @@ fun RegisterScreen(
                             }
                         },
                         trailingIcon = {
-                            Row(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                                    .padding(horizontal = 10.dp, vertical = 6.dp),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                            Surface(
+                                modifier = Modifier.padding(end = 8.dp),
+                                shape = RoundedCornerShape(8.dp),
                             ) {
-                                Text(
-                                    modifier = Modifier.padding(start = 4.dp),
-                                    text = "98+",
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontWeight = FontWeight.SemiBold
-                                    ),
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Icon(
-                                    modifier = Modifier.size(dimensionResource(id = R.dimen.size_sm)),
-                                    painter = painterResource(R.drawable.iran),
-                                    contentDescription = "iran_flag",
-                                    tint = Color.Unspecified
-                                )
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+
+
+                                    VerticalDivider(
+                                        modifier = Modifier
+                                            .height(24.dp)
+                                            .padding(horizontal = 4.dp),
+                                        thickness = 1.dp,
+                                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                    )
+
+
+                                    Text(
+                                        text = "98+",
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.SemiBold
+                                        ),
+                                        fontFamily = FontFamily.SansSerif,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+
+                                    Icon(
+                                        modifier = Modifier.size(dimensionResource(id = R.dimen.size_sm)),
+                                        painter = painterResource(R.drawable.iran),
+                                        contentDescription = null,
+                                        tint = Color.Unspecified
+                                    )
+
+                                }
                             }
                         },
                         leadingIcon = {

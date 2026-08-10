@@ -78,9 +78,13 @@
     <string name="scan_barcode">Scan Barcode </string>
     <string name="choose_from_list">Choose From List</string>
     <string name="no_products_added_yet">No Products Added Yet</string>
+
     <!-- Invoice List -->
     <string name="sale_invoices">Sales Invoices</string>
     <string name="items">Quantity</string>
+    <string name="no_invoices_available">فاکتوری موجود نیست</string>
+    <string name="no_invoices_for_filter">فاکتوری با این فیلتر یافت نشد</string>
+    <string name="try_changing_filter">فیلتر را تغییر دهید</string>
 
     <!-- Invoice Details -->
     <string name="invoice_details">Invoice Details</string>

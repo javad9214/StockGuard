@@ -129,6 +129,10 @@ fun LoginScreen(
                                 showPhoneError = false
                             }
                         },
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(
+                            fontFamily = FontFamily.SansSerif,
+                            fontWeight = FontWeight.SemiBold
+                        ),
                         label = { Text(stringResource(R.string.phone_number)) },
                         modifier = Modifier.fillMaxWidth(),
                         enabled = !isLoading,
@@ -169,7 +173,7 @@ fun LoginScreen(
 
 
                                     Text(
-                                        text = "+98",
+                                        text = "98+",
                                         style = MaterialTheme.typography.bodyMedium.copy(
                                             fontWeight = FontWeight.SemiBold
                                         ),
@@ -217,6 +221,10 @@ fun LoginScreen(
                     value = password,
                     onValueChange = { password = it },
                     label = { Text(stringResource(R.string.password)) },
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(
+                        fontFamily = FontFamily.SansSerif,
+                        fontWeight = FontWeight.SemiBold
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(passwordFocusRequester),

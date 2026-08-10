@@ -10,7 +10,7 @@ import javax.inject.Inject
 class LoginUseCase @Inject constructor(
     private val repository: AuthRepository
 ) {
-    suspend operator fun invoke(request: LoginRequest): Flow<Result<ir.yar.login.domain.model.AuthResult>> {
+    suspend operator fun invoke(request: LoginRequest): Flow<Result<AuthResult>> {
         return repository.login(request)
     }
 }

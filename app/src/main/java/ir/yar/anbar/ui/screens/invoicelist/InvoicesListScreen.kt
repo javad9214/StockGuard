@@ -51,9 +51,17 @@ import ir.yar.anbar.ui.viewmodels.InvoiceListViewModel
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.str
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.outlined.Receipt
+import androidx.compose.material3.Surface
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import android.app.AlertDialog as AndroidAlertDialog
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InvoicesListScreen(
     invoiceListViewModel: InvoiceListViewModel = hiltViewModel(),
@@ -355,24 +363,50 @@ private fun EmptyInvoicesState(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimen(R.dimen.space_8)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Surface(
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+            modifier = Modifier.size(96.dp)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Outlined.Receipt,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(40.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(dimen(R.dimen.space_6)))
+
         Text(
             text = if (hasFilter)
-                "No invoices found for this filter"
+                str(R.string.no_invoices_for_filter)
             else
-                "No invoices available",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+                str(R.string.no_invoices_available),
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.SemiBold
+            ),
+            fontFamily = Beirut_Medium,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
         )
+
         if (hasFilter) {
+            Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
             Text(
-                text = "Try changing the filter",
+                text = str(R.string.try_changing_filter),
                 style = MaterialTheme.typography.bodyMedium,
+                fontFamily = BComps,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = dimen(R.dimen.space_2))
+                textAlign = TextAlign.Center
             )
         }
     }
