@@ -65,10 +65,20 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          ssh-keyscan -p $SERVER_PORT $SERVER_HOST >> ~/.ssh/known_hosts
+          ssh-keyscan -p $SERVER_PORT $SERVER_HOST >> ~/.ssh/known_hosts 2>/dev/null
 
-          echo "Uploading APK to $SERVER_PATH ..."
-          scp -P $SERVER_PORT "$RELEASE_APK" \
-            $SERVER_USER@$SERVER_HOST:$SERVER_PATH
 
-          echo "🚀 Deployment completed successfully!"
+          echo "Uploading to $SERVER_PATH/$TARGET_NAME ..."
+          scp -P "$SERVER_PORT" "$RELEASE_APK" \
+            "$SERVER_USER@$SERVER_HOST:$SERVER_PATH/$TARGET_NAME"
+
+          echo "Fixing permissions & pruning old releases..."
+          ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" \
+            "set -e; \
+             cd '$SERVER_PATH'; \
+             chmod 644 '$TARGET_NAME'; \
+             ls -1t StockGuardApp_v*.apk | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -f --; \
+             ls -lh"
+
+          rm -f ~/.ssh/id_rsa
+          echo "🚀 Deployed $TARGET_NAME successfully!"
