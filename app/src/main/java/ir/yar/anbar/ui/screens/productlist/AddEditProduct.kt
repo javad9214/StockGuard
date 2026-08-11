@@ -135,7 +135,7 @@ fun AddProduct(
                 BarcodeField(
                     value = barcode,
                     onValueChange = { newValue ->
-                        if (newValue.all { it.isDigit() } && newValue.length <= 12) {
+                        if (newValue.all { it.isDigit() } && newValue.length <= 13) {
                             barcode = newValue
                         }
                     }
