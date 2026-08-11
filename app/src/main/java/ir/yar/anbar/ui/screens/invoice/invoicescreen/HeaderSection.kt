@@ -65,6 +65,8 @@ fun HeaderSection(
 
     var isSaleInvoice by remember { mutableStateOf(true) }
 
+    val buyerVisibility = false
+
     CompositionLocalProvider(LocalLayoutDirection.provides(LayoutDirection.Ltr)) {
         Column(
             modifier = Modifier
@@ -270,51 +272,52 @@ fun HeaderSection(
 
             Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
-            // User info card
-            ElevatedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimen(R.dimen.space_2)),
-                shape = RoundedCornerShape(dimen(R.dimen.radius_md)),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+            if(buyerVisibility) {
+                // User info card
+                ElevatedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            vertical = dimen(R.dimen.space_3),
-                            horizontal = dimen(R.dimen.space_4)
-                        ),
-                    horizontalArrangement = Arrangement.End
+                        .padding(horizontal = dimen(R.dimen.space_2)),
+                    shape = RoundedCornerShape(dimen(R.dimen.radius_md)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 ) {
-
-                    Text(
-                        text = str(R.string.unknown),
-                        fontFamily = Beirut_Medium,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = dimen(R.dimen.space_1))
-                    )
-
-                    Text(
-                        text = if (isSaleInvoice) str(R.string.buyer) else str(R.string.seller),
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = Beirut_Medium,
-                        modifier = Modifier.padding(horizontal = dimen(R.dimen.space_1))
-                    )
-
-                    Icon(
-                        painter = painterResource(id = R.drawable.face_24px),
-                        contentDescription = "User",
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .padding(start = dimen(R.dimen.space_2))
-                            .size(dimen(R.dimen.size_sm))
-                    )
+                            .fillMaxWidth()
+                            .padding(
+                                vertical = dimen(R.dimen.space_3),
+                                horizontal = dimen(R.dimen.space_4)
+                            ),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+
+                        Text(
+                            text = str(R.string.unknown),
+                            fontFamily = Beirut_Medium,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(horizontal = dimen(R.dimen.space_1))
+                        )
+
+                        Text(
+                            text = if (isSaleInvoice) str(R.string.buyer) else str(R.string.seller),
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = Beirut_Medium,
+                            modifier = Modifier.padding(horizontal = dimen(R.dimen.space_1))
+                        )
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.face_24px),
+                            contentDescription = "User",
+                            modifier = Modifier
+                                .padding(start = dimen(R.dimen.space_2))
+                                .size(dimen(R.dimen.size_sm))
+                        )
+                    }
+
+
                 }
-
-
             }
-
 
         }
 

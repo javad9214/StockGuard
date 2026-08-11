@@ -8,11 +8,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,11 +22,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -42,6 +46,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -53,6 +58,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductFactory
+import ir.yar.anbar.ui.components.FixedLabelTextField
+import ir.yar.anbar.ui.components.barcodescanner.CompactBarcodeScanner
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
 import ir.yar.anbar.ui.theme.BKoodak
 import ir.yar.anbar.ui.theme.Beirut_Medium
@@ -60,9 +67,11 @@ import ir.yar.anbar.ui.theme.color.costPrice
 import ir.yar.anbar.ui.theme.color.salePrice
 import ir.yar.anbar.ui.viewmodels.ProductsViewModel
 import ir.yar.anbar.utils.barcode.BarcodeGenerator
+import ir.yar.anbar.utils.barcode.BarcodeSoundPlayer
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.price.ThousandSeparatorTransformation
+import ir.yar.anbar.utils.str
 
 @Composable
 fun AddProduct(
@@ -244,36 +253,56 @@ public fun AddProductTopBar(
     }
 }
 
+
 @Composable
 private fun ProductNameField(
     value: String,
     onValueChange: (String) -> Unit
 ) {
-    OutlinedTextField(
+    FixedLabelTextField(
         value = value,
         onValueChange = onValueChange,
-        label = {
-            Text(
-                stringResource(R.string.product_name),
-                fontFamily = BKoodak,
-                fontWeight = FontWeight.Bold
-            )
-        },
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-        ),
-        singleLine = true
+        label = stringResource(R.string.product_name),
+        fontFamily = BKoodak
     )
 }
+
 
 @Composable
 private fun BarcodeField(
     value: String,
     onValueChange: (String) -> Unit
 ) {
+
+    // Context for MediaPlayer
+    val context = LocalContext.current
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(
+                min = 182.dp
+            )
+    ) {
+        CompactBarcodeScanner(
+            onBarcodeDetected = { barcode ->
+
+                // Play barcode success sound
+                BarcodeSoundPlayer.playBarcodeSuccessSound(context)
+
+            },
+            startPaused = true,
+            modifier = Modifier
+                .padding(
+                    horizontal = dimen(R.dimen.space_2),
+                    vertical = dimen(R.dimen.space_2)
+                )
+                .align(Alignment.TopCenter),
+            cardRadius = dimen(R.dimen.radius_md)
+        )
+
+    }
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
