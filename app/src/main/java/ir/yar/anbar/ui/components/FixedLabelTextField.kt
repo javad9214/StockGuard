@@ -49,7 +49,7 @@ fun FixedLabelTextField(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
-                .align(Alignment.TopEnd)
+                .align(Alignment.TopStart)
                 .offset(y = (-2).dp)
                 .padding(end = 12.dp)
                 .background(MaterialTheme.colorScheme.background)

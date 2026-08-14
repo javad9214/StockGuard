@@ -285,10 +285,12 @@ private fun BarcodeField(
             )
     ) {
         CompactBarcodeScanner(
-            onBarcodeDetected = { barcode ->
+            onBarcodeDetected = { detectedBarcode ->
 
                 // Play barcode success sound
                 BarcodeSoundPlayer.playBarcodeSuccessSound(context)
+
+                onValueChange(detectedBarcode)
 
             },
             startPaused = true,
@@ -303,34 +305,11 @@ private fun BarcodeField(
 
     }
 
-    OutlinedTextField(
+    FixedLabelTextField(
         value = value,
         onValueChange = onValueChange,
-        label = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    modifier = Modifier.size(dimen(R.dimen.size_xs)),
-                    painter = painterResource(id = R.drawable.barcode_24px),
-                    contentDescription = "Barcode Icon"
-                )
-                Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
-                Text(
-                    stringResource(R.string.barcode_optional),
-                    fontFamily = BKoodak,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        },
-        modifier = Modifier.fillMaxWidth(),
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Number
-        ),
-        shape = RoundedCornerShape(12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-        ),
-        singleLine = true
+        label = stringResource(R.string.barcode_optional),
+        fontFamily = BKoodak
     )
 }
 
@@ -343,6 +322,7 @@ private fun BarcodeField(
     colorScheme: Color,
     focusRequester: FocusRequester = FocusRequester()
 ) {
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,

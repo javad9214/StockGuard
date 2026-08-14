@@ -70,7 +70,7 @@ jobs:
 
           echo "Uploading to $SERVER_PATH/$TARGET_NAME ..."
           scp -P "$SERVER_PORT" "$RELEASE_APK" \
-            "$SERVER_USER@$SERVER_HOST:$SERVER_PATH"
+            "$SERVER_USER@$SERVER_HOST:$SERVER_PATH/var/www/stockguard-update/apk"
 
           echo "Fixing permissions & pruning old releases..."
           ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" \

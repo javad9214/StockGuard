@@ -16,8 +16,11 @@ import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.core.view.WindowCompat
 
 @AndroidEntryPoint
@@ -26,8 +29,8 @@ class MainActivity : ComponentActivity() {
     override fun attachBaseContext(base: Context) {
         val config = base.resources.configuration
         config.setLocale(Locale("fa"))
-        val localizedContext = base.createConfigurationContext(config)
-        super.attachBaseContext(localizedContext)
+        config.fontScale = 1f
+        super.attachBaseContext(base.createConfigurationContext(config))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,9 +41,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             var isDarkTheme by rememberSaveable { mutableStateOf(false) }
+            
             ComposeTrainerTheme(darkTheme = isDarkTheme) {
                 // Update system bars (status bar and navigation bar) colors
-                val systemBarsColor =  MaterialTheme.colorScheme.surface
+                val systemBarsColor = MaterialTheme.colorScheme.surface
                 val systemBarsContrastColor = !isDarkTheme
 
                 SideEffect {
@@ -61,6 +65,7 @@ class MainActivity : ComponentActivity() {
                     onToggleTheme = { isDarkTheme = !isDarkTheme }
                 )
             }
+
         }
     }
 }
