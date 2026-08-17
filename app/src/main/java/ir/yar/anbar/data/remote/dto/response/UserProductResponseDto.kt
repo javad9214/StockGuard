@@ -1,0 +1,23 @@
+package ir.yar.anbar.data.remote.dto.response
+
+data class UserProductResponseDto(
+    val id: Long,
+    val userId: Long,
+    val catalogProductId: Long? = null,
+    val customName: String? = null,
+    val price: Long,
+    val costPrice: Long,
+    val description: String? = null,
+    val imageType: String? = null,
+    val subcategoryId: Int? = null,
+    val supplierId: Int? = null,
+    val unit: String? = null,
+    val stock: Int,
+    val minStockLevel: Int? = null,
+    val maxStockLevel: Int? = null,
+    val isActive: Boolean,
+    val tags: String? = null,
+    val synced: Boolean,
+    val createdAt: String,
+    val updatedAt: String
+)

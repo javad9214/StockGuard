@@ -51,6 +51,7 @@ import ir.yar.anbar.domain.model.type.Money
 import ir.yar.anbar.ui.components.util.BottomSheetMenu
 import ir.yar.anbar.ui.components.util.BottomSheetMenuItem
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
+import ir.yar.anbar.ui.screens.productlist.serverlist.ProductThumbnail
 import ir.yar.anbar.ui.theme.BHoma
 import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
@@ -136,6 +137,13 @@ fun ProductItem(
                             )
                         )
                     }
+
+                    ProductThumbnail(
+                        imageUrl = product.image?.displayPath,
+                        size = 40.dp
+                    )
+
+                    Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
 
                     Text(
                         modifier = Modifier.fillMaxWidth(),

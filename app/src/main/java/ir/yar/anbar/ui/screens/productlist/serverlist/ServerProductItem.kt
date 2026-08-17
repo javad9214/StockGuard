@@ -251,10 +251,10 @@ fun ServerProductItem(
 @Composable
 fun ProductThumbnail(
     imageUrl: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    size: androidx.compose.ui.unit.Dp = 64.dp
 ) {
     val shape = RoundedCornerShape(8.dp)
-    val size = 64.dp
 
     if (imageUrl != null) {
         SubcomposeAsyncImage(
