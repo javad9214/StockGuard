@@ -1,6 +1,5 @@
 package ir.yar.anbar.ui.screens.productlist
 
-import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
@@ -9,7 +8,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,17 +17,17 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -55,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
@@ -73,8 +72,6 @@ import ir.yar.anbar.utils.barcode.BarcodeSoundPlayer
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.price.ThousandSeparatorTransformation
-import ir.yar.anbar.utils.str
-import androidx.core.net.toUri
 
 @Composable
 fun AddProduct(
@@ -126,6 +123,9 @@ fun AddProduct(
         modifier = Modifier.fillMaxSize()
     ) {
         Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // Header with title and close button
@@ -139,15 +139,9 @@ fun AddProduct(
             Column(
                 modifier = Modifier.padding(horizontal = dimen(R.dimen.space_4))
             ) {
-                // Product Name Field
-                ProductNameField(
-                    value = name,
-                    onValueChange = { name = it }
-                )
-
+                ProductNameField(value = name, onValueChange = { name = it })
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Barcode Field
                 BarcodeField(
                     value = barcode,
                     onValueChange = { newValue ->
@@ -156,10 +150,8 @@ fun AddProduct(
                         }
                     }
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Cost Price Field
                 PriceField(
                     value = costPrice,
                     onValueChange = { costPrice = it.replace(",", "") },
@@ -167,10 +159,8 @@ fun AddProduct(
                     iconRes = R.drawable.input_circle_24px,
                     colorScheme = MaterialTheme.colorScheme.costPrice
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Sale Price Field
                 PriceField(
                     value = salePrice,
                     onValueChange = { salePrice = it.replace(",", "") },
@@ -178,15 +168,15 @@ fun AddProduct(
                     iconRes = R.drawable.output_circle_24px,
                     colorScheme = MaterialTheme.colorScheme.salePrice
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ImagePickerBox(
                     imageUri = imageUri,
                     onImageSelected = { imageUri = it }
                 )
+
+                // Reserve space so the last item isn't hidden behind the fixed SaveButton
+                Spacer(modifier = Modifier.height(88.dp))
             }
         }
 
@@ -204,6 +194,8 @@ fun AddProduct(
                     subcategoryId = subcategoryId.toIntOrNull() ?: product?.subcategoryId?.value ?: 0,
                     supplierId = product?.supplierId?.value ?: 0,
                     unit = product?.unit?.value ?: "",
+                    localImageUri = imageUri?.toString(),
+                    remoteImageUrl = product?.image?.remoteUrl,
                     initialStock = product?.stock?.value ?: 0,
                     minStockLevel = product?.minStockLevel?.value ?: 0,
                     maxStockLevel = product?.maxStockLevel?.value ?: 0,

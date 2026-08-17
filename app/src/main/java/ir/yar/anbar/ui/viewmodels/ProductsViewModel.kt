@@ -2,6 +2,7 @@ package ir.yar.anbar.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.usecase.product.AddProductUseCase
 import ir.yar.anbar.domain.usecase.product.DecreaseStockUseCase
@@ -10,7 +11,6 @@ import ir.yar.anbar.domain.usecase.product.EditProductUseCase
 import ir.yar.anbar.domain.usecase.product.GetAllProductUseCase
 import ir.yar.anbar.domain.usecase.product.GetProductByQueryUseCase
 import ir.yar.anbar.domain.usecase.product.IncreaseStockUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -26,8 +26,7 @@ class ProductsViewModel @Inject constructor(
     private val deleteProductUseCase: DeleteProductUseCase,
     private val editProductUseCase: EditProductUseCase,
     private val increaseStockUseCase: IncreaseStockUseCase,
-    private val decreaseStockUseCase: DecreaseStockUseCase,
-    private val getProductByIdUseCase: GetProductByQueryUseCase
+    private val decreaseStockUseCase: DecreaseStockUseCase
 ) : ViewModel() {
     private val _products = MutableStateFlow<List<Product>>(emptyList())
     val products: StateFlow<List<Product>> get() = _products
@@ -52,8 +51,6 @@ class ProductsViewModel @Inject constructor(
     val selectedProduct: StateFlow<Product?> get() = _selectedProduct
 
 
-    private val TAG = "ProductsViewModel"
-
     init {
         loadProducts()
     }
@@ -71,7 +68,7 @@ class ProductsViewModel @Inject constructor(
                         _isLoading.value = false
                     }
                 } else {
-                    getProductsUseCase.invoke(sortOrder,query).collectLatest { productList ->
+                    getProductsUseCase.invoke(sortOrder, query).collectLatest { productList ->
                         _products.value = productList
                         _filteredProducts.value = productList
                         _isLoading.value = false

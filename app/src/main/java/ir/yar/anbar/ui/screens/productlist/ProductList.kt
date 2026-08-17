@@ -74,7 +74,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProductScreen(
     productsViewModel: ProductsViewModel = hiltViewModel(),
-    mainProductsViewModel: MainProductsViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel(),
     navController: NavController
 ) {

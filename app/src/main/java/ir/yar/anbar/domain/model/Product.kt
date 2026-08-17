@@ -440,7 +440,9 @@ object ProductFactory {
         initialStock: Int,
         minStockLevel: Int,
         maxStockLevel: Int,
-        tags: String? = null
+        tags: String? = null,
+        localImageUri: String? = null,
+        remoteImageUrl: String? = null
     ): Product {
         val now = LocalDateTime.now()
         return Product(
@@ -450,7 +452,9 @@ object ProductFactory {
             price = Money(price),
             costPrice = Money(costPrice),
             description = ProductDescription(description),
-            image = null,
+            image = if (localImageUri != null || remoteImageUrl != null)
+                ProductImage(localUri = localImageUri, remoteUrl = remoteImageUrl)
+            else null,
             subcategoryId = SubcategoryId(subcategoryId),
             supplierId = SupplierId(supplierId),
             unit = ProductUnit(unit),

@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.productlist.serverlist
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -256,6 +257,8 @@ fun ProductThumbnail(
 ) {
     val shape = RoundedCornerShape(8.dp)
 
+    Log.d("ProductThumbnail", "Composing with imageUrl=$imageUrl")
+
     if (imageUrl != null) {
         SubcomposeAsyncImage(
             model = imageUrl,
@@ -264,6 +267,15 @@ fun ProductThumbnail(
             modifier = modifier
                 .size(size)
                 .clip(shape),
+            onLoading = {
+                Log.d("ProductThumbnail", "Loading: $imageUrl")
+            },
+            onSuccess = {
+                Log.d("ProductThumbnail", "Success: $imageUrl")
+            },
+            onError = { state ->
+                Log.e("ProductThumbnail", "Error loading $imageUrl", state.result.throwable)
+            },
             loading = {
                 Box(
                     modifier = Modifier
@@ -295,6 +307,7 @@ fun ProductThumbnail(
             }
         )
     } else {
+        Log.d("ProductThumbnail", "imageUrl is null, showing placeholder")
         // Placeholder when no image URL
         Box(
             modifier = modifier

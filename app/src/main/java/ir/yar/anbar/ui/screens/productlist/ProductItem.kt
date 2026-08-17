@@ -138,10 +138,7 @@ fun ProductItem(
                         )
                     }
 
-                    ProductThumbnail(
-                        imageUrl = product.image?.displayPath,
-                        size = 40.dp
-                    )
+
 
                     Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
 
@@ -151,6 +148,14 @@ fun ProductItem(
                         text = product.name.value,
                         style = MaterialTheme.typography.titleMedium,
                         fontFamily = myFontFamily
+                    )
+
+                    Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
+
+
+                    ProductThumbnail(
+                        imageUrl = product.image?.displayPath,
+                        size = 80.dp
                     )
                 }
 
