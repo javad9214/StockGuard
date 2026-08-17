@@ -181,12 +181,10 @@ data class Product(
     }
 
     fun needsSync(): Boolean {
-        return !synced && isCompleteProduct()
+        return (!synced || (image != null && !image.isSynced)) && isCompleteProduct()
     }
 
-    fun hasImage(): Boolean {
-        return image != null
-    }
+    fun hasImage(): Boolean = image?.displayPath != null
 
     fun hasTags(): Boolean {
         return tags != null && tags.tagList.isNotEmpty()
@@ -235,8 +233,6 @@ value class ProductDescription(val value: String) {
     }
 }
 
-@JvmInline
-value class ProductImage(val value: String)
 
 @JvmInline
 value class SubcategoryId(val value: Int)
@@ -296,7 +292,9 @@ fun UserProductEntity.toDomain(): Product {
         price = Money(price),
         costPrice = Money(costPrice),
         description = description?.let { ProductDescription(it) },
-        image = image?.let { ProductImage(it) },
+        image = if (imageLocalPath != null || imageUrl != null)
+            ProductImage(localUri = imageLocalPath, remoteUrl = imageUrl)
+        else null,
         subcategoryId = subcategoryId?.let { SubcategoryId(it) },
         supplierId = supplierId?.let { SupplierId(it) },
         unit = unit?.let { ProductUnit(it) },
@@ -338,7 +336,8 @@ fun Product.toEntity(): UserProductEntity {
         price = price.amount,
         costPrice = costPrice.amount,
         description = description?.value,
-        image = image?.value,
+        imageLocalPath = image?.localUri,
+        imageUrl = image?.remoteUrl,
         subcategoryId = subcategoryId?.value,
         supplierId = supplierId?.value,
         unit = unit?.value,
@@ -535,9 +534,17 @@ fun Product.addTags(newTags: String): Product {
     )
 }
 
-fun Product.updateImage(imagePath: String): Product {
+fun Product.updateLocalImage(uri: String): Product {
     return copy(
-        image = ProductImage(imagePath),
+        image = ProductImage(localUri = uri, remoteUrl = image?.remoteUrl),
+        synced = false,
+        updatedAt = LocalDateTime.now()
+    )
+}
+
+fun Product.markImageSynced(remoteUrl: String): Product {
+    return copy(
+        image = image?.copy(remoteUrl = remoteUrl),
         updatedAt = LocalDateTime.now()
     )
 }

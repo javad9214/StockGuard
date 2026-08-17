@@ -126,7 +126,7 @@ fun ServerProductItem(
                     Spacer(modifier = Modifier.width(12.dp))
 
                     // ── Product Image ─────────────────────────────────────
-                    ProductThumbnail(imageUrl = product.image?.value)
+                    ProductThumbnail(imageUrl = product.image?.displayPath)
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))

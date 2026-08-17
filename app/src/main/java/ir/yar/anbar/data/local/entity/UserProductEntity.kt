@@ -18,7 +18,9 @@ data class UserProductEntity(
     val costPrice: Long, // User's cost price
 
     val description: String?,
-    val image: String?,
+
+    val imageLocalPath: String?,
+    val imageUrl: String?,
 
     val subcategoryId: Int?,
     val supplierId: Int?,

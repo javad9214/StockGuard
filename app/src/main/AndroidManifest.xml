@@ -31,12 +31,16 @@
             </intent-filter>
         </activity>
 
-        <!-- ACRA provider declaration -->
         <provider
-            android:name="org.acra.attachment.AcraContentProvider"
-            android:authorities="${applicationId}.acra"
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
-            android:process=":acra" />
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
     </application>
 
 </manifest>

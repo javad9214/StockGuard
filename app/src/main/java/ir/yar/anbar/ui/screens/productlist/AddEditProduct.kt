@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.productlist
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
@@ -59,6 +60,7 @@ import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductFactory
 import ir.yar.anbar.ui.components.FixedLabelTextField
+import ir.yar.anbar.ui.components.ImagePickerBox
 import ir.yar.anbar.ui.components.barcodescanner.CompactBarcodeScanner
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
 import ir.yar.anbar.ui.theme.BKoodak
@@ -72,6 +74,7 @@ import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.price.ThousandSeparatorTransformation
 import ir.yar.anbar.utils.str
+import androidx.core.net.toUri
 
 @Composable
 fun AddProduct(
@@ -114,6 +117,10 @@ fun AddProduct(
     }
 
     val isEditMode = product != null
+
+    var imageUri by remember {
+        mutableStateOf(product?.image?.displayPath?.toUri())
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -174,10 +181,11 @@ fun AddProduct(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Subcategory ID Field
-                SubcategoryField(
-                    value = subcategoryId,
-                    onValueChange = { subcategoryId = it }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ImagePickerBox(
+                    imageUri = imageUri,
+                    onImageSelected = { imageUri = it }
                 )
             }
         }
@@ -209,7 +217,7 @@ fun AddProduct(
 }
 
 @Composable
-public fun AddProductTopBar(
+fun AddProductTopBar(
     isEditMode: Boolean = false,
     onNavigateBack: () -> Unit
 ) {
