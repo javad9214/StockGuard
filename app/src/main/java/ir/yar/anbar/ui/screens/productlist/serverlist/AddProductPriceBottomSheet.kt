@@ -24,6 +24,7 @@ import coil.compose.AsyncImage
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductFactory
+import ir.yar.anbar.ui.components.ProductThumbnail
 import ir.yar.anbar.ui.screens.productlist.AddProductTopBar
 import ir.yar.anbar.ui.screens.productlist.PriceField
 import ir.yar.anbar.ui.screens.productlist.SaveButton

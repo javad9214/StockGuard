@@ -48,10 +48,10 @@ import ir.yar.anbar.domain.model.StockQuantity
 import ir.yar.anbar.domain.model.SubcategoryId
 import ir.yar.anbar.domain.model.SupplierId
 import ir.yar.anbar.domain.model.type.Money
+import ir.yar.anbar.ui.components.ProductThumbnail
 import ir.yar.anbar.ui.components.util.BottomSheetMenu
 import ir.yar.anbar.ui.components.util.BottomSheetMenuItem
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
-import ir.yar.anbar.ui.screens.productlist.serverlist.ProductThumbnail
 import ir.yar.anbar.ui.theme.BHoma
 import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
