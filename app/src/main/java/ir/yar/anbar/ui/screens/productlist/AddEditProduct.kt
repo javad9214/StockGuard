@@ -429,31 +429,3 @@ fun SaveButton(
         )
     }
 }
-
-// ==================== Previews ====================
-
-@Preview(showBackground = true, name = "Add Product")
-@Composable
-fun AddProductPreview() {
-    MaterialTheme {
-        AddProduct(
-            initialBarcode = null,
-            productId = null,
-            onSave = { /* Preview - no action */ },
-            onNavigateBack = { /* Preview - no action */ }
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Add Product with Barcode")
-@Composable
-fun AddProductWithBarcodePreview() {
-    MaterialTheme {
-        AddProduct(
-            initialBarcode = "987654321098",
-            productId = null,
-            onSave = { /* Preview - no action */ },
-            onNavigateBack = { /* Preview - no action */ }
-        )
-    }
-}

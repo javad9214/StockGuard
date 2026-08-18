@@ -143,7 +143,7 @@ fun ProductItem(
                     Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
 
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.weight(1f),
                         textAlign = TextAlign.End,
                         text = product.name.value,
                         style = MaterialTheme.typography.titleMedium,
@@ -155,7 +155,7 @@ fun ProductItem(
 
                     ProductThumbnail(
                         imageUrl = product.image?.displayPath,
-                        size = 80.dp
+                        size = 88.dp
                     )
                 }
 
