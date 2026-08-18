@@ -2,10 +2,11 @@ package ir.yar.anbar.domain.repository
 
 import ir.yar.anbar.domain.model.Product
 import kotlinx.coroutines.flow.Flow
+import java.io.File
 
 interface ProductRepository {
 
-    suspend fun addProduct(product: Product)
+    suspend fun addProduct(product: Product, imageFile: File?)
 
     fun getAllProducts(): Flow<List<Product>>
 

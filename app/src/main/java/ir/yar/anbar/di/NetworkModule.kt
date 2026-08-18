@@ -7,6 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ir.yar.anbar.data.remote.api.ApiConstants
 import ir.yar.anbar.data.remote.api.ApiServiceMainProduct
+import ir.yar.anbar.data.remote.api.ApiServiceUserProduct
 import ir.yar.anbar.data.remote.api.ApiServiceVersion
 import ir.yar.anbar.data.remote.interceptor.AuthInterceptor
 import ir.yar.login.data.remote.interceptor.TokenAuthenticator
@@ -51,6 +52,18 @@ object NetworkModule {
             .client(okHttpClient)
             .build()
             .create(ApiServiceMainProduct::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideApiServiceUserProduct(okHttpClient: OkHttpClient): ApiServiceUserProduct {
+        return Retrofit.Builder()
+            .baseUrl(ApiConstants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
+            .client(okHttpClient)
+            .build()
+            .create(ApiServiceUserProduct::class.java)
     }
 
     @Singleton
