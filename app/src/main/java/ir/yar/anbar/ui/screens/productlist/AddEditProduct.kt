@@ -51,7 +51,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -59,7 +58,7 @@ import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductFactory
 import ir.yar.anbar.ui.components.FixedLabelTextField
-import ir.yar.anbar.ui.components.ImagePickerBox
+import ir.yar.anbar.ui.components.image.ImagePickerBox
 import ir.yar.anbar.ui.components.barcodescanner.CompactBarcodeScanner
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
 import ir.yar.anbar.ui.theme.BKoodak

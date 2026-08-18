@@ -278,4 +278,7 @@
     <string name="check_updates_on_startup">Check updates on startup</string>
     <string name="check_updates_startup_description">Automatically check for updates when app starts</string>
 
+    <!-- Image Prev -->
+    <string name="tap_anywhere_to_dismiss">Tap anywhere to dismiss</string>
+
 </resources>

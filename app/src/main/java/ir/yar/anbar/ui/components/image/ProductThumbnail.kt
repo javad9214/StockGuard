@@ -1,4 +1,4 @@
-package ir.yar.anbar.ui.components
+package ir.yar.anbar.ui.components.image
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 
@@ -24,7 +25,7 @@ import coil.compose.SubcomposeAsyncImage
 fun ProductThumbnail(
     imageUrl: String?,
     modifier: Modifier = Modifier,
-    size: androidx.compose.ui.unit.Dp = 64.dp
+    size: Dp = 64.dp
 ) {
     val shape = RoundedCornerShape(8.dp)
 

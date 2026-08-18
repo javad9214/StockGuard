@@ -284,4 +284,7 @@
     <string name="check_updates_on_startup">بررسی به‌روزرسانی در شروع برنامه</string>
     <string name="check_updates_startup_description">بررسی خودکار به‌روزرسانی‌ها هنگام راه‌اندازی برنامه</string>
 
+    <!-- Image Prev -->
+    <string name="tap_anywhere_to_dismiss">برای بستن، هرجارو میخوای لمس کنید</string>
+
 </resources>

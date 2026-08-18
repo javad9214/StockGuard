@@ -48,7 +48,8 @@ import ir.yar.anbar.domain.model.StockQuantity
 import ir.yar.anbar.domain.model.SubcategoryId
 import ir.yar.anbar.domain.model.SupplierId
 import ir.yar.anbar.domain.model.type.Money
-import ir.yar.anbar.ui.components.ProductThumbnail
+import ir.yar.anbar.ui.components.image.ProductThumbnail
+import ir.yar.anbar.ui.components.image.ZoomableImageDialog
 import ir.yar.anbar.ui.components.util.BottomSheetMenu
 import ir.yar.anbar.ui.components.util.BottomSheetMenuItem
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
@@ -75,6 +76,8 @@ fun ProductItem(
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     var showMenu by remember { mutableStateOf(false) }
+    var showZoomedImage by remember { mutableStateOf(false) }
+    val imagePath = product.image?.displayPath
 
     val myFontFamily = FontFamily(
         Font(R.font.b_koodak_bd, FontWeight.Normal)
@@ -155,7 +158,10 @@ fun ProductItem(
 
                     ProductThumbnail(
                         imageUrl = product.image?.displayPath,
-                        size = 88.dp
+                        size = 88.dp,
+                        modifier = Modifier.clickable(enabled = imagePath != null) {
+                            showZoomedImage = true
+                        }
                     )
                 }
 
@@ -319,6 +325,14 @@ fun ProductItem(
         }
     }
 
+    imagePath?.let { path ->
+        if (showZoomedImage) {
+            ZoomableImageDialog(
+                imageUrl = path,
+                onDismiss = { showZoomedImage = false }
+            )
+        }
+    }
 }
 
 // Add this Preview function at the bottom of your ProductItem.kt file
