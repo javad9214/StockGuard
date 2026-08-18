@@ -87,13 +87,13 @@ fun ImagePickerBox(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.outline
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "برای افزودن تصویر کلیک کنید",
                     fontFamily = BKoodak,
-                    color = MaterialTheme.colorScheme.outline
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

@@ -1,9 +1,11 @@
 package ir.yar.anbar.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -116,6 +118,7 @@ fun MainScreen(
     val snackyHostState = rememberSnackyHostState()
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
         bottomBar = {
             if (shouldShowBottomNav) {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -135,12 +138,15 @@ fun MainScreen(
             }
         },
     ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)) {
             NavHost(
                 navController = navController,
                 startDestination = startDestination,
-                modifier = Modifier
-                    .padding(innerPadding)
+                modifier = Modifier.fillMaxSize()
+                    .padding(top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding())
             ) {
                 composable(route = Screen.Login.route) {
                     LoginScreen(
