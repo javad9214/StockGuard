@@ -11,6 +11,7 @@ object ApiConstants {
     
     const val API = "api/"
 
+    const val AUTH = "auth/"
     const val CATALOG = "catalog/"
 
 }

@@ -49,6 +49,7 @@ import ir.yar.anbar.ui.navigation.Screen
 import ir.yar.anbar.ui.screens.component.DatePickerBottomDialog
 import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.viewmodels.InvoiceViewModel
+import ir.yar.anbar.ui.viewmodels.ProfileViewModel
 import ir.yar.anbar.ui.viewmodels.home.HomeTotalItemsViewModel
 import ir.yar.anbar.ui.viewmodels.home.HomeViewModel
 import ir.yar.anbar.utils.dateandtime.FarsiDateUtil
@@ -62,13 +63,15 @@ import ir.yar.anbar.utils.str
 fun HomeScreen(
     onAlertClick: () -> Unit,
     onButtonClick: () -> Unit,
+    onProfileClick: () -> Unit = {},
     onToggleTheme: () -> Unit = {},
     onTodayButtonClick: () -> Unit = {},
     isDarkTheme: Boolean = false,
     navController: NavController = rememberNavController(),
     homeViewModel: HomeViewModel = hiltViewModel(),
     invoiceViewModel: InvoiceViewModel = hiltViewModel(),
-    homeTotalItemsViewModel: HomeTotalItemsViewModel = hiltViewModel()
+    homeTotalItemsViewModel: HomeTotalItemsViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
 
     // Single state collection - much cleaner!
@@ -79,6 +82,14 @@ fun HomeScreen(
     var showDatePickerBottomSheet by remember { mutableStateOf(false) }
     val datePickerSheetState = rememberModalBottomSheetState()
     var selectedDate by remember { mutableStateOf(TimeRange.TODAY) }
+
+    var showProfileMenu by remember { mutableStateOf(false) }
+    val profileState by profileViewModel.uiState.collectAsState()
+
+    // Fetch the profile the first time the dropdown opens
+    LaunchedEffect(showProfileMenu) {
+        if (showProfileMenu) profileViewModel.loadUserProfile()
+    }
 
     // Observe scanned product
     val scannedProduct by homeViewModel.scannedProduct.collectAsState()
@@ -123,10 +134,22 @@ fun HomeScreen(
                     )
                 }
 
-                IconButton(onClick = onAlertClick) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.account_circle_24px),
-                        contentDescription = "Notifications"
+                Box {
+                    IconButton(onClick = {
+                        onProfileClick()
+                        showProfileMenu = true
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.account_circle_24px),
+                            contentDescription = "Profile"
+                        )
+                    }
+
+                    ProfileDropdown(
+                        expanded = showProfileMenu,
+                        onDismissRequest = { showProfileMenu = false },
+                        state = profileState,
+                        onRetry = { profileViewModel.loadUserProfile(forceRefresh = true) }
                     )
                 }
             }

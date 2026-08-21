@@ -285,4 +285,14 @@
     <string name="sync_all_products">Sync all products</string>
     <string name="products_synced">Products synced with server</string>
 
+    <!-- User Profile -->
+    <string name="profile_loading">Loading profile…</string>
+    <string name="profile_role_admin">Admin</string>
+    <string name="profile_role_user">User</string>
+    <string name="profile_status_active">Active</string>
+    <string name="profile_status_disabled">Disabled</string>
+    <string name="profile_user_id">User ID</string>
+    <string name="profile_member_since">Member Since</string>
+    <string name="profile_last_login">Last Login</string>
+
 </resources>

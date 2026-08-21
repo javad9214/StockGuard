@@ -291,4 +291,14 @@
     <string name="sync_all_products">همگام‌سازی همه محصولات</string>
     <string name="products_synced">محصولات با سرور همگام‌سازی شدند</string>
 
+    <!-- User Profile -->
+    <string name="profile_loading">در حال بارگذاری پروفایل…</string>
+    <string name="profile_role_admin">مدیر</string>
+    <string name="profile_role_user">کاربر</string>
+    <string name="profile_status_active">فعال</string>
+    <string name="profile_status_disabled">غیرفعال</string>
+    <string name="profile_user_id">شناسه کاربر</string>
+    <string name="profile_member_since">تاریخ عضویت</string>
+    <string name="profile_last_login">آخرین ورود</string>
+
 </resources>

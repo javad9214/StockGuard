@@ -8,6 +8,7 @@ import ir.yar.anbar.data.repository.ProductSalesSummaryRepoImpl
 import ir.yar.anbar.data.repository.ServerMainProductRepoImpl
 import ir.yar.anbar.data.repository.StockMovementRepoImpl
 import ir.yar.anbar.data.repository.UserPreferencesRepositoryImpl
+import ir.yar.anbar.data.repository.UserRepoImpl
 import ir.yar.anbar.domain.repository.InvoiceProductRepository
 import ir.yar.anbar.domain.repository.InvoiceRepository
 import ir.yar.anbar.domain.repository.ProductRepository
@@ -15,6 +16,7 @@ import ir.yar.anbar.domain.repository.ProductSalesSummaryRepository
 import ir.yar.anbar.domain.repository.ServerMainProductRepository
 import ir.yar.anbar.domain.repository.StockMovementRepository
 import ir.yar.anbar.domain.repository.UserPreferencesRepository
+import ir.yar.anbar.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -68,4 +70,10 @@ object RepositoryModule {
     fun provideUserPreferencesRepository(
         repoImpl: UserPreferencesRepositoryImpl
     ): UserPreferencesRepository = repoImpl
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(
+        repoImpl: UserRepoImpl
+    ): UserRepository = repoImpl
 }
