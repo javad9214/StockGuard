@@ -281,4 +281,8 @@
     <!-- Image Prev -->
     <string name="tap_anywhere_to_dismiss">Tap anywhere to dismiss</string>
 
+    <!-- Sync -->
+    <string name="sync_all_products">Sync all products</string>
+    <string name="products_synced">Products synced with server</string>
+
 </resources>

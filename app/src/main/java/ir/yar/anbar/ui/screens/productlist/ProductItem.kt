@@ -59,6 +59,7 @@ import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.ui.theme.color.costPrice
 import ir.yar.anbar.ui.theme.color.customError
 import ir.yar.anbar.ui.theme.color.salePrice
+import ir.yar.anbar.ui.theme.color.success
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.price.PriceValidator
@@ -152,6 +153,17 @@ fun ProductItem(
                         style = MaterialTheme.typography.titleMedium,
                         fontFamily = myFontFamily
                     )
+
+                    if (product.synced) {
+                        Spacer(modifier = Modifier.width(dimen(R.dimen.space_1)))
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.cloud_done_24px),
+                            contentDescription = "Synced to server",
+                            tint = MaterialTheme.colorScheme.success,
+                            modifier = Modifier.size(dimen(R.dimen.size_xs))
+                        )
+                    }
 
                     Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
 
@@ -397,7 +409,7 @@ fun ProductItemWithoutBarcodePreview() {
         tags = null,
         lastSoldDate = null,
         date = LocalDateTime.now(),
-        synced = true,
+        synced = false,
         createdAt = LocalDateTime.now().minusDays(10),
         updatedAt = LocalDateTime.now()
     )

@@ -7,11 +7,11 @@ import androidx.room.PrimaryKey
 data class UserProductEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
 
-    val serverId: Long? = null, // Server ID after sync
-    val catalogProductId: Long? = null, // NULL = custom product
+    val serverId: Long? = null,
+    val catalogProductId: Long? = null,
 
-    val name: String, // ADDED BACK - Always show product name
-    val barcode: String?, // ADDED BACK - Essential for scanning
+    val name: String,
+    val barcode: String?,
     val customName: String?, // Optional override for catalog products
 
     val price: Long, // User's selling price
@@ -40,4 +40,11 @@ data class UserProductEntity(
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
     val isDeleted: Boolean = false
-)
+) {
+    companion object {
+        const val SYNC_STATUS_SYNCED = "SYNCED"
+        const val SYNC_STATUS_PENDING_CREATE = "PENDING_CREATE"
+        const val SYNC_STATUS_PENDING_UPDATE = "PENDING_UPDATE"
+        const val SYNC_STATUS_PENDING_DELETE = "PENDING_DELETE"
+    }
+}

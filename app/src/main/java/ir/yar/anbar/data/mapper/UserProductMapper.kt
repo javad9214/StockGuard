@@ -4,6 +4,7 @@ import ir.yar.anbar.data.local.entity.UserProductEntity
 import ir.yar.anbar.data.remote.dto.CatalogProductDto
 import ir.yar.anbar.data.remote.dto.CatalogStatus
 import ir.yar.anbar.data.remote.dto.request.UserProductRequestDto
+import ir.yar.anbar.data.remote.dto.response.UserProductResponseDto
 import ir.yar.anbar.domain.model.Barcode
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductDescription
@@ -108,6 +109,35 @@ fun Product.toRequestDto(): UserProductRequestDto {
         maxStockLevel = maxStockLevel?.value,
         isActive = isActive,
         tags = tags?.value
+    )
+}
+
+/**
+ * Merges server-authoritative fields of [UserProductResponseDto] into an existing local row.
+ * Local-only fields the server does not know about (name, barcode, local image path,
+ * local id, dates) are preserved.
+ */
+fun UserProductResponseDto.mergeInto(entity: UserProductEntity): UserProductEntity {
+    val now = System.currentTimeMillis()
+    return entity.copy(
+        serverId = id,
+        customName = customName,
+        price = price,
+        costPrice = costPrice,
+        description = description,
+        subcategoryId = subcategoryId,
+        supplierId = supplierId,
+        unit = unit,
+        stock = stock,
+        minStockLevel = minStockLevel,
+        maxStockLevel = maxStockLevel,
+        isActive = isActive,
+        tags = tags,
+        syncStatus = UserProductEntity.SYNC_STATUS_SYNCED,
+        synced = true,
+        updatedAt = runCatching {
+            LocalDateTime.parse(updatedAt).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        }.getOrDefault(now)
     )
 }
 

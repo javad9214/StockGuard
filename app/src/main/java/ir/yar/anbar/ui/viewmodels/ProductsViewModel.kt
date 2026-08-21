@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductFactory
+import ir.yar.anbar.domain.model.ProductSyncResult
 import ir.yar.anbar.domain.usecase.product.AddProductUseCase
 import ir.yar.anbar.domain.usecase.product.DecreaseStockUseCase
 import ir.yar.anbar.domain.usecase.product.DeleteProductUseCase
@@ -12,6 +13,7 @@ import ir.yar.anbar.domain.usecase.product.EditProductUseCase
 import ir.yar.anbar.domain.usecase.product.GetAllProductUseCase
 import ir.yar.anbar.domain.usecase.product.GetProductByQueryUseCase
 import ir.yar.anbar.domain.usecase.product.IncreaseStockUseCase
+import ir.yar.anbar.domain.usecase.product.SyncAllProductsUseCase
 import ir.yar.anbar.utils.barcode.BarcodeGenerator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +30,8 @@ class ProductsViewModel @Inject constructor(
     private val deleteProductUseCase: DeleteProductUseCase,
     private val editProductUseCase: EditProductUseCase,
     private val increaseStockUseCase: IncreaseStockUseCase,
-    private val decreaseStockUseCase: DecreaseStockUseCase
+    private val decreaseStockUseCase: DecreaseStockUseCase,
+    private val syncAllProductsUseCase: SyncAllProductsUseCase
 ) : ViewModel() {
     private val _products = MutableStateFlow<List<Product>>(emptyList())
     val products: StateFlow<List<Product>> get() = _products
@@ -51,6 +54,12 @@ class ProductsViewModel @Inject constructor(
 
     private val _selectedProduct = MutableStateFlow<Product?>(null)
     val selectedProduct: StateFlow<Product?> get() = _selectedProduct
+
+    private val _isSyncing = MutableStateFlow(false)
+    val isSyncing: StateFlow<Boolean> get() = _isSyncing
+
+    private val _lastSyncResult = MutableStateFlow<ProductSyncResult?>(null)
+    val lastSyncResult: StateFlow<ProductSyncResult?> get() = _lastSyncResult
 
 
     init {
@@ -122,6 +131,18 @@ class ProductsViewModel @Inject constructor(
     fun updateSortOrder(newOrder: SortOrder) {
         _sortOrder.value = newOrder
         loadProducts()
+    }
+
+    fun syncAllProducts() {
+        if (_isSyncing.value) return // a sync pass is already running
+        viewModelScope.launch {
+            _isSyncing.value = true
+            try {
+                _lastSyncResult.value = syncAllProductsUseCase()
+            } finally {
+                _isSyncing.value = false
+            }
+        }
     }
 
     fun updateSearchQuery(query: String) {

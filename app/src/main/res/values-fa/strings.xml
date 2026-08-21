@@ -287,4 +287,8 @@
     <!-- Image Prev -->
     <string name="tap_anywhere_to_dismiss">برای بستن، هرجارو میخوای لمس کنید</string>
 
+    <!-- Sync -->
+    <string name="sync_all_products">همگام‌سازی همه محصولات</string>
+    <string name="products_synced">محصولات با سرور همگام‌سازی شدند</string>
+
 </resources>
