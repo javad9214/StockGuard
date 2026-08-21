@@ -47,6 +47,9 @@ interface UserProductDao {
     @Query("SELECT * FROM user_products WHERE serverId = :serverId AND isDeleted = 0 LIMIT 1")
     suspend fun getProductByServerId(serverId: Long): UserProductEntity?
 
+    @Query("SELECT * FROM user_products WHERE serverId IN (:serverIds)")
+    suspend fun getProductsByServerIds(serverIds: List<Long>): List<UserProductEntity>
+
     @Query("SELECT * FROM user_products WHERE catalogProductId = :catalogProductId AND isDeleted = 0 LIMIT 1")
     suspend fun getProductByCatalogId(catalogProductId: Long): UserProductEntity?
 

@@ -141,6 +141,51 @@ fun UserProductResponseDto.mergeInto(entity: UserProductEntity): UserProductEnti
     )
 }
 
+/**
+ * Builds a fresh local row from a server product that doesn't exist locally yet.
+ * The server never stores barcode or the catalog display name, so barcode is
+ * unknown and catalog-adopted products fall back to a placeholder name
+ * (custom products carry their name in [UserProductResponseDto.customName]).
+ */
+fun UserProductResponseDto.toNewEntity(): UserProductEntity {
+    val now = System.currentTimeMillis()
+    val createdMillis = runCatching {
+        LocalDateTime.parse(createdAt).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    }.getOrDefault(now)
+    val updatedMillis = runCatching {
+        LocalDateTime.parse(updatedAt).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    }.getOrDefault(now)
+
+    return UserProductEntity(
+        id = 0L, // auto-generated
+        serverId = id,
+        catalogProductId = catalogProductId,
+        name = customName ?: "Product $id",
+        barcode = null,
+        customName = customName,
+        price = price,
+        costPrice = costPrice,
+        description = description,
+        imageLocalPath = null,
+        imageUrl = null,
+        subcategoryId = subcategoryId,
+        supplierId = supplierId,
+        unit = unit,
+        stock = stock,
+        minStockLevel = minStockLevel,
+        maxStockLevel = maxStockLevel,
+        isActive = isActive,
+        tags = tags,
+        lastSoldDate = null,
+        date = createdMillis,
+        syncStatus = UserProductEntity.SYNC_STATUS_SYNCED,
+        synced = true,
+        createdAt = createdMillis,
+        updatedAt = updatedMillis,
+        isDeleted = false
+    )
+}
+
 fun CatalogProductDto.toDomain(): Product {
     return Product(
         id = ProductId(id),

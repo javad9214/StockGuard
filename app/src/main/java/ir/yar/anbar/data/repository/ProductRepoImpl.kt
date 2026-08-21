@@ -6,20 +6,29 @@ import ir.yar.anbar.data.local.entity.UserProductEntity
 import ir.yar.anbar.data.mapper.mergeInto
 import ir.yar.anbar.data.mapper.toDomain
 import ir.yar.anbar.data.mapper.toEntity
+import ir.yar.anbar.data.mapper.toNewEntity
 import ir.yar.anbar.data.mapper.toRequestDto
 import ir.yar.anbar.data.remote.datasource.UserProductRemoteDataSource
+import ir.yar.anbar.data.remote.dto.response.UserProductResponseDto
+import ir.yar.anbar.di.ApplicationScope
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductSyncResult
 import ir.yar.anbar.domain.repository.ProductRepository
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import java.io.File
 import javax.inject.Inject
 
 class ProductRepoImpl @Inject constructor(
     private val localDataSource: UserProductLocalDataSource,
-    private val remoteDataSource: UserProductRemoteDataSource
+    private val remoteDataSource: UserProductRemoteDataSource,
+    @ApplicationScope private val applicationScope: CoroutineScope
 ) : ProductRepository {
+
+    private val refreshMutex = Mutex()
 
     override suspend fun addProduct(product: Product, imageFile: File?) {
         // 1. Save locally first (offline-first). The row starts as PENDING_CREATE
@@ -50,9 +59,10 @@ class ProductRepoImpl @Inject constructor(
     }
 
     override fun getAllProducts(): Flow<List<Product>> {
-        // Local-first read. Server rows are pulled in through addProduct/getProductById
-        // sync paths; a full paged pull (getUserProducts) needs conflict resolution and
-        // belongs to a dedicated sync pass, since the list DTO lacks local-only fields.
+        // Local-first: DB rows emit immediately. In parallel, pull the server's copy
+        // so products created on other devices get inserted/updated locally and
+        // appear here through Room's reactive flow.
+        applicationScope.launch { refreshProductsFromServer() }
         return localDataSource.observeAllProducts()
             .map { entities -> entities.map { it.toDomain() } }
     }
@@ -241,6 +251,58 @@ class ProductRepoImpl @Inject constructor(
             deleted = deleted,
             failed = failed
         )
+    }
+
+    /**
+     * Pulls every page of the user's products from the server and merges them into
+     * the local DB. Never blocks callers on failures — the local table stays as-is.
+     */
+    private suspend fun refreshProductsFromServer() {
+        // Only one pull at a time; getAllProducts() is called on every list load
+        if (!refreshMutex.tryLock()) return
+        try {
+            val pageSize = 50
+            var page = 0
+            while (true) {
+                val response = remoteDataSource.getUserProducts(page, pageSize)
+                val pageData = (response as? ApiResponse.Success)?.data ?: break
+                mergeServerProducts(pageData.content)
+                if (pageData.last || pageData.content.isEmpty()) break
+                page++
+            }
+        } catch (e: Exception) {
+            // Offline / server error — keep serving local data
+        } finally {
+            refreshMutex.unlock()
+        }
+    }
+
+    /**
+     * Merge policy per server row, matched by serverId:
+     * - unknown locally → insert as a synced row
+     * - local row already synced → take server values (server wins)
+     * - local row pending (create/update/delete) → keep local, it wins until pushed
+     */
+    private suspend fun mergeServerProducts(serverProducts: List<UserProductResponseDto>) {
+        if (serverProducts.isEmpty()) return
+
+        val localByServerId = localDataSource
+            .getProductsByServerIds(serverProducts.map { it.id })
+            .associateBy { it.serverId }
+
+        for (dto in serverProducts) {
+            val local = localByServerId[dto.id]
+            when {
+                local == null -> localDataSource.insertProduct(dto.toNewEntity())
+                local.syncStatus == UserProductEntity.SYNC_STATUS_SYNCED -> {
+                    val merged = dto.mergeInto(local)
+                    if (merged != local) {
+                        localDataSource.updateProduct(merged)
+                    }
+                }
+                // else: local pending change — leave untouched until it's pushed
+            }
+        }
     }
 
 }

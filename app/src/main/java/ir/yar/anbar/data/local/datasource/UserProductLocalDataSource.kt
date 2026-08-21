@@ -30,6 +30,9 @@ class UserProductLocalDataSource @Inject constructor(
     suspend fun getProductByServerId(serverId: Long): UserProductEntity? =
         dao.getProductByServerId(serverId)
 
+    suspend fun getProductsByServerIds(serverIds: List<Long>): List<UserProductEntity> =
+        dao.getProductsByServerIds(serverIds)
+
     suspend fun getProductByCatalogId(catalogProductId: Long): UserProductEntity? =
         dao.getProductByCatalogId(catalogProductId)
 
