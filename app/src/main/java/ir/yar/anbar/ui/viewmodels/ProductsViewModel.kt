@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.yar.anbar.domain.model.Product
+import ir.yar.anbar.domain.model.ProductFactory
 import ir.yar.anbar.domain.usecase.product.AddProductUseCase
 import ir.yar.anbar.domain.usecase.product.DecreaseStockUseCase
 import ir.yar.anbar.domain.usecase.product.DeleteProductUseCase
@@ -11,6 +12,7 @@ import ir.yar.anbar.domain.usecase.product.EditProductUseCase
 import ir.yar.anbar.domain.usecase.product.GetAllProductUseCase
 import ir.yar.anbar.domain.usecase.product.GetProductByQueryUseCase
 import ir.yar.anbar.domain.usecase.product.IncreaseStockUseCase
+import ir.yar.anbar.utils.barcode.BarcodeGenerator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -85,6 +87,36 @@ class ProductsViewModel @Inject constructor(
         viewModelScope.launch {
             addProductUseCase.invoke(product)
         }
+    }
+
+    fun saveProduct(
+        name: String,
+        barcode: String,
+        salePrice: String,
+        costPrice: String,
+        subcategoryId: String,
+        localImageUri: String?
+    ) {
+        val product = _selectedProduct.value
+        val newProduct = ProductFactory.createComplete(
+            id = product?.id?.value ?: 0,
+            name = name,
+            barcode = barcode.ifEmpty { BarcodeGenerator.generateBarcodeNumber() },
+            price = salePrice.toLongOrNull() ?: 0,
+            costPrice = costPrice.toLongOrNull() ?: 0,
+            description = product?.description?.value ?: "",
+            subcategoryId = subcategoryId.toIntOrNull() ?: product?.subcategoryId?.value ?: 0,
+            supplierId = product?.supplierId?.value ?: 0,
+            unit = product?.unit?.value ?: "",
+            localImageUri = localImageUri,
+            remoteImageUrl = product?.image?.remoteUrl,
+            initialStock = product?.stock?.value ?: 0,
+            minStockLevel = product?.minStockLevel?.value ?: 0,
+            maxStockLevel = product?.maxStockLevel?.value ?: 0,
+            tags = product?.tags?.value ?: ""
+        )
+        if (product == null) addProduct(newProduct) else editProduct(newProduct)
+        cleanUpSelectedProduct()
     }
 
     fun updateSortOrder(newOrder: SortOrder) {

@@ -55,8 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
-import ir.yar.anbar.domain.model.Product
-import ir.yar.anbar.domain.model.ProductFactory
 import ir.yar.anbar.ui.components.FixedLabelTextField
 import ir.yar.anbar.ui.components.image.ImagePickerBox
 import ir.yar.anbar.ui.components.barcodescanner.CompactBarcodeScanner
@@ -66,7 +64,6 @@ import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.color.costPrice
 import ir.yar.anbar.ui.theme.color.salePrice
 import ir.yar.anbar.ui.viewmodels.ProductsViewModel
-import ir.yar.anbar.utils.barcode.BarcodeGenerator
 import ir.yar.anbar.utils.barcode.BarcodeSoundPlayer
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
@@ -76,7 +73,7 @@ import ir.yar.anbar.utils.price.ThousandSeparatorTransformation
 fun AddProduct(
     initialBarcode: String? = null,
     productId: Long? = null,
-    onSave: (Product) -> Unit,
+    onSaved: () -> Unit,
     onNavigateBack: () -> Unit,
     productsViewModel: ProductsViewModel = hiltViewModel(),
 ) {
@@ -183,24 +180,15 @@ fun AddProduct(
         SaveButton(
             isEditMode = isEditMode,
             onSave = {
-                val newProduct = ProductFactory.createComplete(
-                    id = product?.id?.value ?: 0,
+                productsViewModel.saveProduct(
                     name = name,
-                    barcode = barcode.ifEmpty { BarcodeGenerator.generateBarcodeNumber() },
-                    price = salePrice.toLongOrNull() ?: 0,
-                    costPrice = costPrice.toLongOrNull() ?: 0,
-                    description = product?.description?.value ?: "",
-                    subcategoryId = subcategoryId.toIntOrNull() ?: product?.subcategoryId?.value ?: 0,
-                    supplierId = product?.supplierId?.value ?: 0,
-                    unit = product?.unit?.value ?: "",
-                    localImageUri = imageUri?.toString(),
-                    remoteImageUrl = product?.image?.remoteUrl,
-                    initialStock = product?.stock?.value ?: 0,
-                    minStockLevel = product?.minStockLevel?.value ?: 0,
-                    maxStockLevel = product?.maxStockLevel?.value ?: 0,
-                    tags = product?.tags?.value ?: ""
+                    barcode = barcode,
+                    salePrice = salePrice,
+                    costPrice = costPrice,
+                    subcategoryId = subcategoryId,
+                    localImageUri = imageUri?.toString()
                 )
-                onSave(newProduct)
+                onSaved()
             },
             modifier = Modifier.align(Alignment.BottomCenter)
         )

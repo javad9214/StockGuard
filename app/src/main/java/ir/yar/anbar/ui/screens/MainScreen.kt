@@ -198,8 +198,7 @@ fun MainScreen(
                     AddProduct(
                         initialBarcode = barcode,
                         productId = productId,
-                        onSave = { product ->
-                            productsViewModel.addProduct(product)
+                        onSaved = {
                             navController.popBackStack()
                         },
                         onNavigateBack = {
