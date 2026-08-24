@@ -97,6 +97,7 @@ fun Product.toEntity(): UserProductEntity {
 fun Product.toRequestDto(): UserProductRequestDto {
     return UserProductRequestDto(
         catalogProductId = null,
+        barcode = barcode?.value,
         customName = name.value,
         price = price.amount,
         costPrice = costPrice.amount,
@@ -114,17 +115,23 @@ fun Product.toRequestDto(): UserProductRequestDto {
 
 /**
  * Merges server-authoritative fields of [UserProductResponseDto] into an existing local row.
- * Local-only fields the server does not know about (name, barcode, local image path,
- * local id, dates) are preserved.
+ * The server barcode and image overwrite the local ones when present; when the
+ * server has none, the local values are preserved. Other local-only fields the
+ * server does not know about (name, local id, dates) are preserved.
  */
-fun UserProductResponseDto.mergeInto(entity: UserProductEntity): UserProductEntity {
+fun UserProductResponseDto.mergeInto(
+    entity: UserProductEntity,
+    serverImagePath: String? = null
+): UserProductEntity {
     val now = System.currentTimeMillis()
     return entity.copy(
         serverId = id,
+        barcode = barcode ?: entity.barcode,
         customName = customName,
         price = price,
         costPrice = costPrice,
         description = description,
+        imageLocalPath = serverImagePath ?: entity.imageLocalPath,
         subcategoryId = subcategoryId,
         supplierId = supplierId,
         unit = unit,
@@ -143,11 +150,11 @@ fun UserProductResponseDto.mergeInto(entity: UserProductEntity): UserProductEnti
 
 /**
  * Builds a fresh local row from a server product that doesn't exist locally yet.
- * The server never stores barcode or the catalog display name, so barcode is
- * unknown and catalog-adopted products fall back to a placeholder name
- * (custom products carry their name in [UserProductResponseDto.customName]).
+ * The barcode and the persisted server image ([serverImagePath], already decoded
+ * to a local file) are carried over; catalog-adopted products without a
+ * customName fall back to a placeholder name.
  */
-fun UserProductResponseDto.toNewEntity(): UserProductEntity {
+fun UserProductResponseDto.toNewEntity(serverImagePath: String? = null): UserProductEntity {
     val now = System.currentTimeMillis()
     val createdMillis = runCatching {
         LocalDateTime.parse(createdAt).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
@@ -161,12 +168,12 @@ fun UserProductResponseDto.toNewEntity(): UserProductEntity {
         serverId = id,
         catalogProductId = catalogProductId,
         name = customName ?: "Product $id",
-        barcode = null,
+        barcode = barcode,
         customName = customName,
         price = price,
         costPrice = costPrice,
         description = description,
-        imageLocalPath = null,
+        imageLocalPath = serverImagePath,
         imageUrl = null,
         subcategoryId = subcategoryId,
         supplierId = supplierId,

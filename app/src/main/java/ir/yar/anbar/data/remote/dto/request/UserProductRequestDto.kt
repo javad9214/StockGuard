@@ -2,6 +2,7 @@ package ir.yar.anbar.data.remote.dto.request
 
 data class UserProductRequestDto(
     val catalogProductId: Long? = null,
+    val barcode: String? = null,
     val customName: String? = null,
     val price: Long,
     val costPrice: Long,

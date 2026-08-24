@@ -10,6 +10,7 @@ import ir.yar.anbar.data.mapper.toNewEntity
 import ir.yar.anbar.data.mapper.toRequestDto
 import ir.yar.anbar.data.remote.datasource.UserProductRemoteDataSource
 import ir.yar.anbar.data.remote.dto.response.UserProductResponseDto
+import ir.yar.anbar.data.util.ProductImageFileManager
 import ir.yar.anbar.di.ApplicationScope
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductSyncResult
@@ -19,18 +20,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
-import java.io.File
 import javax.inject.Inject
 
 class ProductRepoImpl @Inject constructor(
     private val localDataSource: UserProductLocalDataSource,
     private val remoteDataSource: UserProductRemoteDataSource,
+    private val imageFileManager: ProductImageFileManager,
     @ApplicationScope private val applicationScope: CoroutineScope
 ) : ProductRepository {
 
     private val refreshMutex = Mutex()
 
-    override suspend fun addProduct(product: Product, imageFile: File?) {
+    override suspend fun addProduct(product: Product, imageSource: String?) {
         // 1. Save locally first (offline-first). The row starts as PENDING_CREATE
         //    and is only marked SYNCED after the server confirms it.
         val localId = localDataSource.insertProduct(
@@ -46,7 +47,7 @@ class ProductRepoImpl @Inject constructor(
         try {
             val response = remoteDataSource.createCustomProduct(
                 product = product.toRequestDto(),
-                imageFile = imageFile
+                imageSource = imageSource ?: product.image?.localUri
             )
             val serverId = (response as? ApiResponse.Success)?.data?.data ?: return
             localDataSource.markProductSynced(
@@ -127,7 +128,7 @@ class ProductRepoImpl @Inject constructor(
             val response = remoteDataSource.updateProduct(
                 id = serverId,
                 product = product.toRequestDto(),
-                imageFile = product.image?.localUri?.let(::File)
+                imageSource = product.image?.localUri
             )
             if ((response as? ApiResponse.Success)?.data?.success == true) {
                 localDataSource.markProductSynced(
@@ -152,7 +153,7 @@ class ProductRepoImpl @Inject constructor(
                 val response = remoteDataSource.getProductById(serverId)
                 val serverProduct = (response as? ApiResponse.Success)?.data
                 if (serverProduct != null) {
-                    val merged = serverProduct.mergeInto(entity)
+                    val merged = serverProduct.mergeInto(entity, serverProduct.persistImage())
                     if (merged != entity) {
                         localDataSource.updateProduct(merged)
                     }
@@ -184,7 +185,7 @@ class ProductRepoImpl @Inject constructor(
             try {
                 val response = remoteDataSource.createCustomProduct(
                     product = entity.toDomain().toRequestDto(),
-                    imageFile = entity.imageLocalPath?.let(::File)
+                    imageSource = entity.imageLocalPath
                 )
                 val serverId = (response as? ApiResponse.Success)?.data?.data
                 if (serverId != null) {
@@ -210,7 +211,7 @@ class ProductRepoImpl @Inject constructor(
                 val response = remoteDataSource.updateProduct(
                     id = serverId,
                     product = entity.toDomain().toRequestDto(),
-                    imageFile = entity.imageLocalPath?.let(::File)
+                    imageSource = entity.imageLocalPath
                 )
                 if ((response as? ApiResponse.Success)?.data?.success == true) {
                     localDataSource.markProductSynced(entity.id, serverId)
@@ -293,9 +294,11 @@ class ProductRepoImpl @Inject constructor(
         for (dto in serverProducts) {
             val local = localByServerId[dto.id]
             when {
-                local == null -> localDataSource.insertProduct(dto.toNewEntity())
+                local == null -> localDataSource.insertProduct(
+                    dto.toNewEntity(dto.persistImage())
+                )
                 local.syncStatus == UserProductEntity.SYNC_STATUS_SYNCED -> {
-                    val merged = dto.mergeInto(local)
+                    val merged = dto.mergeInto(local, dto.persistImage())
                     if (merged != local) {
                         localDataSource.updateProduct(merged)
                     }
@@ -304,5 +307,14 @@ class ProductRepoImpl @Inject constructor(
             }
         }
     }
+
+    /**
+     * Decodes the Base64 image the server sent with a product into a local file
+     * so it can be displayed. Never throws — a broken image must not break the
+     * product sync itself.
+     */
+    private suspend fun UserProductResponseDto.persistImage(): String? = runCatching {
+        imageFileManager.saveServerImage(id, image, imageType)
+    }.getOrNull()
 
 }

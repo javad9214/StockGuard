@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class AddProductUseCase @Inject constructor(private val productRepository: ProductRepository) {
     suspend operator fun invoke(product: Product){
-        productRepository.addProduct(product, null)
+        productRepository.addProduct(product, product.image?.localUri)
     }
 
     companion object{

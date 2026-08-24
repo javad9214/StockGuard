@@ -3,11 +3,14 @@ package ir.yar.anbar.domain.repository
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductSyncResult
 import kotlinx.coroutines.flow.Flow
-import java.io.File
 
 interface ProductRepository {
 
-    suspend fun addProduct(product: Product, imageFile: File?)
+    /**
+     * @param imageSource image reference exactly as stored on the product
+     * (content:// picker URI or file path); uploaded with the product
+     */
+    suspend fun addProduct(product: Product, imageSource: String?)
 
     /**
      * Pushes every locally pending product (PENDING_CREATE, PENDING_UPDATE,

@@ -4,11 +4,13 @@ data class UserProductResponseDto(
     val id: Long,
     val userId: Long,
     val catalogProductId: Long? = null,
+    val barcode: String? = null,
     val customName: String? = null,
     val price: Long,
     val costPrice: Long,
     val description: String? = null,
     val imageType: String? = null,
+    val image: String? = null, // Base64-encoded image bytes sent back by the server
     val subcategoryId: Int? = null,
     val supplierId: Int? = null,
     val unit: String? = null,
