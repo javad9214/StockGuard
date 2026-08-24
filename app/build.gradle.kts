@@ -16,7 +16,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 30
-        versionName = "0.21.1"
+        versionName = "0.21.2"
 
 
         buildConfigField("String", "BASE_URL", "\"https://mjavadserver.ir\"")
