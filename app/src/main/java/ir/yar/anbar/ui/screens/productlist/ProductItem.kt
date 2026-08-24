@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.productlist
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
@@ -154,27 +156,36 @@ fun ProductItem(
                         fontFamily = myFontFamily
                     )
 
-                    if (product.synced) {
-                        Spacer(modifier = Modifier.width(dimen(R.dimen.space_1)))
-
-                        Icon(
-                            painter = painterResource(id = R.drawable.cloud_done_24px),
-                            contentDescription = "Synced to server",
-                            tint = MaterialTheme.colorScheme.success,
-                            modifier = Modifier.size(dimen(R.dimen.size_xs))
-                        )
-                    }
-
                     Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
 
 
-                    ProductThumbnail(
-                        imageUrl = product.image?.displayPath,
-                        size = 88.dp,
-                        modifier = Modifier.clickable(enabled = imagePath != null) {
-                            showZoomedImage = true
+                    Box {
+                        ProductThumbnail(
+                            imageUrl = product.image?.displayPath,
+                            size = 88.dp,
+                            modifier = Modifier.clickable(enabled = imagePath != null) {
+                                showZoomedImage = true
+                            }
+                        )
+
+                        // Sync tick badge pinned to the right corner of the image
+                        if (product.synced) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .size(dimen(R.dimen.size_sm))
+                                    .background(MaterialTheme.colorScheme.surface, CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.cloud_done_24px),
+                                    contentDescription = "Synced to server",
+                                    tint = MaterialTheme.colorScheme.success,
+                                    modifier = Modifier.size(dimen(R.dimen.size_xs))
+                                )
+                            }
                         }
-                    )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
