@@ -47,6 +47,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 /**
+ *
  * Profile dropdown anchored to the account icon on the Home header.
  * Shows the authenticated user's full profile information.
  */

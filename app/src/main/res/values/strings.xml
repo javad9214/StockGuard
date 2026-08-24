@@ -237,6 +237,7 @@
     <string name="skip">Skip</string>
     <string name="update_icon">Update Icon</string>
     <string name="arrow">Arrow</string>
+    <string name="select_time_range">Select Time Range</string>
     <string name="current">Current</string>
     <string name="latest">Latest</string>
 

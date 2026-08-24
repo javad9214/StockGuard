@@ -242,6 +242,7 @@
     <string name="skip">رد کردن</string>
     <string name="update_icon">آیکون به‌روزرسانی</string>
     <string name="arrow">فلش</string>
+    <string name="select_time_range">انتخاب بازه زمانی</string>
     <string name="current">فعلی</string>
     <string name="latest">جدید</string>
 
