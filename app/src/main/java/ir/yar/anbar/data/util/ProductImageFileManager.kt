@@ -69,6 +69,20 @@ class ProductImageFileManager @Inject constructor(
         }.getOrNull()
     }
 
+    /**
+     * True when [path] refers to a file written by [saveServerImage]: the server
+     * already holds this exact image, so uploading it again would only waste
+     * bandwidth. User-picked images (content:// URIs, camera files) return false.
+     */
+    fun isServerImage(path: String?): Boolean {
+        if (path.isNullOrBlank()) return false
+        return runCatching {
+            val dir = File(context.filesDir, SERVER_IMAGE_DIR).canonicalPath + File.separator
+            val file = File(Uri.parse(path).path ?: path).canonicalPath
+            file.startsWith(dir)
+        }.getOrDefault(false)
+    }
+
     private suspend fun resolveUploadFile(source: String): File? {
         val uri = runCatching { Uri.parse(source) }.getOrNull()
 

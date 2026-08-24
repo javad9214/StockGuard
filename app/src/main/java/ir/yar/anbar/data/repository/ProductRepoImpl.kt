@@ -8,6 +8,7 @@ import ir.yar.anbar.data.mapper.toDomain
 import ir.yar.anbar.data.mapper.toEntity
 import ir.yar.anbar.data.mapper.toNewEntity
 import ir.yar.anbar.data.mapper.toRequestDto
+import ir.yar.anbar.data.mapper.updatedAtMillis
 import ir.yar.anbar.data.remote.datasource.UserProductRemoteDataSource
 import ir.yar.anbar.data.remote.dto.response.UserProductResponseDto
 import ir.yar.anbar.data.util.ProductImageFileManager
@@ -114,9 +115,18 @@ class ProductRepoImpl @Inject constructor(
         val existing = localDataSource.getProductById(product.id.value)
         val serverId = existing?.serverId
 
+        // The domain model doesn't carry server-link fields, so they must be
+        // carried over from the current row — dropping them would silently turn
+        // an adopted product into a custom one locally.
+        val isAdopted = existing?.catalogProductId != null
         val rowsUpdated = localDataSource.updateProduct(
             product.toEntity().copy(
                 serverId = serverId,
+                catalogProductId = existing?.catalogProductId,
+                // Adopted rows keep the catalog base name; the edit becomes the custom override
+                name = if (isAdopted) existing?.name ?: product.name.value else product.name.value,
+                customName = if (isAdopted) product.name.value else null,
+                imageUrl = product.image?.remoteUrl ?: existing?.imageUrl,
                 syncStatus = UserProductEntity.SYNC_STATUS_PENDING_UPDATE,
                 synced = false
             )
@@ -128,7 +138,7 @@ class ProductRepoImpl @Inject constructor(
             val response = remoteDataSource.updateProduct(
                 id = serverId,
                 product = product.toRequestDto(),
-                imageSource = product.image?.localUri
+                imageSource = product.image?.localUri?.takeUnless(imageFileManager::isServerImage)
             )
             if ((response as? ApiResponse.Success)?.data?.success == true) {
                 localDataSource.markProductSynced(
@@ -153,7 +163,10 @@ class ProductRepoImpl @Inject constructor(
                 val response = remoteDataSource.getProductById(serverId)
                 val serverProduct = (response as? ApiResponse.Success)?.data
                 if (serverProduct != null) {
-                    val merged = serverProduct.mergeInto(entity, serverProduct.persistImage())
+                    val merged = serverProduct.mergeInto(
+                        entity,
+                        serverProduct.persistImageIfChanged(entity)
+                    )
                     if (merged != entity) {
                         localDataSource.updateProduct(merged)
                     }
@@ -211,7 +224,7 @@ class ProductRepoImpl @Inject constructor(
                 val response = remoteDataSource.updateProduct(
                     id = serverId,
                     product = entity.toDomain().toRequestDto(),
-                    imageSource = entity.imageLocalPath
+                    imageSource = entity.imageLocalPath?.takeUnless(imageFileManager::isServerImage)
                 )
                 if ((response as? ApiResponse.Success)?.data?.success == true) {
                     localDataSource.markProductSynced(entity.id, serverId)
@@ -298,7 +311,7 @@ class ProductRepoImpl @Inject constructor(
                     dto.toNewEntity(dto.persistImage())
                 )
                 local.syncStatus == UserProductEntity.SYNC_STATUS_SYNCED -> {
-                    val merged = dto.mergeInto(local, dto.persistImage())
+                    val merged = dto.mergeInto(local, dto.persistImageIfChanged(local))
                     if (merged != local) {
                         localDataSource.updateProduct(merged)
                     }
@@ -316,5 +329,18 @@ class ProductRepoImpl @Inject constructor(
     private suspend fun UserProductResponseDto.persistImage(): String? = runCatching {
         imageFileManager.saveServerImage(id, image, imageType)
     }.getOrNull()
+
+    /**
+     * Like [persistImage], but skips the decode/rewrite entirely when the server
+     * row's updatedAt matches the local one — an unchanged row by definition
+     * still has the image file from the previous pull on disk.
+     */
+    private suspend fun UserProductResponseDto.persistImageIfChanged(
+        local: UserProductEntity
+    ): String? {
+        val serverUpdatedAt = updatedAtMillis()
+        if (serverUpdatedAt != null && serverUpdatedAt == local.updatedAt) return null
+        return persistImage()
+    }
 
 }

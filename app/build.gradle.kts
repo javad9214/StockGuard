@@ -16,7 +16,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 30
-        versionName = "0.18.3"
+        versionName = "0.19.0"
 
 
         buildConfigField("String", "BASE_URL", "\"https://mjavadserver.ir\"")
@@ -103,6 +103,11 @@ android {
             res.srcDirs("src/main/res")
         }
     }
+}
+
+// Golden Room schemas for writing/validating future migrations
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {

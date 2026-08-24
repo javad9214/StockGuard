@@ -3,6 +3,7 @@ package ir.yar.anbar.di
 import android.content.Context
 import androidx.room.Room
 import ir.yar.anbar.data.local.database.AppDatabase
+import ir.yar.anbar.data.local.database.MIGRATION_3_4
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +23,12 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "stock_guard_db"
-        ).build()
+        )
+            .addMigrations(MIGRATION_3_4)
+            // v1/v2 predate server sync — their local-only rows can't be mapped.
+            // Wiping is safe: the server copy is re-pulled on the next list load.
+            .fallbackToDestructiveMigrationFrom(1, 2)
+            .build()
     }
 
 

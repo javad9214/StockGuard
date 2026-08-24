@@ -1,9 +1,17 @@
 package ir.yar.anbar.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "user_products")
+@Entity(
+    tableName = "user_products",
+    indices = [
+        // Server-sync merges look rows up by serverId; search scans by barcode
+        Index(value = ["serverId"]),
+        Index(value = ["barcode"])
+    ]
+)
 data class UserProductEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
 

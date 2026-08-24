@@ -113,11 +113,16 @@ fun Product.toRequestDto(): UserProductRequestDto {
     )
 }
 
+/** Server `updatedAt` (ISO-8601) as epoch millis, or null when unparseable. */
+fun UserProductResponseDto.updatedAtMillis(): Long? = runCatching {
+    LocalDateTime.parse(updatedAt).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+}.getOrNull()
+
 /**
  * Merges server-authoritative fields of [UserProductResponseDto] into an existing local row.
- * The server barcode and image overwrite the local ones when present; when the
- * server has none, the local values are preserved. Other local-only fields the
- * server does not know about (name, local id, dates) are preserved.
+ * The server barcode, catalog link and image overwrite the local ones when present;
+ * when the server has none, the local values are preserved. Other local-only fields
+ * the server does not know about (name, local id, dates) are preserved.
  */
 fun UserProductResponseDto.mergeInto(
     entity: UserProductEntity,
@@ -127,6 +132,7 @@ fun UserProductResponseDto.mergeInto(
     return entity.copy(
         serverId = id,
         barcode = barcode ?: entity.barcode,
+        catalogProductId = catalogProductId ?: entity.catalogProductId,
         customName = customName,
         price = price,
         costPrice = costPrice,
@@ -142,9 +148,7 @@ fun UserProductResponseDto.mergeInto(
         tags = tags,
         syncStatus = UserProductEntity.SYNC_STATUS_SYNCED,
         synced = true,
-        updatedAt = runCatching {
-            LocalDateTime.parse(updatedAt).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        }.getOrDefault(now)
+        updatedAt = updatedAtMillis() ?: now
     )
 }
 
@@ -159,9 +163,7 @@ fun UserProductResponseDto.toNewEntity(serverImagePath: String? = null): UserPro
     val createdMillis = runCatching {
         LocalDateTime.parse(createdAt).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
     }.getOrDefault(now)
-    val updatedMillis = runCatching {
-        LocalDateTime.parse(updatedAt).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    }.getOrDefault(now)
+    val updatedMillis = updatedAtMillis() ?: now
 
     return UserProductEntity(
         id = 0L, // auto-generated
