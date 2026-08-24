@@ -22,6 +22,7 @@ data class Product(
     val description: ProductDescription?,
     val image: ProductImage?,
     val subcategoryId: SubcategoryId?,
+    val subcategoryName: SubcategoryName? = null,
     val supplierId: SupplierId?,
     val unit: ProductUnit?,
     val stock: StockQuantity,
@@ -237,6 +238,10 @@ value class ProductDescription(val value: String) {
 
 @JvmInline
 value class SubcategoryId(val value: Int)
+
+/** Display name of the subcategory, cached from the server so lists can show it offline. */
+@JvmInline
+value class SubcategoryName(val value: String)
 
 @JvmInline
 value class SupplierId(val value: Int)

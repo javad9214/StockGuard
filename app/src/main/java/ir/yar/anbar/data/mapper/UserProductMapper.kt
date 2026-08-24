@@ -15,6 +15,7 @@ import ir.yar.anbar.domain.model.ProductTags
 import ir.yar.anbar.domain.model.ProductUnit
 import ir.yar.anbar.domain.model.StockQuantity
 import ir.yar.anbar.domain.model.SubcategoryId
+import ir.yar.anbar.domain.model.SubcategoryName
 import ir.yar.anbar.domain.model.SupplierId
 import ir.yar.anbar.domain.model.type.Money
 import java.time.Instant
@@ -34,6 +35,7 @@ fun UserProductEntity.toDomain(): Product {
             ProductImage(localUri = imageLocalPath, remoteUrl = imageUrl)
         else null,
         subcategoryId = subcategoryId?.let { SubcategoryId(it) },
+        subcategoryName = subcategoryName?.let { SubcategoryName(it) },
         supplierId = supplierId?.let { SupplierId(it) },
         unit = unit?.let { ProductUnit(it) },
         stock = StockQuantity(stock),
@@ -77,6 +79,7 @@ fun Product.toEntity(): UserProductEntity {
         imageLocalPath = image?.localUri,
         imageUrl = image?.remoteUrl,
         subcategoryId = subcategoryId?.value,
+        subcategoryName = subcategoryName?.value,
         supplierId = supplierId?.value,
         unit = unit?.value,
         stock = stock.value,
@@ -139,6 +142,8 @@ fun UserProductResponseDto.mergeInto(
         description = description,
         imageLocalPath = serverImagePath ?: entity.imageLocalPath,
         subcategoryId = subcategoryId,
+        // Servers that don't send names yet keep the previously cached value
+        subcategoryName = subcategoryName ?: entity.subcategoryName,
         supplierId = supplierId,
         unit = unit,
         stock = stock,
@@ -178,6 +183,7 @@ fun UserProductResponseDto.toNewEntity(serverImagePath: String? = null): UserPro
         imageLocalPath = serverImagePath,
         imageUrl = null,
         subcategoryId = subcategoryId,
+        subcategoryName = subcategoryName,
         supplierId = supplierId,
         unit = unit,
         stock = stock,
@@ -208,6 +214,7 @@ fun CatalogProductDto.toDomain(): Product {
         costPrice = Money(0),
 
         subcategoryId = subcategoryId?.let { SubcategoryId(it) },
+        subcategoryName = subcategoryName?.let { SubcategoryName(it) },
         supplierId = null, // Catalog has no supplier concept
 
         unit = unit?.let { ProductUnit(it) },

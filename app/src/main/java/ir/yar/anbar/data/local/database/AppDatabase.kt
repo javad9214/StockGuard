@@ -36,7 +36,7 @@ import ir.yar.anbar.data.local.entity.SupplierEntity
         CustomerInvoiceSummaryEntity::class,
         StockMovementEntity::class,
         SupplierEntity::class],
-    version = 4,
+    version = 5,
     // Golden schemas for future migrations live in app/schemas (see the
     // room.schemaLocation KSP arg in app/build.gradle.kts).
     exportSchema = true

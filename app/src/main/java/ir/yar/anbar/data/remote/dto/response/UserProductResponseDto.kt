@@ -12,6 +12,9 @@ data class UserProductResponseDto(
     val imageType: String? = null,
     val image: String? = null, // Base64-encoded image bytes sent back by the server
     val subcategoryId: Int? = null,
+    val categoryId: Int? = null,
+    val subcategoryName: String? = null,
+    val categoryName: String? = null,
     val supplierId: Int? = null,
     val unit: String? = null,
     val stock: Int,

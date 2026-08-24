@@ -31,6 +31,9 @@ data class UserProductEntity(
     val imageUrl: String?,
 
     val subcategoryId: Int?,
+    // Display name cached from the server response — the local subcategories
+    // table is never synced, so a join can't resolve it.
+    val subcategoryName: String?,
     val supplierId: Int?,
 
     val unit: String?,

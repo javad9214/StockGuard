@@ -78,3 +78,15 @@ val MIGRATION_3_4: Migration = object : Migration(3, 4) {
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_user_products_barcode` ON `user_products` (`barcode`)")
     }
 }
+
+/**
+ * v5 caches the subcategory display name on each row. The server now sends it
+ * with the product list, and the local `subcategories` table is never synced,
+ * so persisting it is the only way list UIs can render it offline. Rows
+ * created before v5 stay null until the next server pull fills them in.
+ */
+val MIGRATION_4_5: Migration = object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE `user_products` ADD COLUMN `subcategoryName` TEXT")
+    }
+}
