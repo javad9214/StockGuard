@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import ir.yar.anbar.data.local.datastore.UserPreferencesKeys
 import ir.yar.anbar.domain.repository.UserPreferencesRepository
+import ir.yar.anbar.domain.repository.UserPreferencesRepository.Companion.DEFAULT_STOCK_RUNOUT_LIMIT
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -21,6 +22,6 @@ class UserPreferencesRepositoryImpl @Inject constructor(
 
     override val stockRunoutLimit: Flow<Int> =
         dataStore.data.map { preferences ->
-            preferences[UserPreferencesKeys.STOCK_RUNOUT_ALERT_LIMIT] ?: 0
+            preferences[UserPreferencesKeys.STOCK_RUNOUT_ALERT_LIMIT] ?: DEFAULT_STOCK_RUNOUT_LIMIT
         }
 }

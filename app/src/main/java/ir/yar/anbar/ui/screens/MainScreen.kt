@@ -217,6 +217,13 @@ fun MainScreen(
                         },
                         isDarkTheme = isDarkTheme,
                         onToggleTheme = onToggleTheme,
+                        onLogout = {
+                            // Logout and navigate to login
+                            authViewModel.logout()
+                            navController.navigate(Routes.LOGIN) {
+                                popUpTo(0) { inclusive = true } // Clear all back stack
+                            }
+                        },
                         navController = navController,
                         homeViewModel = sharedHomeViewModel
                     )
@@ -282,19 +289,9 @@ fun MainScreen(
 
                 composable(Routes.SETTINGS) {
                     SettingScreen(
-                        onButtonClick = {
-                            navController.navigate(Routes.INVOICES_LIST)
-                        },
                         isDarkTheme = isDarkTheme,
                         onToggleTheme = onToggleTheme,
-                        onNavigateBack = { navController.popBackStack() },
-                        onLogout = {
-                            // Logout and navigate to login
-                            authViewModel.logout()
-                            navController.navigate(Routes.LOGIN) {
-                                popUpTo(0) { inclusive = true } // Clear all back stack
-                            }
-                        }
+                        onNavigateBack = { navController.popBackStack() }
                     )
                 }
 

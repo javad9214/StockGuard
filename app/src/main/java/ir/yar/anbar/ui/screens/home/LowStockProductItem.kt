@@ -41,6 +41,8 @@ import ir.yar.anbar.utils.price.PriceValidator.formatPrice
 import ir.yar.anbar.utils.str
 import java.time.LocalDateTime
 
+private const val TAG = "LowStockProductItem"
+
 @Composable
 fun LowStockProductItem(
     modifier: Modifier = Modifier,

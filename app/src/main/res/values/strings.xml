@@ -13,11 +13,21 @@
     <string name="most_sold_products">most sold products</string>
     <string name="most_profitable_products">most profitable products</string>
     <string name="running_out_products">running out_products</string>
+    <string name="navigate_to_settings">Navigate to Settings</string>
+    <string name="notifications">Notifications</string>
+    <string name="profile">Profile</string>
 
     <!-- Home Empty State -->
     <string name="home_empty_title">Nothing Here Yet!</string>
     <string name="home_empty_message">Add your products and register your first invoice — your sales overview will appear here.</string>
     <string name="home_empty_icon">Empty state illustration</string>
+
+    <!-- Home Error State -->
+    <string name="home_error_title">Something Went Wrong!</string>
+
+    <!-- Barcode scan -->
+    <string name="error_no_product_for_barcode">No product found with barcode: %1$s</string>
+    <string name="error_product_search_failed">Error searching for product: %1$s</string>
 
     <!-- Setting -->
     <string name="setting">Setting</string>
@@ -247,7 +257,7 @@
     <string name="update_check_failed">Failed to check for updates</string>
 
     <!-- Version Info -->
-    <string name="app_version">App Version</string>
+    <string name="app_version">App Version: %1$s</string>
     <string name="version_code">Version Code</string>
     <string name="build_number">Build Number</string>
     <string name="last_update_check">Last update check</string>
@@ -301,5 +311,6 @@
     <string name="profile_user_id">User ID</string>
     <string name="profile_member_since">Member Since</string>
     <string name="profile_last_login">Last Login</string>
+    <string name="close">Close</string>
 
 </resources>

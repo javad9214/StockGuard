@@ -2,6 +2,7 @@ package ir.yar.anbar.ui.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
@@ -25,12 +31,18 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import ir.yar.anbar.R
@@ -57,8 +69,11 @@ fun ProfileDropdown(
     onDismissRequest: () -> Unit,
     state: ProfileUiState,
     onRetry: () -> Unit,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
@@ -73,7 +88,116 @@ fun ProfileDropdown(
             is ProfileUiState.Error -> ProfileErrorContent(message = state.message, onRetry = onRetry)
             else -> ProfileLoadingContent()
         }
+
+        // Logout stays reachable even when the profile fails to load
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        LogoutItem(onClick = {
+            onDismissRequest()
+            showLogoutDialog = true
+        })
     }
+
+    if (showLogoutDialog) {
+        LogoutConfirmationDialog(
+            onConfirm = {
+                showLogoutDialog = false
+                onLogout()
+            },
+            onDismiss = { showLogoutDialog = false }
+        )
+    }
+}
+
+@Composable
+private fun LogoutItem(onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(dimen(R.dimen.space_2))
+            .clip(RoundedCornerShape(dimen(R.dimen.radius_md)))
+            .background(MaterialTheme.colorScheme.customError.copy(alpha = 0.08f))
+            .clickable(onClick = onClick)
+            .padding(
+                horizontal = dimen(R.dimen.space_3),
+                vertical = dimen(R.dimen.space_2)
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.customError,
+            modifier = Modifier.size(dimen(R.dimen.size_xs))
+        )
+        Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
+        Text(
+            text = str(R.string.logout),
+            fontFamily = Beirut_Medium,
+            fontSize = dimenTextSize(R.dimen.text_size_sm),
+            color = MaterialTheme.colorScheme.customError
+        )
+    }
+}
+
+// Moved from the settings screen — logout now lives in the profile dropdown
+@Composable
+private fun LogoutConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                contentDescription = str(R.string.logout),
+                tint = MaterialTheme.colorScheme.customError,
+                modifier = Modifier.size(48.dp)
+            )
+        },
+        title = {
+            Text(
+                text = str(R.string.logout_confirmation_title),
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        text = {
+            Text(
+                text = str(R.string.logout_confirmation_message),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.customError
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = str(R.string.logout),
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = str(R.string.cancel),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        shape = RoundedCornerShape(20.dp),
+        containerColor = MaterialTheme.colorScheme.surface
+    )
 }
 
 @Composable

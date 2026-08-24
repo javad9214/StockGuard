@@ -13,6 +13,10 @@ import androidx.compose.ui.unit.sp
 fun str(@StringRes stringRes: Int): String = stringResource(id = stringRes)
 
 @Composable
+fun str(@StringRes stringRes: Int, vararg formatArgs: Any): String =
+    stringResource(id = stringRes, formatArgs = formatArgs)
+
+@Composable
 fun dimen(@DimenRes dimenRes: Int): Dp = dimensionResource(dimenRes)
 
 @Composable

@@ -54,6 +54,8 @@ import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+private const val TAG = "MostSoldProductItem"
+
 @Composable
 fun MostSoldProductItem(
     modifier: Modifier = Modifier,

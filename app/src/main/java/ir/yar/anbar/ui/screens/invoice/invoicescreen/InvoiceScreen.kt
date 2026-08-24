@@ -92,11 +92,13 @@ fun InvoiceScreen(
     val loadingSaveInvoiceMessage = str(R.string.finalizing_invoice)
     val successSaveInvoiceMessage = str(R.string.invoice_created_successfully)
 
-    // Observe scanned product from HomeViewModel for barcode scanning
-    val scannedProduct by homeViewModel.scannedProduct.collectAsState()
-    val scannerIsLoading by homeViewModel.isLoading.collectAsState()
-    val scannerErrorMessage by homeViewModel.errorMessage.collectAsState()
-    val scannedBarcode by homeViewModel.detectedBarcode.collectAsState()
+    // Observe barcode-scan state from HomeViewModel — one snapshot, so error and
+    // barcode can never come from different scans
+    val scanState by homeViewModel.uiState.collectAsState()
+    val scannedProduct = scanState.scannedProduct
+    val scannerIsLoading = scanState.isLoading
+    val scannerErrorMessage = scanState.errorMessage
+    val scannedBarcode = scanState.detectedBarcode
     val noBarcodeFoundDialogSheetState = rememberModalBottomSheetState()
     var showNoBarcodeFoundDialog by remember { mutableStateOf(false) }
 

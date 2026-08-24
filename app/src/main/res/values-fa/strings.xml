@@ -27,11 +27,21 @@
     <string name="most_sold_products">پرفروش ترین محصولات</string>
     <string name="most_profitable_products">پرسـودترین محصولات</string>
     <string name="running_out_products">موجودی درحال اتمام</string>
+    <string name="navigate_to_settings">رفتن به تنظیمات</string>
+    <string name="notifications">اعلان‌ها</string>
+    <string name="profile">پروفایل</string>
 
     <!-- Home Empty State -->
     <string name="home_empty_title">هنوز چیزی اینجا نیست!</string>
     <string name="home_empty_message">محصولات خود را اضافه کنید و اولین فاکتورتان را ثبت کنید؛ خلاصه فروش شما اینجا نمایش داده می‌شود.</string>
     <string name="home_empty_icon">نمایشگر صفحه خالی</string>
+
+    <!-- Home Error State -->
+    <string name="home_error_title">مشکلی پیش آمد!</string>
+
+    <!-- Barcode scan -->
+    <string name="error_no_product_for_barcode">محصولی با بارکد %1$s یافت نشد</string>
+    <string name="error_product_search_failed">خطا در جستجوی محصول: %1$s</string>
 
     <!-- Setting -->
     <string name="setting">تنظیمات</string>
@@ -253,7 +263,7 @@
     <string name="check_for_updates">بررسی به‌روزرسانی‌ها</string>
 
     <!-- Version Info -->
-    <string name="app_version">نسخه برنامه</string>
+    <string name="app_version">نسخه برنامه: %1$s</string>
     <string name="version_code">کد نسخه</string>
     <string name="build_number">شماره ساخت</string>
     <string name="last_update_check">آخرین بررسی به‌روزرسانی</string>
@@ -307,5 +317,6 @@
     <string name="profile_user_id">شناسه کاربر</string>
     <string name="profile_member_since">تاریخ عضویت</string>
     <string name="profile_last_login">آخرین ورود</string>
+    <string name="close">بستن</string>
 
 </resources>
