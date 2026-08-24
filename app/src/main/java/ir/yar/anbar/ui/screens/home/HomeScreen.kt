@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
@@ -39,7 +40,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -223,91 +226,102 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(dimen(R.dimen.space_4)))
 
-            // Analytics section - using combined state
-            TotalsItem(
-                modifier = Modifier,
-                totalInvoiceCount = uiState.analytics.totalInvoiceCount,
-                totalSales = uiState.analytics.totalSales,
-                totalProfit = uiState.analytics.totalProfit
-            )
+            // Show empty screen when there is no data at all for the selected period
+            val hasNoData = !uiState.isLoading &&
+                    uiState.analytics.totalInvoiceCount == 0 &&
+                    uiState.products.topSellingProducts.isEmpty() &&
+                    uiState.products.topProfitableProducts.isEmpty() &&
+                    uiState.products.lowStockProducts.isEmpty()
 
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_4)))
+            if (hasNoData) {
+                HomeEmptyState(modifier = Modifier.fillMaxWidth())
+            } else {
+                // Analytics section - using combined state
+                TotalsItem(
+                    modifier = Modifier,
+                    totalInvoiceCount = uiState.analytics.totalInvoiceCount,
+                    totalSales = uiState.analytics.totalSales,
+                    totalProfit = uiState.analytics.totalProfit
+                )
 
-            Text(
-                modifier = Modifier.padding(start = dimen(R.dimen.space_4)),
-                text = str(R.string.most_sold_products),
-                style = MaterialTheme.typography.bodyLarge,
-                fontFamily = Beirut_Medium,
-                fontSize = dimenTextSize(R.dimen.text_size_lg)
-            )
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_4)))
 
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
+                Text(
+                    modifier = Modifier.padding(start = dimen(R.dimen.space_4)),
+                    text = str(R.string.most_sold_products),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontFamily = Beirut_Medium,
+                    fontSize = dimenTextSize(R.dimen.text_size_lg)
+                )
 
-            // Most Sold Products - NO MORE .find()!
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = dimen(R.dimen.space_1))
-            ) {
-                items(
-                    items = uiState.products.topSellingProducts,
-                    key = { it.summary.id.value }
-                ) { productWithSummary ->
-                    MostSoldProductItem(
-                        product = productWithSummary.product,
-                        productSalesSummary = productWithSummary.summary,
-                        rank = productWithSummary.rank
-                    )
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
+
+                // Most Sold Products - NO MORE .find()!
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = dimen(R.dimen.space_1))
+                ) {
+                    items(
+                        items = uiState.products.topSellingProducts,
+                        key = { it.summary.id.value }
+                    ) { productWithSummary ->
+                        MostSoldProductItem(
+                            product = productWithSummary.product,
+                            productSalesSummary = productWithSummary.summary,
+                            rank = productWithSummary.rank
+                        )
+                    }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
-            Text(
-                modifier = Modifier.padding(start = dimen(R.dimen.space_4)),
-                text = str(R.string.most_profitable_products),
-                style = MaterialTheme.typography.bodyLarge,
-                fontFamily = Beirut_Medium,
-                fontSize = dimenTextSize(R.dimen.text_size_lg)
-            )
+                Text(
+                    modifier = Modifier.padding(start = dimen(R.dimen.space_4)),
+                    text = str(R.string.most_profitable_products),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontFamily = Beirut_Medium,
+                    fontSize = dimenTextSize(R.dimen.text_size_lg)
+                )
 
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
-            // Most Profitable Products - NO MORE .find() or .indexOf()!
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = dimen(R.dimen.space_1))
-            ) {
-                items(
-                    items = uiState.products.topProfitableProducts,
-                    key = { it.summary.id.value }
-                ) { productWithSummary ->
-                    MostSoldProductItem(
-                        product = productWithSummary.product,
-                        productSalesSummary = productWithSummary.summary,
-                        rank = productWithSummary.rank
-                    )
+                // Most Profitable Products - NO MORE .find() or .indexOf()!
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = dimen(R.dimen.space_1))
+                ) {
+                    items(
+                        items = uiState.products.topProfitableProducts,
+                        key = { it.summary.id.value }
+                    ) { productWithSummary ->
+                        MostSoldProductItem(
+                            product = productWithSummary.product,
+                            productSalesSummary = productWithSummary.summary,
+                            rank = productWithSummary.rank
+                        )
+                    }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
-            Text(
-                modifier = Modifier.padding(start = dimen(R.dimen.space_4)),
-                text = str(R.string.stock_running_out),
-                style = MaterialTheme.typography.bodyLarge,
-                fontFamily = Beirut_Medium,
-                fontSize = dimenTextSize(R.dimen.text_size_lg)
-            )
+                Text(
+                    modifier = Modifier.padding(start = dimen(R.dimen.space_4)),
+                    text = str(R.string.stock_running_out),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontFamily = Beirut_Medium,
+                    fontSize = dimenTextSize(R.dimen.text_size_lg)
+                )
 
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
-            // Low Stock Products
-            LazyRow {
-                items(
-                    items = uiState.products.lowStockProducts,
-                    key = { it.id.value }
-                ) { product ->
-                    LowStockProductItem(product = product)
+                // Low Stock Products
+                LazyRow {
+                    items(
+                        items = uiState.products.lowStockProducts,
+                        key = { it.id.value }
+                    ) { product ->
+                        LowStockProductItem(product = product)
+                    }
                 }
             }
 
@@ -317,6 +331,55 @@ fun HomeScreen(
 }
 
 const val TAG = "HomeScreen"
+
+@Composable
+fun HomeEmptyState(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = dimen(R.dimen.space_8)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(dimen(R.dimen.size_6xl))
+                .clip(RoundedCornerShape(dimen(R.dimen.radius_circle)))
+                .background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.box),
+                contentDescription = str(R.string.home_empty_icon),
+                modifier = Modifier.size(dimen(R.dimen.size_4xl)),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
+
+        Spacer(modifier = Modifier.height(dimen(R.dimen.space_5)))
+
+        Text(
+            text = str(R.string.home_empty_title),
+            style = MaterialTheme.typography.titleLarge,
+            fontFamily = Beirut_Medium,
+            fontSize = dimenTextSize(R.dimen.text_size_xl),
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
+
+        Text(
+            text = str(R.string.home_empty_message),
+            style = MaterialTheme.typography.bodyMedium,
+            fontFamily = Beirut_Medium,
+            fontSize = dimenTextSize(R.dimen.text_size_md),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = dimen(R.dimen.space_8))
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable

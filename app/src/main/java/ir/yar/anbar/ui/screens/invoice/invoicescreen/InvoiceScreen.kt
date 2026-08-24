@@ -264,7 +264,7 @@ fun InvoiceScreen(
                         .fillMaxWidth()
                         .weight(1f)
                         .padding(horizontal = dimen(R.dimen.space_2)),
-                    contentPadding = PaddingValues(bottom = dimen(R.dimen.space_14))
+                    contentPadding = PaddingValues(bottom = dimen(R.dimen.space_2))
 
                 ) {
 
@@ -303,25 +303,25 @@ fun InvoiceScreen(
                     )
                 }
             }
-        }
 
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-            BottomTotalSection(
-                totalPrice = if (uiState.currentInvoice.invoice.invoiceType == InvoiceType.SALE) {
-                    uiState.currentInvoice.calculateTotalAmount().amount
-                } else {
-                    uiState.currentInvoice.calculateTotalCost().amount
-                },
-                isLoading = uiState.isLoading,
-                hasItems = uiState.currentInvoice.products.isNotEmpty(),
-                onSubmit = {
-                    if (uiState.currentInvoice.isValid()) {
-                        invoiceViewModel.saveInvoice()
+            // Footer pinned to the bottom of the screen; the items list scrolls above it
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                BottomTotalSection(
+                    totalPrice = if (uiState.currentInvoice.invoice.invoiceType == InvoiceType.SALE) {
+                        uiState.currentInvoice.calculateTotalAmount().amount
+                    } else {
+                        uiState.currentInvoice.calculateTotalCost().amount
+                    },
+                    isLoading = uiState.isLoading,
+                    hasItems = uiState.currentInvoice.products.isNotEmpty(),
+                    onSubmit = {
+                        if (uiState.currentInvoice.isValid()) {
+                            invoiceViewModel.saveInvoice()
 
+                        }
                     }
-                },
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
+                )
+            }
         }
 
 

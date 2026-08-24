@@ -1,134 +1,92 @@
 package ir.yar.anbar.ui.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ir.yar.anbar.domain.model.AnalyticsData
-import ir.yar.anbar.domain.model.Product
-import ir.yar.anbar.domain.model.ProductSalesSummary
-import ir.yar.anbar.domain.model.analyze.DailySalesData
-import ir.yar.anbar.domain.usecase.analytics.GetAnalyticsDataUseCase
-import ir.yar.anbar.domain.usecase.analytics.GetDailySalesBreakdownUseCase
-import ir.yar.anbar.domain.usecase.sales.GetTopSellingProductsUseCase
-import ir.yar.anbar.utils.dateandtime.TimeRange
+import ir.yar.anbar.ui.viewmodels.home.HomeScreenState
+import ir.yar.anbar.ui.viewmodels.home.ProductWithSummary
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+/**
+ * Dedicated ViewModel for the Analyze screen.
+ *
+ * It fetches nothing itself: it wraps the state exposed by
+ * [ir.yar.anbar.ui.viewmodels.home.HomeTotalItemsViewModel] (forwarded by the screen)
+ * and transforms it into the format required by Vico (chart entries + axis labels),
+ * so no data-loading logic is duplicated.
+ */
 @HiltViewModel
-class AnalyzeViewModel @Inject constructor(
-    private val getAnalyticsDataUseCase: GetAnalyticsDataUseCase,
-    private val getTopSellingProductsUseCase: GetTopSellingProductsUseCase,
-    private val getDailySalesBreakdownUseCase: GetDailySalesBreakdownUseCase
-) : ViewModel() {
+class AnalyzeViewModel @Inject constructor() : ViewModel() {
 
-    private val _uiState = MutableStateFlow(AnalyzeUiState())
-    val uiState: StateFlow<AnalyzeUiState> = _uiState.asStateFlow()
+    /** Latest state exposed by HomeTotalItemsViewModel, forwarded via [onHomeStateChanged]. */
+    private val homeScreenState = MutableStateFlow(HomeScreenState())
+
+    /** Owns the chart data so the screen stays UI-only. */
+    val modelProducer = CartesianChartModelProducer()
+
+    val uiState: StateFlow<AnalyzeUiState> = homeScreenState
+        .map(::toAnalyzeUiState)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AnalyzeUiState())
 
     init {
-        loadAllData()
-    }
-
-    private fun loadAllData() {
-        loadAnalyticsData()
-        loadProductSalesSummary(TimeRange.THIS_MONTH)
-        loadDailySalesData()
-    }
-
-    private fun loadAnalyticsData() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            try {
-                Log.d(TAG, "Loading analytics data...")
-                val analyticsData = getAnalyticsDataUseCase()
-                Log.d(TAG, "Analytics data loaded: $analyticsData")
-                _uiState.update {
-                    it.copy(
-                        analyticsData = analyticsData,
-                        error = null
+            homeScreenState
+                .map { it.products.topSellingProducts }
+                .distinctUntilChanged()
+                .collect { topSelling -> updateChart(topSelling) }
+        }
+    }
+
+    /** Called by the Analyze screen with the state exposed by HomeTotalItemsViewModel. */
+    fun onHomeStateChanged(state: HomeScreenState) {
+        homeScreenState.value = state
+    }
+
+    private fun toAnalyzeUiState(state: HomeScreenState): AnalyzeUiState = AnalyzeUiState(
+        productLabels = state.products.topSellingProducts.map { it.product.name.value.toChartLabel() },
+        isLoading = state.isLoading,
+        isEmpty = state.products.topSellingProducts.isEmpty(),
+        error = state.errorMessage
+    )
+
+    /** Maps top-selling products into Vico entries (revenue per product, in display units). */
+    private suspend fun updateChart(topSellingProducts: List<ProductWithSummary>) {
+        if (topSellingProducts.isEmpty()) return
+
+        withContext(Dispatchers.Default) {
+            modelProducer.runTransaction {
+                columnSeries {
+                    series(
+                        x = topSellingProducts.map { it.rank - 1 },
+                        y = topSellingProducts.map { it.summary.totalRevenue.toDisplayAmount() }
                     )
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error loading analytics data", e)
-                _uiState.update {
-                    it.copy(
-                        error = e.message ?: "Unknown error"
-                    )
-                }
-            } finally {
-                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
 
-    private fun loadProductSalesSummary(timeRange: TimeRange) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(selectedTimeRange = timeRange) }
-            try {
-                getTopSellingProductsUseCase(timeRange).collect { (summaries, products) ->
-                    _uiState.update {
-                        it.copy(
-                            productSalesSummary = summaries,
-                            products = products,
-                            error = null
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error loading product sales summary", e)
-                _uiState.update {
-                    it.copy(error = e.message ?: "Unknown error")
-                }
-            }
-        }
-    }
-
-    private fun loadDailySalesData() {
-        viewModelScope.launch {
-            try {
-                // Get real daily breakdown for last 7 days
-                getDailySalesBreakdownUseCase(TimeRange.THIS_WEEK).collect { dailySales ->
-                    Log.d(TAG, "Daily sales data loaded: ${dailySales.size} days")
-                    _uiState.update {
-                        it.copy(
-                            dailySalesChartData = dailySales,
-                            error = null
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error loading daily sales data", e)
-                _uiState.update {
-                    it.copy(error = e.message ?: "Unknown error")
-                }
-            }
-        }
-    }
-
-    fun onTimeRangeChanged(timeRange: TimeRange) {
-        loadProductSalesSummary(timeRange)
-        loadDailySalesData()
-    }
-
-    fun refresh() {
-        loadAllData()
-    }
+    private fun String.toChartLabel(): String =
+        if (length > MAX_LABEL_LENGTH) "${take(MAX_LABEL_LENGTH - 1)}…" else this
 
     companion object {
-        private const val TAG = "AnalyzeViewModel"
+        private const val MAX_LABEL_LENGTH = 10
     }
 }
 
 data class AnalyzeUiState(
-    val analyticsData: AnalyticsData? = null,
-    val productSalesSummary: List<ProductSalesSummary> = emptyList(),
-    val products: List<Product> = emptyList(),
-    val dailySalesChartData: List<DailySalesData> = emptyList(),
-    val selectedTimeRange: TimeRange = TimeRange.THIS_MONTH,
+    val productLabels: List<String> = emptyList(),
     val isLoading: Boolean = false,
+    val isEmpty: Boolean = true,
     val error: String? = null
 )

@@ -14,6 +14,11 @@
     <string name="most_profitable_products">most profitable products</string>
     <string name="running_out_products">running out_products</string>
 
+    <!-- Home Empty State -->
+    <string name="home_empty_title">Nothing Here Yet!</string>
+    <string name="home_empty_message">Add your products and register your first invoice — your sales overview will appear here.</string>
+    <string name="home_empty_icon">Empty state illustration</string>
+
     <!-- Setting -->
     <string name="setting">Setting</string>
     <string name="select_currency">Choose Currency</string>
@@ -173,6 +178,7 @@
 
     <!-- Analyze Screen -->
     <string name="sales_analyse">Sales Analysis</string>
+    <string name="no_data_for_period">No data available for the selected period</string>
     <string name="refresh">Refresh</string>
     <string name="monthly_summary">Monthly Sales Summary</string>
     <string name="top_selling_products">Top Selling Products This Month</string>
