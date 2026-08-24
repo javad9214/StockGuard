@@ -55,7 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.components.FixedLabelTextField
 import ir.yar.anbar.ui.components.image.ImagePickerBox
 import ir.yar.anbar.ui.components.barcodescanner.CompactBarcodeScanner
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
@@ -246,11 +245,28 @@ private fun ProductNameField(
     value: String,
     onValueChange: (String) -> Unit
 ) {
-    FixedLabelTextField(
+    OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = stringResource(R.string.product_name),
-        fontFamily = BKoodak
+        label = {
+            Text(
+                stringResource(R.string.product_name),
+                fontFamily = BKoodak,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+        ),
+        singleLine = true,
+        textStyle = TextStyle(
+            fontFamily = BKoodak,
+            fontWeight = FontWeight.Bold,
+            fontSize = dimenTextSize(R.dimen.text_size_md)
+        )
     )
 }
 
@@ -292,11 +308,38 @@ private fun BarcodeField(
 
     }
 
-    FixedLabelTextField(
+    OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = stringResource(R.string.barcode_optional),
-        fontFamily = BKoodak
+        label = {
+            Text(
+                stringResource(R.string.barcode_optional),
+                fontFamily = BKoodak,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        trailingIcon = {
+            Icon(
+                painter = painterResource(id = R.drawable.barcode_24px),
+                contentDescription = stringResource(R.string.barcode_optional),
+                tint = MaterialTheme.colorScheme.outline
+            )
+        },
+        modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Number
+        ),
+        shape = RoundedCornerShape(12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+        ),
+        singleLine = true,
+        textStyle = TextStyle(
+            fontFamily = BKoodak,
+            fontWeight = FontWeight.Bold,
+            fontSize = dimenTextSize(R.dimen.text_size_md)
+        )
     )
 }
 
