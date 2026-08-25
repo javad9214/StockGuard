@@ -1,12 +1,13 @@
 package ir.yar.anbar.domain.repository
 
-import ir.yar.anbar.data.local.entity.ProductSalesSummaryEntity
 import ir.yar.anbar.domain.model.ProductSalesSummary
 import ir.yar.anbar.domain.model.analyze.DailySalesData
 import kotlinx.coroutines.flow.Flow
 
 interface ProductSalesSummaryRepository {
+
     suspend fun insertProductSale(productSalesSummary: ProductSalesSummary)
+
     suspend fun updateProductSale(productSalesSummary: ProductSalesSummary)
 
     fun getTopSellingProductsBetween(
@@ -19,7 +20,11 @@ interface ProductSalesSummaryRepository {
         end: Long
     ): Flow<List<ProductSalesSummary>>
 
-    suspend fun getByProductAndDate(productId: Long, date: Long): ProductSalesSummaryEntity?
+    /**
+     * @param date day key as epoch millis at local midnight — the format the
+     * date column stores
+     */
+    suspend fun getByProductAndDate(productId: Long, date: Long): ProductSalesSummary?
 
     fun getDailySalesBetween(startDate: Long, endDate: Long): Flow<List<DailySalesData>>
 }
