@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import ir.yar.anbar.R
-import ir.yar.anbar.data.remote.dto.response.UpdateStatus
+import ir.yar.anbar.domain.model.UpdateStatus
 import ir.yar.anbar.ui.theme.BKoodak
 import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
