@@ -1,9 +1,11 @@
 package ir.yar.anbar.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -116,6 +118,7 @@ fun MainScreen(
     val snackyHostState = rememberSnackyHostState()
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
         bottomBar = {
             if (shouldShowBottomNav) {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -135,12 +138,15 @@ fun MainScreen(
             }
         },
     ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)) {
             NavHost(
                 navController = navController,
                 startDestination = startDestination,
-                modifier = Modifier
-                    .padding(innerPadding)
+                modifier = Modifier.fillMaxSize()
+                    .padding(top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding())
             ) {
                 composable(route = Screen.Login.route) {
                     LoginScreen(
@@ -192,8 +198,7 @@ fun MainScreen(
                     AddProduct(
                         initialBarcode = barcode,
                         productId = productId,
-                        onSave = { product ->
-                            productsViewModel.addProduct(product)
+                        onSaved = {
                             navController.popBackStack()
                         },
                         onNavigateBack = {
@@ -212,6 +217,13 @@ fun MainScreen(
                         },
                         isDarkTheme = isDarkTheme,
                         onToggleTheme = onToggleTheme,
+                        onLogout = {
+                            // Logout and navigate to login
+                            authViewModel.logout()
+                            navController.navigate(Routes.LOGIN) {
+                                popUpTo(0) { inclusive = true } // Clear all back stack
+                            }
+                        },
                         navController = navController,
                         homeViewModel = sharedHomeViewModel
                     )
@@ -277,19 +289,9 @@ fun MainScreen(
 
                 composable(Routes.SETTINGS) {
                     SettingScreen(
-                        onButtonClick = {
-                            navController.navigate(Routes.INVOICES_LIST)
-                        },
                         isDarkTheme = isDarkTheme,
                         onToggleTheme = onToggleTheme,
-                        onNavigateBack = { navController.popBackStack() },
-                        onLogout = {
-                            // Logout and navigate to login
-                            authViewModel.logout()
-                            navController.navigate(Routes.LOGIN) {
-                                popUpTo(0) { inclusive = true } // Clear all back stack
-                            }
-                        }
+                        onNavigateBack = { navController.popBackStack() }
                     )
                 }
 

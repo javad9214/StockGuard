@@ -4,6 +4,7 @@ package ir.yar.anbar.domain.model
 import ir.yar.anbar.data.local.entity.UserProductEntity
 import ir.yar.anbar.data.remote.dto.CatalogProductDto
 import ir.yar.anbar.data.remote.dto.CatalogStatus
+import ir.yar.anbar.data.remote.dto.request.UserProductRequestDto
 import ir.yar.anbar.domain.model.type.Money
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -21,6 +22,7 @@ data class Product(
     val description: ProductDescription?,
     val image: ProductImage?,
     val subcategoryId: SubcategoryId?,
+    val subcategoryName: SubcategoryName? = null,
     val supplierId: SupplierId?,
     val unit: ProductUnit?,
     val stock: StockQuantity,
@@ -237,6 +239,10 @@ value class ProductDescription(val value: String) {
 @JvmInline
 value class SubcategoryId(val value: Int)
 
+/** Display name of the subcategory, cached from the server so lists can show it offline. */
+@JvmInline
+value class SubcategoryName(val value: String)
+
 @JvmInline
 value class SupplierId(val value: Int)
 
@@ -281,116 +287,6 @@ enum class PriceCategory {
     PREMIUM,
     LUXURY,
     UNKNOWN
-}
-
-// Mapping Extension Functions
-fun UserProductEntity.toDomain(): Product {
-    return Product(
-        id = ProductId(id),
-        name = ProductName(customName ?: name), // Use customName if exists, fallback to name
-        barcode = barcode?.let { Barcode(it) },
-        price = Money(price),
-        costPrice = Money(costPrice),
-        description = description?.let { ProductDescription(it) },
-        image = if (imageLocalPath != null || imageUrl != null)
-            ProductImage(localUri = imageLocalPath, remoteUrl = imageUrl)
-        else null,
-        subcategoryId = subcategoryId?.let { SubcategoryId(it) },
-        supplierId = supplierId?.let { SupplierId(it) },
-        unit = unit?.let { ProductUnit(it) },
-        stock = StockQuantity(stock),
-        minStockLevel = minStockLevel?.let { StockQuantity(it) },
-        maxStockLevel = maxStockLevel?.let { StockQuantity(it) },
-        isActive = isActive,
-        tags = tags?.let { ProductTags(it) },
-        lastSoldDate = lastSoldDate?.let {
-            LocalDateTime.ofInstant(
-                Instant.ofEpochMilli(it),
-                ZoneId.systemDefault()
-            )
-        },
-        date = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(date),
-            ZoneId.systemDefault()
-        ),
-        synced = synced,
-        createdAt = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(createdAt),
-            ZoneId.systemDefault()
-        ),
-        updatedAt = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(updatedAt),
-            ZoneId.systemDefault()
-        )
-    )
-}
-
-fun Product.toEntity(): UserProductEntity {
-    return UserProductEntity(
-        id = id.value,
-        serverId = null, // Add this
-        catalogProductId = null, // Add this
-        name = name.value,
-        barcode = barcode?.value,
-        customName = null, // Add this
-        price = price.amount,
-        costPrice = costPrice.amount,
-        description = description?.value,
-        imageLocalPath = image?.localUri,
-        imageUrl = image?.remoteUrl,
-        subcategoryId = subcategoryId?.value,
-        supplierId = supplierId?.value,
-        unit = unit?.value,
-        stock = stock.value,
-        minStockLevel = minStockLevel?.value,
-        maxStockLevel = maxStockLevel?.value,
-        isActive = isActive,
-        tags = tags?.value,
-        lastSoldDate = lastSoldDate?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli(),
-        date = date.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-        syncStatus = "SYNCED", // Add this
-        synced = synced,
-        createdAt = createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-        updatedAt = updatedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-        isDeleted = false
-    )
-}
-
-// DTO to Domain Mapping
-// CatalogProductMapper.kt
-
-fun CatalogProductDto.toDomain(): Product {
-    return Product(
-        id = ProductId(id),
-        name = ProductName(name),
-        barcode = barcode?.let { Barcode(it) },
-        description = description?.let { ProductDescription(it) },
-        image = imageUrl?.let { ProductImage(it) },
-
-        // Catalog has no selling/cost price — default to zero or map suggestedPrice as needed
-        price = suggestedPrice?.let { Money(it) } ?: Money(0),
-        costPrice = Money(0),
-
-        subcategoryId = subcategoryId?.let { SubcategoryId(it) },
-        supplierId = null, // Catalog has no supplier concept
-
-        unit = unit?.let { ProductUnit(it) },
-
-        // Catalog has no local stock data
-        stock = StockQuantity(0),
-        minStockLevel = null,
-        maxStockLevel = null,
-
-        isActive = status == CatalogStatus.VERIFIED,
-        tags = tags?.let { ProductTags(it) },
-        lastSoldDate = null, // Not part of catalog
-
-        date = LocalDateTime.parse(createdAt),
-        createdAt = LocalDateTime.parse(createdAt),
-        updatedAt = LocalDateTime.parse(updatedAt),
-
-        synced = true,
-    )
 }
 
 // Factory for creating products

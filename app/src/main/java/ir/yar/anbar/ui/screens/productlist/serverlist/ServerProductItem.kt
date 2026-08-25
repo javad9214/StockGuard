@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
-import ir.yar.anbar.ui.components.ProductThumbnail
+import ir.yar.anbar.ui.components.image.ProductThumbnail
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
 import ir.yar.anbar.ui.theme.BHoma
 import ir.yar.anbar.ui.theme.BMitra

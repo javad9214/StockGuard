@@ -92,11 +92,13 @@ fun InvoiceScreen(
     val loadingSaveInvoiceMessage = str(R.string.finalizing_invoice)
     val successSaveInvoiceMessage = str(R.string.invoice_created_successfully)
 
-    // Observe scanned product from HomeViewModel for barcode scanning
-    val scannedProduct by homeViewModel.scannedProduct.collectAsState()
-    val scannerIsLoading by homeViewModel.isLoading.collectAsState()
-    val scannerErrorMessage by homeViewModel.errorMessage.collectAsState()
-    val scannedBarcode by homeViewModel.detectedBarcode.collectAsState()
+    // Observe barcode-scan state from HomeViewModel — one snapshot, so error and
+    // barcode can never come from different scans
+    val scanState by homeViewModel.uiState.collectAsState()
+    val scannedProduct = scanState.scannedProduct
+    val scannerIsLoading = scanState.isLoading
+    val scannerErrorMessage = scanState.errorMessage
+    val scannedBarcode = scanState.detectedBarcode
     val noBarcodeFoundDialogSheetState = rememberModalBottomSheetState()
     var showNoBarcodeFoundDialog by remember { mutableStateOf(false) }
 
@@ -264,7 +266,7 @@ fun InvoiceScreen(
                         .fillMaxWidth()
                         .weight(1f)
                         .padding(horizontal = dimen(R.dimen.space_2)),
-                    contentPadding = PaddingValues(bottom = dimen(R.dimen.space_14))
+                    contentPadding = PaddingValues(bottom = dimen(R.dimen.space_2))
 
                 ) {
 
@@ -303,25 +305,25 @@ fun InvoiceScreen(
                     )
                 }
             }
-        }
 
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-            BottomTotalSection(
-                totalPrice = if (uiState.currentInvoice.invoice.invoiceType == InvoiceType.SALE) {
-                    uiState.currentInvoice.calculateTotalAmount().amount
-                } else {
-                    uiState.currentInvoice.calculateTotalCost().amount
-                },
-                isLoading = uiState.isLoading,
-                hasItems = uiState.currentInvoice.products.isNotEmpty(),
-                onSubmit = {
-                    if (uiState.currentInvoice.isValid()) {
-                        invoiceViewModel.saveInvoice()
+            // Footer pinned to the bottom of the screen; the items list scrolls above it
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                BottomTotalSection(
+                    totalPrice = if (uiState.currentInvoice.invoice.invoiceType == InvoiceType.SALE) {
+                        uiState.currentInvoice.calculateTotalAmount().amount
+                    } else {
+                        uiState.currentInvoice.calculateTotalCost().amount
+                    },
+                    isLoading = uiState.isLoading,
+                    hasItems = uiState.currentInvoice.products.isNotEmpty(),
+                    onSubmit = {
+                        if (uiState.currentInvoice.isValid()) {
+                            invoiceViewModel.saveInvoice()
 
+                        }
                     }
-                },
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
+                )
+            }
         }
 
 

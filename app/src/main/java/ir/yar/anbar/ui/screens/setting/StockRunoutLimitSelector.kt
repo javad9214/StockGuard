@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import ir.yar.anbar.R
 import ir.yar.anbar.ui.theme.AppFont.BKoodak
 import ir.yar.anbar.ui.theme.Beirut_Medium
+import ir.yar.anbar.ui.viewmodels.SettingUiState
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.str
@@ -59,8 +60,12 @@ fun StockRunoutLimitSelector(
             Slider(
                 value = limit.toFloat(),
                 onValueChange = { onLimitChange(it.toInt()) },
-                valueRange = 0f..50f,
-                steps = 49,
+                // Same constants the ViewModel validates against, so the UI
+                // can never offer a value the domain would reject
+                valueRange = SettingUiState.MIN_STOCK_RUNOUT_LIMIT.toFloat()..
+                        SettingUiState.MAX_STOCK_RUNOUT_LIMIT.toFloat(),
+                steps = SettingUiState.MAX_STOCK_RUNOUT_LIMIT -
+                        SettingUiState.MIN_STOCK_RUNOUT_LIMIT - 1,
                 colors = SliderDefaults.colors(
                     thumbColor = MaterialTheme.colorScheme.secondary,
                     activeTrackColor = MaterialTheme.colorScheme.primary,

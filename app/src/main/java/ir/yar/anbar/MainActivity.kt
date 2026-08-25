@@ -2,10 +2,13 @@ package ir.yar.anbar
 
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -15,13 +18,6 @@ import ir.yar.anbar.ui.screens.MainScreen
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
-import androidx.core.view.WindowCompat
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -35,37 +31,40 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Set the activity to portrait mode
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        enableEdgeToEdge()
+
+        // Initial call before setContent - avoids a flash of wrong icon color
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT)
+        )
+
         setContent {
             val navController = rememberNavController()
             var isDarkTheme by rememberSaveable { mutableStateOf(false) }
-            
+
+            // Re-apply whenever theme toggles, since icon appearance
+            // must go through enableEdgeToEdge, not window properties
+            LaunchedEffect(isDarkTheme) {
+                enableEdgeToEdge(
+                    statusBarStyle = if (isDarkTheme)
+                        SystemBarStyle.dark(Color.TRANSPARENT)
+                    else
+                        SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+                    navigationBarStyle = if (isDarkTheme)
+                        SystemBarStyle.dark(Color.TRANSPARENT)
+                    else
+                        SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                )
+            }
+
             ComposeTrainerTheme(darkTheme = isDarkTheme) {
-                // Update system bars (status bar and navigation bar) colors
-                val systemBarsColor = MaterialTheme.colorScheme.surface
-                val systemBarsContrastColor = !isDarkTheme
-
-                SideEffect {
-                    val window = this@MainActivity.window
-                    window.statusBarColor = systemBarsColor.toArgb()
-                    window.navigationBarColor = systemBarsColor.toArgb()
-
-                    // Set the appearance of the status bar and navigation bar icons
-                    WindowCompat.getInsetsController(window, window.decorView).apply {
-                        isAppearanceLightStatusBars = systemBarsContrastColor
-                        isAppearanceLightNavigationBars = systemBarsContrastColor
-                    }
-                }
-
                 MainScreen(
                     navController = navController,
                     isDarkTheme = isDarkTheme,
                     onToggleTheme = { isDarkTheme = !isDarkTheme }
                 )
             }
-
         }
     }
 }

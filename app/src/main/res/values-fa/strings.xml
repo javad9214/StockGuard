@@ -27,6 +27,21 @@
     <string name="most_sold_products">پرفروش ترین محصولات</string>
     <string name="most_profitable_products">پرسـودترین محصولات</string>
     <string name="running_out_products">موجودی درحال اتمام</string>
+    <string name="navigate_to_settings">رفتن به تنظیمات</string>
+    <string name="notifications">اعلان‌ها</string>
+    <string name="profile">پروفایل</string>
+
+    <!-- Home Empty State -->
+    <string name="home_empty_title">هنوز چیزی اینجا نیست!</string>
+    <string name="home_empty_message">محصولات خود را اضافه کنید و اولین فاکتورتان را ثبت کنید؛ خلاصه فروش شما اینجا نمایش داده می‌شود.</string>
+    <string name="home_empty_icon">نمایشگر صفحه خالی</string>
+
+    <!-- Home Error State -->
+    <string name="home_error_title">مشکلی پیش آمد!</string>
+
+    <!-- Barcode scan -->
+    <string name="error_no_product_for_barcode">محصولی با بارکد %1$s یافت نشد</string>
+    <string name="error_product_search_failed">خطا در جستجوی محصول: %1$s</string>
 
     <!-- Setting -->
     <string name="setting">تنظیمات</string>
@@ -189,6 +204,7 @@
 
     <!-- Analyze Screen -->
     <string name="sales_analyse">تحلیل فروش</string>
+    <string name="no_data_for_period">برای بازه انتخاب‌شده داده‌ای موجود نیست</string>
     <string name="refresh">بارگذاری مجدد</string>
     <string name="monthly_summary">خلاصه فروش ماهانه</string>
     <string name="top_selling_products">پرفروش‌ترین محصولات این ماه</string>
@@ -219,6 +235,22 @@
     <string name="cost_price">قیمت خرید</string>
     <string name="sale_price">قیمت فروش</string>
     <string name="category_id_optional">شناسه دسته‌بندی (اختیاری)</string>
+    <string name="subcategory_optional">زیردسته‌بندی (اختیاری)</string>
+    <string name="currency_icon">نماد واحد پول</string>
+
+    <!-- Product Save/Load Errors -->
+    <string name="error_failed_to_load_products">بارگذاری محصولات ناموفق بود: %1$s</string>
+    <string name="error_failed_to_load_product">بارگذاری محصول ناموفق بود: %1$s</string>
+    <string name="error_failed_to_save_product">ذخیره محصول ناموفق بود: %1$s</string>
+    <string name="error_failed_to_edit_product">ویرایش محصول ناموفق بود: %1$s</string>
+    <string name="error_product_not_found">محصول یافت نشد</string>
+    <string name="error_product_name_required">نام محصول الزامی است</string>
+    <string name="error_sale_price_invalid">قیمت فروش باید عددی مثبت باشد</string>
+    <string name="error_cost_price_invalid">قیمت خرید باید عددی مثبت باشد</string>
+    <string name="error_enter_valid_price">قیمت معتبر وارد کنید</string>
+    <string name="profit_margin_hint">سود: %1$s (%2$d٪)</string>
+    <string name="discard_changes_message">تغییرات ذخیره‌نشده دور ریخته شود؟</string>
+    <string name="discard">دور بینداز</string>
     <string name="add_product_button">افزودن محصول</string>
     <string name="save_changes_button">ذخیره تغییرات</string>
 
@@ -236,6 +268,7 @@
     <string name="skip">رد کردن</string>
     <string name="update_icon">آیکون به‌روزرسانی</string>
     <string name="arrow">فلش</string>
+    <string name="select_time_range">انتخاب بازه زمانی</string>
     <string name="current">فعلی</string>
     <string name="latest">جدید</string>
 
@@ -246,7 +279,7 @@
     <string name="check_for_updates">بررسی به‌روزرسانی‌ها</string>
 
     <!-- Version Info -->
-    <string name="app_version">نسخه برنامه</string>
+    <string name="app_version">نسخه برنامه: %1$s</string>
     <string name="version_code">کد نسخه</string>
     <string name="build_number">شماره ساخت</string>
     <string name="last_update_check">آخرین بررسی به‌روزرسانی</string>
@@ -283,5 +316,23 @@
     <string name="update_over_wifi_description">فقط در صورت اتصال به Wi-Fi به‌روزرسانی دانلود شود</string>
     <string name="check_updates_on_startup">بررسی به‌روزرسانی در شروع برنامه</string>
     <string name="check_updates_startup_description">بررسی خودکار به‌روزرسانی‌ها هنگام راه‌اندازی برنامه</string>
+
+    <!-- Image Prev -->
+    <string name="tap_anywhere_to_dismiss">برای بستن، هرجارو میخوای لمس کنید</string>
+
+    <!-- Sync -->
+    <string name="sync_all_products">همگام‌سازی همه محصولات</string>
+    <string name="products_synced">محصولات با سرور همگام‌سازی شدند</string>
+
+    <!-- User Profile -->
+    <string name="profile_loading">در حال بارگذاری پروفایل…</string>
+    <string name="profile_role_admin">مدیر</string>
+    <string name="profile_role_user">کاربر</string>
+    <string name="profile_status_active">فعال</string>
+    <string name="profile_status_disabled">غیرفعال</string>
+    <string name="profile_user_id">شناسه کاربر</string>
+    <string name="profile_member_since">تاریخ عضویت</string>
+    <string name="profile_last_login">آخرین ورود</string>
+    <string name="close">بستن</string>
 
 </resources>

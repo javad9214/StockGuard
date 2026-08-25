@@ -1,66 +1,96 @@
 package ir.yar.anbar.ui.viewmodels.home
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.usecase.product.GetProductByBarcodeUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Single source of truth for barcode-scan UI state. One immutable snapshot keeps
+ * product, loading, error and barcode from drifting apart across recompositions.
+ */
+data class BarcodeScanUiState(
+    val scannedProduct: Product? = null,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+    val detectedBarcode: String? = null
+)
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val getProductByBarcodeUseCase: GetProductByBarcodeUseCase
-): ViewModel() {
+) : ViewModel() {
 
-    private val _progress = MutableStateFlow(0)
-    val progress: StateFlow<Int> = _progress
+    private val _uiState = MutableStateFlow(BarcodeScanUiState())
+    val uiState: StateFlow<BarcodeScanUiState> = _uiState.asStateFlow()
 
-    private val _scannedProduct = MutableStateFlow<Product?>(null)
-    val scannedProduct: StateFlow<Product?> = _scannedProduct
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage
-
-    private val _detectedBarcode = MutableStateFlow<String?>(null)
-    val detectedBarcode: StateFlow<String?> = _detectedBarcode
+    private var searchJob: Job? = null
 
     fun searchProductByBarcode(barcode: String) {
-        _isLoading.value = true
-        _errorMessage.value = null
-        _scannedProduct.value = null
+        // Cancel any in-flight search so a slow older scan can't overwrite
+        // the result of a newer one
+        searchJob?.cancel()
 
-        viewModelScope.launch {
+        _uiState.update {
+            it.copy(isLoading = true, errorMessage = null, scannedProduct = null)
+        }
+
+        searchJob = viewModelScope.launch {
             try {
                 val product = getProductByBarcodeUseCase(barcode)
-                _scannedProduct.value = product
-                _isLoading.value = false
-                if (product == null) {
-                    _errorMessage.value = "No product found with barcode: $barcode"
-                    _detectedBarcode.value = barcode
+                _uiState.update { state ->
+                    if (product == null) {
+                        state.copy(
+                            scannedProduct = null,
+                            isLoading = false,
+                            errorMessage = context.getString(
+                                R.string.error_no_product_for_barcode, barcode
+                            ),
+                            detectedBarcode = barcode
+                        )
+                    } else {
+                        state.copy(scannedProduct = product, isLoading = false)
+                    }
                 }
+            } catch (e: CancellationException) {
+                // Swallowing this would break structured concurrency
+                throw e
             } catch (e: Exception) {
-                _errorMessage.value = "Error searching for product: ${e.message}"
-                _detectedBarcode.value = barcode
-                _isLoading.value = false
+                _uiState.update { state ->
+                    state.copy(
+                        isLoading = false,
+                        errorMessage = context.getString(
+                            R.string.error_product_search_failed, e.message ?: ""
+                        ),
+                        detectedBarcode = barcode
+                    )
+                }
             }
         }
     }
 
     fun clearScannedProduct() {
-        _scannedProduct.value = null
+        _uiState.update { it.copy(scannedProduct = null) }
     }
 
     fun clearErrorMessage() {
-        _errorMessage.value = null
+        _uiState.update { it.copy(errorMessage = null) }
     }
 
     fun clearDetectedBarcode() {
-        _detectedBarcode.value = null
+        _uiState.update { it.copy(detectedBarcode = null) }
     }
 }

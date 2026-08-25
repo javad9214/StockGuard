@@ -13,6 +13,21 @@
     <string name="most_sold_products">most sold products</string>
     <string name="most_profitable_products">most profitable products</string>
     <string name="running_out_products">running out_products</string>
+    <string name="navigate_to_settings">Navigate to Settings</string>
+    <string name="notifications">Notifications</string>
+    <string name="profile">Profile</string>
+
+    <!-- Home Empty State -->
+    <string name="home_empty_title">Nothing Here Yet!</string>
+    <string name="home_empty_message">Add your products and register your first invoice — your sales overview will appear here.</string>
+    <string name="home_empty_icon">Empty state illustration</string>
+
+    <!-- Home Error State -->
+    <string name="home_error_title">Something Went Wrong!</string>
+
+    <!-- Barcode scan -->
+    <string name="error_no_product_for_barcode">No product found with barcode: %1$s</string>
+    <string name="error_product_search_failed">Error searching for product: %1$s</string>
 
     <!-- Setting -->
     <string name="setting">Setting</string>
@@ -173,6 +188,7 @@
 
     <!-- Analyze Screen -->
     <string name="sales_analyse">Sales Analysis</string>
+    <string name="no_data_for_period">No data available for the selected period</string>
     <string name="refresh">Refresh</string>
     <string name="monthly_summary">Monthly Sales Summary</string>
     <string name="top_selling_products">Top Selling Products This Month</string>
@@ -203,6 +219,22 @@
     <string name="cost_price">Cost Price</string>
     <string name="sale_price">Sale Price</string>
     <string name="category_id_optional">Category ID (Optional)</string>
+    <string name="subcategory_optional">Subcategory (Optional)</string>
+    <string name="currency_icon">Currency Icon</string>
+
+    <!-- Product Save/Load Errors -->
+    <string name="error_failed_to_load_products">Failed to load products: %1$s</string>
+    <string name="error_failed_to_load_product">Failed to load product: %1$s</string>
+    <string name="error_failed_to_save_product">Failed to save product: %1$s</string>
+    <string name="error_failed_to_edit_product">Failed to edit product: %1$s</string>
+    <string name="error_product_not_found">Product not found</string>
+    <string name="error_product_name_required">Product name is required</string>
+    <string name="error_sale_price_invalid">Sale price must be a positive number</string>
+    <string name="error_cost_price_invalid">Cost price must be a positive number</string>
+    <string name="error_enter_valid_price">Enter a valid price</string>
+    <string name="profit_margin_hint">Profit: %1$s (%2$d%%)</string>
+    <string name="discard_changes_message">Discard unsaved changes?</string>
+    <string name="discard">Discard</string>
     <string name="add_product_button">Add Product</string>
     <string name="save_changes_button">Save Changes</string>
 
@@ -231,6 +263,7 @@
     <string name="skip">Skip</string>
     <string name="update_icon">Update Icon</string>
     <string name="arrow">Arrow</string>
+    <string name="select_time_range">Select Time Range</string>
     <string name="current">Current</string>
     <string name="latest">Latest</string>
 
@@ -240,7 +273,7 @@
     <string name="update_check_failed">Failed to check for updates</string>
 
     <!-- Version Info -->
-    <string name="app_version">App Version</string>
+    <string name="app_version">App Version: %1$s</string>
     <string name="version_code">Version Code</string>
     <string name="build_number">Build Number</string>
     <string name="last_update_check">Last update check</string>
@@ -277,5 +310,23 @@
     <string name="update_over_wifi_description">Only download updates when connected to Wi-Fi</string>
     <string name="check_updates_on_startup">Check updates on startup</string>
     <string name="check_updates_startup_description">Automatically check for updates when app starts</string>
+
+    <!-- Image Prev -->
+    <string name="tap_anywhere_to_dismiss">Tap anywhere to dismiss</string>
+
+    <!-- Sync -->
+    <string name="sync_all_products">Sync all products</string>
+    <string name="products_synced">Products synced with server</string>
+
+    <!-- User Profile -->
+    <string name="profile_loading">Loading profile…</string>
+    <string name="profile_role_admin">Admin</string>
+    <string name="profile_role_user">User</string>
+    <string name="profile_status_active">Active</string>
+    <string name="profile_status_disabled">Disabled</string>
+    <string name="profile_user_id">User ID</string>
+    <string name="profile_member_since">Member Since</string>
+    <string name="profile_last_login">Last Login</string>
+    <string name="close">Close</string>
 
 </resources>

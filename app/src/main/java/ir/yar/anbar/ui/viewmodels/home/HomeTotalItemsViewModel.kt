@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductSalesSummary
 import ir.yar.anbar.domain.model.type.Money
+import ir.yar.anbar.domain.repository.UserPreferencesRepository
 import ir.yar.anbar.domain.usecase.analytics.GetInvoiceReportCountUseCase
 import ir.yar.anbar.domain.usecase.analytics.GetLowStockProductsUseCase
 import ir.yar.anbar.domain.usecase.analytics.GetTotalProfitPriceUseCase
@@ -15,10 +16,13 @@ import ir.yar.anbar.domain.usecase.sales.GetTopSellingProductsUseCase
 import ir.yar.anbar.domain.usecase.userpreferences.GetStockRunoutLimitUseCase
 import ir.yar.anbar.utils.dateandtime.TimeRange
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -62,8 +66,15 @@ class HomeTotalItemsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeScreenState())
     val uiState: StateFlow<HomeScreenState> = _uiState.asStateFlow()
 
-    private val _stockRunoutLimit = MutableStateFlow(0)
+    private val _stockRunoutLimit =
+        MutableStateFlow(UserPreferencesRepository.DEFAULT_STOCK_RUNOUT_LIMIT)
     val stockRunoutLimit: StateFlow<Int> = _stockRunoutLimit.asStateFlow()
+
+    // One job per section. Each loader cancels its predecessor, so collectors for
+    // a previous period can never overwrite a newer period's data on DB changes.
+    private var analyticsJob: Job? = null
+    private var productsJob: Job? = null
+    private var lowStockJob: Job? = null
 
     init {
         loadAnalyticsData(TimeRange.TODAY)
@@ -72,7 +83,9 @@ class HomeTotalItemsViewModel @Inject constructor(
     }
 
     private fun loadAnalyticsData(timeRange: TimeRange) {
-        viewModelScope.launch {
+        analyticsJob?.cancel()
+        analyticsJob = viewModelScope.launch {
+            clearError()
             setLoading(true)
             try {
                 // Combine all analytics flows
@@ -87,19 +100,38 @@ class HomeTotalItemsViewModel @Inject constructor(
                         totalProfit = Money(profitPrice)
                     )
                 }.collect { analyticsState ->
-                    _uiState.value = _uiState.value.copy(analytics = analyticsState)
+                    // Room flows never complete, so loading must stop on the first
+                    // emission; nothing else terminates this collector
+                    _uiState.value = _uiState.value.copy(
+                        analytics = analyticsState,
+                        isLoading = false
+                    )
                 }
+            } catch (e: CancellationException) {
+                // Cancellation means this load was replaced by a newer one —
+                // and swallowing it would break structured concurrency
+                throw e
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = e.message ?: "Unknown error",
+                    isLoading = false
+                )
             } finally {
-                setLoading(false)
+                // Skip when cancelled: the replacement load owns the flag now
+                if (isActive) setLoading(false)
             }
         }
     }
 
     private fun loadProductSalesSummary(timeRange: TimeRange) {
-        viewModelScope.launch {
+        productsJob?.cancel()
+        productsJob = viewModelScope.launch {
+            clearError()
             setLoading(true)
+            // Room flows never complete, so loading stops once both collectors
+            // have delivered their first emission
+            var topSellingLoaded = false
+            var topProfitableLoaded = false
             try {
                 // Launch both separately but update state atomically
                 val topSellingJob = launch {
@@ -113,6 +145,9 @@ class HomeTotalItemsViewModel @Inject constructor(
                                     topSellingProducts = combined
                                 )
                             )
+
+                            topSellingLoaded = true
+                            if (topProfitableLoaded) setLoading(false)
                         }
                 }
 
@@ -127,6 +162,9 @@ class HomeTotalItemsViewModel @Inject constructor(
                                     topProfitableProducts = combined
                                 )
                             )
+
+                            topProfitableLoaded = true
+                            if (topSellingLoaded) setLoading(false)
                         }
                 }
 
@@ -134,10 +172,15 @@ class HomeTotalItemsViewModel @Inject constructor(
                 topSellingJob.join()
                 topProfitableJob.join()
 
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = e.message ?: "Unknown error",
+                    isLoading = false
+                )
             } finally {
-                setLoading(false)
+                if (isActive) setLoading(false)
             }
         }
     }
@@ -146,30 +189,45 @@ class HomeTotalItemsViewModel @Inject constructor(
         viewModelScope.launch {
             getStockRunoutLimitUseCase.invoke().collect { stockLimit ->
                 _stockRunoutLimit.value = stockLimit
+                // loadLowStockProducts cancels its predecessor, so a changed
+                // limit replaces the collector instead of stacking another
                 loadLowStockProducts(stockLimit)
             }
         }
     }
 
     private fun loadLowStockProducts(stockLimit: Int) {
-        viewModelScope.launch {
+        lowStockJob?.cancel()
+        lowStockJob = viewModelScope.launch {
+            clearError()
             setLoading(true)
             try {
                 getLowStockProductsUseCase.invoke(stockLimit).collect { products ->
                     _uiState.value = _uiState.value.copy(
                         products = _uiState.value.products.copy(
                             lowStockProducts = products
-                        )
+                        ),
+                        isLoading = false
                     )
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = e.message ?: "Unknown error",
+                    isLoading = false
+                )
             } finally {
-                setLoading(false)
+                if (isActive) setLoading(false)
             }
         }
     }
 
+    /**
+     * Reloads the period-dependent sections (products and analytics) for the
+     * given range — used by the date picker, error retry and pull-to-refresh.
+     * Each loader cancels the previous period's collectors first.
+     */
     fun reLoadProductSaleSummary(timeRange: TimeRange) {
         loadProductSalesSummary(timeRange)
         loadAnalyticsData(timeRange)
@@ -177,6 +235,12 @@ class HomeTotalItemsViewModel @Inject constructor(
 
     private fun setLoading(isLoading: Boolean) {
         _uiState.value = _uiState.value.copy(isLoading = isLoading)
+    }
+
+    // Drop any previous error so a fresh load starts from a clean state;
+    // a failure during the load sets a new message
+    private fun clearError() {
+        _uiState.value = _uiState.value.copy(errorMessage = null)
     }
 
     // Helper function to combine products with their summaries efficiently

@@ -6,7 +6,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ir.yar.anbar.data.remote.api.ApiConstants
+import ir.yar.anbar.data.remote.api.ApiServiceCategory
 import ir.yar.anbar.data.remote.api.ApiServiceMainProduct
+import ir.yar.anbar.data.remote.api.ApiServiceUser
+import ir.yar.anbar.data.remote.api.ApiServiceUserProduct
 import ir.yar.anbar.data.remote.api.ApiServiceVersion
 import ir.yar.anbar.data.remote.interceptor.AuthInterceptor
 import ir.yar.login.data.remote.interceptor.TokenAuthenticator
@@ -55,6 +58,18 @@ object NetworkModule {
 
     @Singleton
     @Provides
+    fun provideApiServiceUserProduct(okHttpClient: OkHttpClient): ApiServiceUserProduct {
+        return Retrofit.Builder()
+            .baseUrl(ApiConstants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
+            .client(okHttpClient)
+            .build()
+            .create(ApiServiceUserProduct::class.java)
+    }
+
+    @Singleton
+    @Provides
     fun provideApiServiceVersion(okHttpClient: OkHttpClient): ApiServiceVersion {
         return Retrofit.Builder()
             .baseUrl(ApiConstants.BASE_URL)
@@ -63,5 +78,29 @@ object NetworkModule {
             .client(okHttpClient)
             .build()
             .create(ApiServiceVersion::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideApiServiceUser(okHttpClient: OkHttpClient): ApiServiceUser {
+        return Retrofit.Builder()
+            .baseUrl(ApiConstants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
+            .client(okHttpClient)
+            .build()
+            .create(ApiServiceUser::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideApiServiceCategory(okHttpClient: OkHttpClient): ApiServiceCategory {
+        return Retrofit.Builder()
+            .baseUrl(ApiConstants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
+            .client(okHttpClient)
+            .build()
+            .create(ApiServiceCategory::class.java)
     }
 }

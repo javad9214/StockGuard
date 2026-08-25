@@ -22,4 +22,7 @@ interface SubcategoryDao {
 
     @Query("SELECT * FROM subcategories WHERE name = :name AND categoryId = :categoryId LIMIT 1")
     suspend fun getByNameAndCategoryId(name: String, categoryId: Int): SubcategoryEntity?
+
+    @Query("SELECT * FROM subcategories WHERE isDeleted = 0 ORDER BY name")
+    suspend fun getAll(): List<SubcategoryEntity>
 }

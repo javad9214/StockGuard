@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.productlist
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -46,9 +50,11 @@ import ir.yar.anbar.domain.model.ProductName
 import ir.yar.anbar.domain.model.ProductUnit
 import ir.yar.anbar.domain.model.StockQuantity
 import ir.yar.anbar.domain.model.SubcategoryId
+import ir.yar.anbar.domain.model.SubcategoryName
 import ir.yar.anbar.domain.model.SupplierId
 import ir.yar.anbar.domain.model.type.Money
-import ir.yar.anbar.ui.components.ProductThumbnail
+import ir.yar.anbar.ui.components.image.ProductThumbnail
+import ir.yar.anbar.ui.components.image.ZoomableImageDialog
 import ir.yar.anbar.ui.components.util.BottomSheetMenu
 import ir.yar.anbar.ui.components.util.BottomSheetMenuItem
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
@@ -58,6 +64,7 @@ import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.ui.theme.color.costPrice
 import ir.yar.anbar.ui.theme.color.customError
 import ir.yar.anbar.ui.theme.color.salePrice
+import ir.yar.anbar.ui.theme.color.success
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.price.PriceValidator
@@ -75,6 +82,8 @@ fun ProductItem(
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     var showMenu by remember { mutableStateOf(false) }
+    var showZoomedImage by remember { mutableStateOf(false) }
+    val imagePath = product.image?.displayPath
 
     val myFontFamily = FontFamily(
         Font(R.font.b_koodak_bd, FontWeight.Normal)
@@ -153,38 +162,96 @@ fun ProductItem(
                     Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
 
 
-                    ProductThumbnail(
-                        imageUrl = product.image?.displayPath,
-                        size = 88.dp
-                    )
+                    Box {
+                        ProductThumbnail(
+                            imageUrl = product.image?.displayPath,
+                            size = 88.dp,
+                            modifier = Modifier.clickable(enabled = imagePath != null) {
+                                showZoomedImage = true
+                            }
+                        )
+
+                        // Sync tick badge pinned to the right corner of the image
+                        if (product.synced) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .size(dimen(R.dimen.size_sm))
+                                    .background(MaterialTheme.colorScheme.surface, CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.cloud_done_24px),
+                                    contentDescription = "Synced to server",
+                                    tint = MaterialTheme.colorScheme.success,
+                                    modifier = Modifier.size(dimen(R.dimen.size_xs))
+                                )
+                            }
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
 
-                // Barcode
+                // Subcategory + Barcode
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
+                    // Keep the barcode at the trailing edge when there's no chip
+                    horizontalArrangement = if (product.subcategoryName != null) Arrangement.SpaceBetween
+                    else Arrangement.End
                 ) {
-                    product.barcode?.value?.let {
-                        Text(
-                            text = it,
+                    // Subcategory chip on the leading edge
+                    product.subcategoryName?.value?.let { subcategory ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
+                                    shape = RoundedCornerShape(dimen(R.dimen.radius_sm))
+                                )
+                                .padding(
+                                    horizontal = dimen(R.dimen.space_2),
+                                    vertical = dimen(R.dimen.space_1)
+                                )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Category,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(dimen(R.dimen.size_xs))
+                            )
+                            Spacer(modifier = Modifier.width(dimen(R.dimen.space_1)))
+                            Text(
+                                text = subcategory,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontFamily = BHoma,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
+
+                    // Barcode on the trailing edge
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        product.barcode?.value?.let {
+                            Text(
+                                text = it,
+                                fontSize = dimenTextSize(R.dimen.text_size_md),
+                                fontFamily = BHoma
+                            )
+                        } ?: Text(
+                            text = "N/A",
                             fontSize = dimenTextSize(R.dimen.text_size_md),
                             fontFamily = BHoma
                         )
-                    } ?: Text(
-                        text = "N/A",
-                        fontSize = dimenTextSize(R.dimen.text_size_md),
-                        fontFamily = BHoma
-                    )
-                    Spacer(modifier = Modifier.width(dimen(R.dimen.space_4)))
+                        Spacer(modifier = Modifier.width(dimen(R.dimen.space_4)))
 
-                    Icon(
-                        painter = painterResource(id = R.drawable.barcode_24px),
-                        contentDescription = "barcode"
-                    )
+                        Icon(
+                            painter = painterResource(id = R.drawable.barcode_24px),
+                            contentDescription = "barcode"
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
@@ -319,6 +386,14 @@ fun ProductItem(
         }
     }
 
+    imagePath?.let { path ->
+        if (showZoomedImage) {
+            ZoomableImageDialog(
+                imageUrl = path,
+                onDismiss = { showZoomedImage = false }
+            )
+        }
+    }
 }
 
 // Add this Preview function at the bottom of your ProductItem.kt file
@@ -337,6 +412,7 @@ fun ProductItemPreview() {
         description = ProductDescription("This is a great sample product for preview."),
         image = null,
         subcategoryId = SubcategoryId(4),
+        subcategoryName = SubcategoryName("نوشیدنی"),
         supplierId = SupplierId(2),
         unit = ProductUnit("pcs"),
         stock = StockQuantity(30),
@@ -374,6 +450,7 @@ fun ProductItemWithoutBarcodePreview() {
         description = ProductDescription("This product doesn't have a barcode."),
         image = null,
         subcategoryId = SubcategoryId(3), // sample subcategory
+        subcategoryName = SubcategoryName("تنقلات"),
         supplierId = SupplierId(1),
         unit = ProductUnit("pcs"),
         stock = StockQuantity(5),
@@ -383,7 +460,7 @@ fun ProductItemWithoutBarcodePreview() {
         tags = null,
         lastSoldDate = null,
         date = LocalDateTime.now(),
-        synced = true,
+        synced = false,
         createdAt = LocalDateTime.now().minusDays(10),
         updatedAt = LocalDateTime.now()
     )

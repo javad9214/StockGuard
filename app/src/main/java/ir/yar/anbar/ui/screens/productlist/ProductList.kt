@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -81,12 +82,16 @@ fun ProductScreen(
     val isLoading by productsViewModel.isLoading.collectAsState()
     val sortOrder by productsViewModel.sortOrder.collectAsState()
     val searchQuery by productsViewModel.searchQuery.collectAsState()
+    val isSyncing by productsViewModel.isSyncing.collectAsState()
+    val lastSyncResult by productsViewModel.lastSyncResult.collectAsState()
 
-    // Observe scanned product from HomeViewModel for barcode scanning
-    val scannedProduct by homeViewModel.scannedProduct.collectAsState()
-    val scannerIsLoading by homeViewModel.isLoading.collectAsState()
-    val scannerErrorMessage by homeViewModel.errorMessage.collectAsState()
-    val scannedBarcode by homeViewModel.detectedBarcode.collectAsState()
+    // Observe barcode-scan state from HomeViewModel — one snapshot, so error and
+    // barcode can never come from different scans
+    val scanState by homeViewModel.uiState.collectAsState()
+    val scannedProduct = scanState.scannedProduct
+    val scannerIsLoading = scanState.isLoading
+    val scannerErrorMessage = scanState.errorMessage
+    val scannedBarcode = scanState.detectedBarcode
     val noBarcodeFoundDialogSheetState = rememberModalBottomSheetState()
     var showNoBarcodeFoundDialog by remember { mutableStateOf(false) }
     // Context for MediaPlayer
@@ -97,6 +102,19 @@ fun ProductScreen(
     var showBarcodeScannerView by remember { mutableStateOf(false) }
 
     var productToDelete by remember { mutableStateOf<Product?>(null) }
+
+    // Snackbar host for sync results
+    val syncSnackyHostState = rememberSnackyHostState()
+    val productsSyncedMessage = str(R.string.products_synced)
+
+    LaunchedEffect(lastSyncResult) {
+        lastSyncResult?.let {
+            syncSnackyHostState.show(
+                message = productsSyncedMessage,
+                type = SnackyType.INFO
+            )
+        }
+    }
 
 
 
@@ -156,8 +174,10 @@ fun ProductScreen(
             isLoading = isLoading,
             sortOrder = sortOrder,
             searchQuery = searchQuery,
+            isSyncing = isSyncing,
             onSearchQueryChange = { productsViewModel.updateSearchQuery(it) },
             onSortOrderSelected = { productsViewModel.updateSortOrder(it) },
+            onSyncAllProducts = { productsViewModel.syncAllProducts() },
             onAddProduct = {
 
                 navController.navigate(Screen.ProductCreate.createRoute(barcode = scannedBarcode))
@@ -194,6 +214,9 @@ fun ProductScreen(
             CircularProgressIndicator()
         }
     }
+
+    // Host that renders sync-result snackbars
+    SnackyHost(hostState = syncSnackyHostState)
 
 }
 
@@ -242,8 +265,10 @@ fun ProductScreenContent(
     isLoading: Boolean,
     sortOrder: SortOrder,
     searchQuery: String,
+    isSyncing: Boolean = false,
     onSearchQueryChange: (String) -> Unit,
     onSortOrderSelected: (SortOrder) -> Unit,
+    onSyncAllProducts: () -> Unit = {},
     onAddProduct: () -> Unit,
     onEditProduct: (Product) -> Unit,
     onDisableProduct: (Product) -> Unit,
@@ -279,6 +304,23 @@ fun ProductScreenContent(
                             painter = painterResource(id = R.drawable.receive_square_01),
                             contentDescription = "Navigate to Main Server Products "
                         )
+                    }
+
+                    // Sync All Products Button
+                    IconButton(
+                        onClick = onSyncAllProducts,
+                        enabled = !isSyncing
+                    ) {
+                        if (isSyncing) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(dimen(R.dimen.size_sm))
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(id = R.drawable.sync_24px),
+                                contentDescription = str(R.string.sync_all_products)
+                            )
+                        }
                     }
 
                     // Add Product Button - trigger the provided onAddProduct lambda (the caller will set savedState and navigate)
