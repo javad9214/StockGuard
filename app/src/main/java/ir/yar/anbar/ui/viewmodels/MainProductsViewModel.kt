@@ -2,10 +2,9 @@ package ir.yar.anbar.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ir.yar.anbar.data.remote.dto.response.PagedResponseDto
+import ir.yar.anbar.domain.model.PagedResult
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.usecase.product.AddProductUseCase
-import ir.yar.anbar.domain.usecase.servermainproduct.AddNewProductToMainServerUseCase
 import ir.yar.anbar.domain.usecase.servermainproduct.GetAllMainProductsUseCase
 import ir.yar.anbar.domain.usecase.servermainproduct.GetSearchedMainProductsUseCase
 import ir.yar.anbar.ui.screens.productlist.ProductsUiState
@@ -25,7 +24,6 @@ import javax.inject.Inject
 class MainProductsViewModel @Inject constructor(
     private val getAllMainProductsUseCase: GetAllMainProductsUseCase,
     private val getSearchedMainProductsUseCase: GetSearchedMainProductsUseCase,
-    private val addNewProductToMainServerUseCase: AddNewProductToMainServerUseCase,
     private val addProductUseCase: AddProductUseCase
 ) : ViewModel() {
 
@@ -34,15 +32,6 @@ class MainProductsViewModel @Inject constructor(
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> get() = _searchQuery
-
-    private val _createState = MutableStateFlow<Resource<Long>>(Resource.Loading())
-    val createState: StateFlow<Resource<Long>> = _createState
-
-    private val _updateState = MutableStateFlow<Resource<Product>>(Resource.Loading())
-    val updateState: StateFlow<Resource<Product>> = _updateState
-
-    private val _deleteState = MutableStateFlow<Resource<Product>>(Resource.Loading())
-    val deleteState: StateFlow<Resource<Product>> = _deleteState
 
     init {
         loadProducts(reset = true)
@@ -89,7 +78,7 @@ class MainProductsViewModel @Inject constructor(
         }
     }
 
-    private fun handleSuccessResponse(pagedResponse: PagedResponseDto<Product>, reset: Boolean, page: Int) {
+    private fun handleSuccessResponse(pagedResponse: PagedResult<Product>, reset: Boolean, page: Int) {
         _uiState.update { state ->
             state.copy(
                 products = if (reset) {

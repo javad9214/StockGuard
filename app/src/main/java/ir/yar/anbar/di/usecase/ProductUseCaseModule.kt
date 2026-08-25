@@ -16,7 +16,6 @@ import ir.yar.anbar.domain.usecase.product.GetProductByBarcodeUseCase
 import ir.yar.anbar.domain.usecase.product.GetProductByQueryUseCase
 import ir.yar.anbar.domain.usecase.product.GetProductsByIDsUseCase
 import ir.yar.anbar.domain.usecase.product.IncreaseStockUseCase
-import ir.yar.anbar.domain.usecase.servermainproduct.AddNewProductToMainServerUseCase
 import ir.yar.anbar.domain.usecase.servermainproduct.GetAllMainProductsUseCase
 import ir.yar.anbar.domain.usecase.servermainproduct.GetSearchedMainProductsUseCase
 import javax.inject.Singleton
@@ -98,10 +97,4 @@ object ProductUseCaseModule {
     fun provideGetSearchedMainProductsUseCase(
         repository: ServerMainProductRepository
     ): GetSearchedMainProductsUseCase = GetSearchedMainProductsUseCase(repository)
-
-    @Provides
-    @Singleton
-    fun provideAddNewProductToMainServerUseCase(
-        repository: ServerMainProductRepository
-    ): AddNewProductToMainServerUseCase = AddNewProductToMainServerUseCase(repository)
 }
