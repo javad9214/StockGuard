@@ -215,6 +215,50 @@ fun InvoiceWithProducts.getProduct(productId: ProductId): InvoiceProduct? {
     return invoiceProducts.find { it.productId == productId }
 }
 
+/**
+ * Adds [quantity] units of [product] to the invoice, or increases the quantity of
+ * the existing line for that product. Sale invoices are clamped to the available
+ * stock; purchase invoices are not limited.
+ */
+fun InvoiceWithProducts.addProductToInvoice(product: Product, quantity: Int): InvoiceWithProducts {
+    val stockLimit = stockLimitFor(product)
+
+    val existingItem = invoiceProducts.find { it.productId == product.id }
+    if (existingItem == null) {
+        val newItem = InvoiceProductFactory.create(
+            invoiceId = invoiceId,
+            productId = product.id,
+            quantity = Quantity(quantity.coerceAtMost(stockLimit)),
+            priceAtSale = product.price,
+            costPriceAtTransaction = product.costPrice
+        )
+        return addProduct(newItem, product)
+    }
+
+    val newQuantity = (existingItem.quantity.value + quantity).coerceAtMost(stockLimit)
+    return updateProduct(
+        productId = product.id,
+        updater = { line -> line.updateQuantity(newQuantity) }
+    )
+}
+
+/**
+ * Sets the quantity of the invoice line for [productId]. Sale invoices are clamped
+ * to the product's available stock. Lines for unknown products are left untouched.
+ */
+fun InvoiceWithProducts.updateProductQuantity(productId: ProductId, newQuantity: Int): InvoiceWithProducts {
+    val product = products.find { it.id == productId } ?: return this
+    val safeQuantity = newQuantity.coerceIn(0, stockLimitFor(product))
+    return copy(
+        invoiceProducts = invoiceProducts.map { line ->
+            if (line.productId == productId) line.updateQuantity(safeQuantity) else line
+        }
+    )
+}
+
+private fun InvoiceWithProducts.stockLimitFor(product: Product): Int =
+    if (invoice.invoiceType == InvoiceType.SALE) product.stock.value else Int.MAX_VALUE
+
 fun InvoiceWithProducts.hasProduct(productId: ProductId): Boolean {
     return invoiceProducts.any { it.productId == productId }
 }

@@ -1,7 +1,6 @@
 package ir.yar.anbar.ui.screens.invoice.invoicescreen
 
 
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,8 +17,8 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -36,7 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.InvoiceProduct
 import ir.yar.anbar.domain.model.InvoiceType
@@ -46,7 +44,9 @@ import ir.yar.anbar.ui.theme.BKoodak
 import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.color.customError
 import ir.yar.anbar.utils.dimen
+import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.price.PriceValidator
+import ir.yar.anbar.utils.str
 
 @Composable
 fun InvoiceProductItem(
@@ -56,6 +56,9 @@ fun InvoiceProductItem(
     onRemove: () -> Unit,
     onQuantityChange: (Int) -> Unit
 ) {
+    val isSale = invoiceType == InvoiceType.SALE
+    val isAtStockLimit = isSale && productWithQuantity.quantity.value >= product.stock.value
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Card(
             modifier = Modifier
@@ -65,7 +68,7 @@ fun InvoiceProductItem(
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 2.dp
             ),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(dimen(R.dimen.radius_md))
         ) {
             Column(
                 modifier = Modifier
@@ -81,7 +84,7 @@ fun InvoiceProductItem(
                         text = product.name.value,
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
+                            fontSize = dimenTextSize(R.dimen.text_size_md)
                         ),
                         modifier = Modifier.weight(1f)
                     )
@@ -89,19 +92,19 @@ fun InvoiceProductItem(
                     IconButton(
                         onClick = onRemove,
                         modifier = Modifier
-                            .size(32.dp)
+                            .size(dimen(R.dimen.size_md))
                             .clip(CircleShape)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.delete_24px),
-                            contentDescription = "حذف",
+                            contentDescription = str(R.string.delete),
                             tint = MaterialTheme.colorScheme.customError,
                             modifier = Modifier.size(18.dp)
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
                 // Price information
                 Row(
@@ -109,14 +112,14 @@ fun InvoiceProductItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "قیمت واحد: ",
+                        text = "${str(R.string.product_unit_price)}: ",
                         fontFamily = Beirut_Medium,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
 
-                    val priceToShow = if (invoiceType == InvoiceType.SALE) {
+                    val priceToShow = if (isSale) {
                         product.price.amount
                     } else {
                         product.costPrice.amount
@@ -135,12 +138,11 @@ fun InvoiceProductItem(
                     Spacer(modifier = Modifier.weight(1f))
 
                     Text(
-                        text = "موجودی: ${product.stock.value}",
+                        text = str(R.string.stock_with_value, product.stock.value),
                         fontFamily = BKoodak,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyMedium.copy(
-                            color = if (invoiceType == InvoiceType.SALE &&
-                                productWithQuantity.quantity.value >= product.stock.value)
+                            color = if (isAtStockLimit)
                                 MaterialTheme.colorScheme.error
                             else
                                 MaterialTheme.colorScheme.onSurfaceVariant
@@ -148,12 +150,12 @@ fun InvoiceProductItem(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
-                Divider(
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_3)))
+                HorizontalDivider(
                     color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
                     thickness = 1.dp
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_3)))
 
                 // Quantity control and total row
                 Row(
@@ -164,8 +166,8 @@ fun InvoiceProductItem(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .padding(horizontal = 4.dp)
+                            .clip(RoundedCornerShape(dimen(R.dimen.radius_xs)))
+                            .padding(horizontal = dimen(R.dimen.space_1))
                     ) {
                         FilledTonalIconButton(
                             onClick = {
@@ -174,7 +176,7 @@ fun InvoiceProductItem(
                                     onQuantityChange(newQuantity)
                                 }
                             },
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier.size(dimen(R.dimen.size_md)),
                             colors = IconButtonDefaults.filledTonalIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
                                     alpha = 0.7f
@@ -183,49 +185,40 @@ fun InvoiceProductItem(
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Remove,
-                                contentDescription = "کاهش",
-                                modifier = Modifier.size(16.dp)
+                                contentDescription = str(R.string.decrease),
+                                modifier = Modifier.size(dimen(R.dimen.size_xs))
                             )
                         }
 
                         Box(
                             modifier = Modifier
                                 .width(36.dp)
-                                .padding(horizontal = 4.dp),
+                                .padding(horizontal = dimen(R.dimen.space_1)),
                             contentAlignment = Alignment.Center
                         ) {
-
-                            val isNearingLimit = invoiceType == InvoiceType.SALE &&
-                                    productWithQuantity.quantity.value >= product.stock.value
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "${productWithQuantity.quantity.value}",
-                                    style = MaterialTheme.typography.bodyLarge.copy(
-                                        fontFamily = BKoodak,
-                                        fontWeight = FontWeight.Bold,
-                                        textAlign = TextAlign.Center,
-                                        color = if (isNearingLimit)
-                                            MaterialTheme.colorScheme.error
-                                        else
-                                            MaterialTheme.colorScheme.onSurface
-                                    )
+                            Text(
+                                text = productWithQuantity.quantity.value.toString(),
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontFamily = BKoodak,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center,
+                                    color = if (isAtStockLimit)
+                                        MaterialTheme.colorScheme.error
+                                    else
+                                        MaterialTheme.colorScheme.onSurface
                                 )
-                            }
+                            )
                         }
 
 
                         FilledTonalIconButton(
                             onClick = {
                                 val newQuantity = productWithQuantity.quantity.value + 1
-                                val stock = product.stock.value
-                                if (newQuantity <= stock || invoiceType == InvoiceType.PURCHASE) {
+                                if (!isSale || newQuantity <= product.stock.value) {
                                     onQuantityChange(newQuantity)
                                 }
                             },
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier.size(dimen(R.dimen.size_md)),
                             colors = IconButtonDefaults.filledTonalIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
                                     alpha = 0.7f
@@ -238,13 +231,12 @@ fun InvoiceProductItem(
                                 )
                             ),
 
-                            enabled = invoiceType == InvoiceType.PURCHASE ||
-                                    productWithQuantity.quantity.value < product.stock.value
+                            enabled = !isSale || productWithQuantity.quantity.value < product.stock.value
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Add,
-                                contentDescription = "افزایش",
-                                modifier = Modifier.size(16.dp)
+                                contentDescription = str(R.string.increase),
+                                modifier = Modifier.size(dimen(R.dimen.size_xs))
                             )
                         }
                     }
@@ -260,7 +252,7 @@ fun InvoiceProductItem(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.height(dimen(R.dimen.size_sm))
                         ) {
-                            val itemTotal = if (invoiceType == InvoiceType.SALE) {
+                            val itemTotal = if (isSale) {
                                 productWithQuantity.calculateTotalRevenue()
                             } else {
                                 productWithQuantity.calculateTotalCost()
