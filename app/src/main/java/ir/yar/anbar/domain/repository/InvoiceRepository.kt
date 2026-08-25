@@ -1,7 +1,6 @@
 package ir.yar.anbar.domain.repository
 
 
-
 import ir.yar.anbar.domain.model.Invoice
 import ir.yar.anbar.domain.model.InvoiceWithProducts
 import ir.yar.anbar.domain.model.TopSellingProductInfo
@@ -9,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface InvoiceRepository {
 
-    suspend fun createInvoice(invoice : Invoice): Long
+    suspend fun createInvoice(invoice: Invoice): Long
 
     /**
      * Get a single invoice and its products by invoice ID. The returned InvoiceWithProducts
@@ -46,8 +45,4 @@ interface InvoiceRepository {
     fun getTotalSalesBetweenDates(start: Long, end: Long): Flow<Long>
 
     fun getTotalInvoicesBetweenDates(start: Long, end: Long): Flow<Int>
-    
-    // Debug methods
-    suspend fun getTotalInvoiceCount(): Int
-    suspend fun getRecentInvoicesForDebug(): List<String> // Return just the dates as strings
 }

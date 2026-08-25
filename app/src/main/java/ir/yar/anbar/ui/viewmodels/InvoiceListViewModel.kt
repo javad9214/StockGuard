@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import ir.yar.anbar.domain.model.InvoiceType
 import ir.yar.anbar.domain.model.InvoiceWithProducts
 import ir.yar.anbar.domain.usecase.invoice.DeleteInvoiceUseCase
+import ir.yar.anbar.domain.usecase.invoice.GetAllInvoicesOldestFirstUseCase
 import ir.yar.anbar.domain.usecase.invoice.GetAllInvoiceUseCase
-import ir.yar.anbar.domain.repository.InvoiceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -46,9 +46,9 @@ sealed class InvoiceListEvent {
 
 @HiltViewModel
 class InvoiceListViewModel @Inject constructor(
-    private val invoiceRepository: InvoiceRepository,
     private val deleteInvoiceUseCase: DeleteInvoiceUseCase,
-    private val getAllInvoiceUseCase: GetAllInvoiceUseCase
+    private val getAllInvoiceUseCase: GetAllInvoiceUseCase,
+    private val getAllInvoicesOldestFirstUseCase: GetAllInvoicesOldestFirstUseCase
 ) : ViewModel() {
 
     // Single source of truth for UI state
@@ -89,7 +89,7 @@ class InvoiceListViewModel @Inject constructor(
                 val invoicesFlow = if (_uiState.value.sortNewestFirst) {
                     getAllInvoiceUseCase.invoke()
                 } else {
-                    invoiceRepository.getAllInvoicesOldestFirst()
+                    getAllInvoicesOldestFirstUseCase.invoke()
                 }
 
                 invoicesFlow

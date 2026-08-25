@@ -18,9 +18,6 @@ interface InvoiceDao {
     @Query("DELETE FROM invoices WHERE id = :invoiceId")
     suspend fun deleteInvoice(invoiceId: Long)
 
-    @Query("SELECT * FROM invoices ORDER BY invoiceNumber DESC")
-    fun getAllInvoices(): Flow<List<InvoiceEntity>>
-
     @Query("SELECT * FROM invoices ORDER BY invoiceNumber DESC LIMIT 1")
     suspend fun getLastInvoice(): InvoiceEntity?
 
@@ -111,12 +108,6 @@ interface InvoiceDao {
     """
     )
     fun getTotalInvoicesBetweenDates(startDate: Long, endDate: Long): Flow<Int>
-
-    @Query("SELECT * FROM invoices ORDER BY createdAt DESC LIMIT 5")
-    suspend fun getRecentInvoicesForDebug(): List<InvoiceEntity>
-
-    @Query("SELECT COUNT(*) FROM invoices")
-    suspend fun getTotalInvoiceCount(): Int
 }
 
 data class TopSellingProduct(
