@@ -13,7 +13,7 @@ class UserRepoImpl @Inject constructor(
     private val apiServiceUser: ApiServiceUser
 ) : UserRepository {
 
-    override suspend fun getUserProfile(): Flow<Resource<User>> =
+    override fun getUserProfile(): Flow<Resource<User>> =
         ApiResponseHandler.handleApiResponse(
             apiCall = { apiServiceUser.getUserProfile() },
             mapper = { it.toDomain() }

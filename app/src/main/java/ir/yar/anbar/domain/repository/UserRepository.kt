@@ -5,5 +5,5 @@ import ir.yar.anbar.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
-    suspend fun getUserProfile(): Flow<Resource<User>>
+    fun getUserProfile(): Flow<Resource<User>>
 }
