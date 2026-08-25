@@ -61,9 +61,9 @@ import ir.yar.anbar.ui.navigation.Screen
 import ir.yar.anbar.ui.screens.component.NoBarcodeFoundDialog
 import ir.yar.anbar.ui.theme.BMitra
 import ir.yar.anbar.ui.theme.Beirut_Medium
+import ir.yar.anbar.domain.model.SortOrder
 import ir.yar.anbar.ui.viewmodels.MainProductsViewModel
 import ir.yar.anbar.ui.viewmodels.ProductsViewModel
-import ir.yar.anbar.ui.viewmodels.SortOrder
 import ir.yar.anbar.ui.viewmodels.home.HomeViewModel
 import ir.yar.anbar.utils.barcode.BarcodeSoundPlayer
 import ir.yar.anbar.utils.dimen
