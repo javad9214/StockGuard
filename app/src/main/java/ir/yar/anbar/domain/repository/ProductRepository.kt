@@ -24,8 +24,11 @@ interface ProductRepository {
 
     suspend fun deleteProduct(product: Product)
 
-    suspend fun editProduct(product: Product)
-
+    /**
+     * Updates the row locally as PENDING_UPDATE and pushes the change to the
+     * server; failures keep the row pending for the next sync pass. Returns
+     * the number of local rows updated.
+     */
     suspend fun updateProduct(product: Product): Int
 
     suspend fun getProductById(id: Long): Product?

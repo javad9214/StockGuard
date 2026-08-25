@@ -8,6 +8,6 @@ class EditProductUseCase @Inject constructor(
     private val repository: ProductRepository
 ) {
     suspend operator fun invoke(product: Product) {
-        repository.editProduct(product)
+        repository.updateProduct(product)
     }
 }
