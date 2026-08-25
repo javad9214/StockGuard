@@ -235,6 +235,22 @@
     <string name="cost_price">قیمت خرید</string>
     <string name="sale_price">قیمت فروش</string>
     <string name="category_id_optional">شناسه دسته‌بندی (اختیاری)</string>
+    <string name="subcategory_optional">زیردسته‌بندی (اختیاری)</string>
+    <string name="currency_icon">نماد واحد پول</string>
+
+    <!-- Product Save/Load Errors -->
+    <string name="error_failed_to_load_products">بارگذاری محصولات ناموفق بود: %1$s</string>
+    <string name="error_failed_to_load_product">بارگذاری محصول ناموفق بود: %1$s</string>
+    <string name="error_failed_to_save_product">ذخیره محصول ناموفق بود: %1$s</string>
+    <string name="error_failed_to_edit_product">ویرایش محصول ناموفق بود: %1$s</string>
+    <string name="error_product_not_found">محصول یافت نشد</string>
+    <string name="error_product_name_required">نام محصول الزامی است</string>
+    <string name="error_sale_price_invalid">قیمت فروش باید عددی مثبت باشد</string>
+    <string name="error_cost_price_invalid">قیمت خرید باید عددی مثبت باشد</string>
+    <string name="error_enter_valid_price">قیمت معتبر وارد کنید</string>
+    <string name="profit_margin_hint">سود: %1$s (%2$d٪)</string>
+    <string name="discard_changes_message">تغییرات ذخیره‌نشده دور ریخته شود؟</string>
+    <string name="discard">دور بینداز</string>
     <string name="add_product_button">افزودن محصول</string>
     <string name="save_changes_button">ذخیره تغییرات</string>
 

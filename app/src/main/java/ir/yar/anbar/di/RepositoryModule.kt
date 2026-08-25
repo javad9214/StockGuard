@@ -1,6 +1,7 @@
 package ir.yar.anbar.di
 
 import ir.yar.anbar.data.remote.api.ApiServiceMainProduct
+import ir.yar.anbar.data.repository.CategoryRepoImpl
 import ir.yar.anbar.data.repository.InvoiceProductRepoImpl
 import ir.yar.anbar.data.repository.InvoiceRepoImpl
 import ir.yar.anbar.data.repository.ProductRepoImpl
@@ -9,6 +10,7 @@ import ir.yar.anbar.data.repository.ServerMainProductRepoImpl
 import ir.yar.anbar.data.repository.StockMovementRepoImpl
 import ir.yar.anbar.data.repository.UserPreferencesRepositoryImpl
 import ir.yar.anbar.data.repository.UserRepoImpl
+import ir.yar.anbar.domain.repository.CategoryRepository
 import ir.yar.anbar.domain.repository.InvoiceProductRepository
 import ir.yar.anbar.domain.repository.InvoiceRepository
 import ir.yar.anbar.domain.repository.ProductRepository
@@ -38,6 +40,12 @@ object RepositoryModule {
     fun provideProductRepository(
         repoImpl: ProductRepoImpl
     ): ProductRepository = repoImpl
+
+    @Provides
+    @Singleton
+    fun provideCategoryRepository(
+        repoImpl: CategoryRepoImpl
+    ): CategoryRepository = repoImpl
 
     @Provides
     @Singleton

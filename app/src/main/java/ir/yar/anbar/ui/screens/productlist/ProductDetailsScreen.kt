@@ -50,10 +50,17 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
+import ir.yar.anbar.domain.model.StockQuantity
 import ir.yar.anbar.domain.model.getBusinessInsight
+import ir.yar.anbar.domain.model.type.Money
+import ir.yar.anbar.ui.components.util.SnackyDuration
+import ir.yar.anbar.ui.components.util.SnackyHost
+import ir.yar.anbar.ui.components.util.SnackyType
+import ir.yar.anbar.ui.components.util.rememberSnackyHostState
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
 import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.viewmodels.ProductsViewModel
+import ir.yar.anbar.ui.viewmodels.SaveResult
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.str
@@ -71,64 +78,86 @@ fun ProductDetailsScreen(
 
     val product by viewModel.selectedProduct.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val isSaving by viewModel.isSaving.collectAsState()
+    val snackyHostState = rememberSnackyHostState()
+
+    // Saving is async — navigate only once the edit actually succeeded,
+    // otherwise a failed write would strand the user with no feedback
+    LaunchedEffect(Unit) {
+        viewModel.saveEvent.collect { result ->
+            when (result) {
+                is SaveResult.Success -> onNavigateBack()
+                is SaveResult.Error -> snackyHostState.show(
+                    message = result.message,
+                    type = SnackyType.ERROR,
+                    duration = SnackyDuration.LONG
+                )
+            }
+        }
+    }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl){
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(start = dimen(R.dimen.space_6), end = dimen(R.dimen.space_2)),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+        Box {
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(start = dimen(R.dimen.space_6), end = dimen(R.dimen.space_2)),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
-                Text(
-                    str(R.string.product_details),
-                    fontFamily = Beirut_Medium,
-                    fontSize = dimenTextSize(R.dimen.text_size_xl)
-                )
-
-                Row {
-
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow_back_ios_new_24px),
-                            contentDescription = str(R.string.back)
-                        )
-                    }
-                }
-
-            }
-
-            Box {
-                if (isLoading) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text("Loading...")
-                    }
-                } else if (product != null) {
-                    ProductDetailsContent(
-                        product = product!!,
-                        onSave = { updatedProduct ->
-                            viewModel.editProduct(updatedProduct)
-                            onNavigateBack()
-                        },
-                        onCancel = onNavigateBack
+                    Text(
+                        str(R.string.product_details),
+                        fontFamily = Beirut_Medium,
+                        fontSize = dimenTextSize(R.dimen.text_size_xl)
                     )
-                } else {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text("Product not found")
+
+                    Row {
+
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.arrow_back_ios_new_24px),
+                                contentDescription = str(R.string.back)
+                            )
+                        }
+                    }
+
+                }
+
+                Box {
+                    if (isLoading) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text("Loading...")
+                        }
+                    } else if (product != null) {
+                        ProductDetailsContent(
+                            product = product!!,
+                            isSaving = isSaving,
+                            onSave = { updatedProduct ->
+                                viewModel.editProduct(updatedProduct)
+                            },
+                            onCancel = onNavigateBack
+                        )
+                    } else {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text("Product not found")
+                        }
                     }
                 }
             }
+
+            // Snackbar for save errors
+            SnackyHost(hostState = snackyHostState)
         }
     }
 
@@ -137,6 +166,7 @@ fun ProductDetailsScreen(
 @Composable
 fun ProductDetailsContent(
     product: Product,
+    isSaving: Boolean = false,
     onSave: (Product) -> Unit,
     onCancel: () -> Unit
 ) {
@@ -353,12 +383,12 @@ fun ProductDetailsContent(
             Button(
                 onClick = {
                     val updatedProduct = product.copy(
-                        stock = product.stock,
-                        price = product.price,
+                        stock = StockQuantity(stockValue.toIntOrNull() ?: product.stock.value),
+                        price = Money(priceValue.toLongOrNull() ?: product.price.amount),
                     )
                     onSave(updatedProduct)
                 },
-                enabled = isFormValid,
+                enabled = isFormValid && !isSaving,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary

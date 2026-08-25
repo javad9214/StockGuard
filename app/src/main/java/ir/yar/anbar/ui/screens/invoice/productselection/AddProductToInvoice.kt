@@ -52,7 +52,6 @@ fun AddProductToInvoice(
     invoiceViewModel: InvoiceViewModel = hiltViewModel(),
 ) {
     val products by productsViewModel.products.collectAsState()
-    val filteredProducts by productsViewModel.filteredProducts.collectAsState()
     val isLoading by productsViewModel.isLoading.collectAsState()
     val searchQuery by productsViewModel.searchQuery.collectAsState()
 
@@ -165,7 +164,7 @@ fun AddProductToInvoice(
                         CircularProgressIndicator(
                             modifier = Modifier.align(Alignment.Center)
                         )
-                    } else if (filteredProducts.isEmpty()) {
+                    } else if (products.isEmpty()) {
                         Text(
                             text = str(R.string.no_products_available),
                             modifier = Modifier.align(Alignment.Center),
@@ -177,7 +176,7 @@ fun AddProductToInvoice(
                             modifier = Modifier.fillMaxSize()
                         ) {
 
-                            items(filteredProducts, key = { it.id.value }) { product ->
+                            items(products, key = { it.id.value }) { product ->
                                 ProductSelectionItem(
                                     product = product,
                                     onClick = { onProductSelected(product) },
