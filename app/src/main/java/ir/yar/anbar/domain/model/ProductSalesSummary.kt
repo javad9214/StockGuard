@@ -349,6 +349,25 @@ fun List<ProductSalesSummary>.getTotalRevenue(): Money {
     return Money(sumOf { it.totalRevenue.amount })
 }
 
+/**
+ * Collapses per-day rows into one summary per product, summing quantity,
+ * revenue and cost and taking the widest created/updated window. Ordering
+ * is left to the caller (top-selling sorts by quantity, top-profitable by
+ * profit).
+ */
+fun List<ProductSalesSummary>.aggregateByProduct(): List<ProductSalesSummary> =
+    groupBy { it.productId }.map { (_, productSummaries) ->
+        productSummaries.first().copy(
+            date = productSummaries.minOf { it.date },
+            totalSold = SalesQuantity(productSummaries.sumOf { it.totalSold.value }),
+            totalRevenue = Money(productSummaries.sumOf { it.totalRevenue.amount }),
+            totalCost = Money(productSummaries.sumOf { it.totalCost.amount }),
+            createdAt = productSummaries.minOf { it.createdAt },
+            updatedAt = productSummaries.maxOf { it.updatedAt },
+            synced = productSummaries.all { it.synced }
+        )
+    }
+
 fun List<ProductSalesSummary>.getTotalProfit(): Money {
     return Money(sumOf { it.getTotalProfit().amount })
 }
