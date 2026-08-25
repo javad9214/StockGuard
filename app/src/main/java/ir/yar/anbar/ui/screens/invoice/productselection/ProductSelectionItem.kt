@@ -14,22 +14,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
 import ir.yar.anbar.ui.theme.BRoya
-import ir.yar.anbar.utils.price.PriceValidator
 import ir.yar.anbar.utils.dimen
+import ir.yar.anbar.utils.price.PriceValidator
+import ir.yar.anbar.utils.str
 
 @Composable
 fun ProductSelectionItem(
     product: Product,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    showStock: Boolean = true
+    modifier: Modifier = Modifier
 ) {
     ElevatedCard(
         onClick = onClick,
@@ -44,10 +43,12 @@ fun ProductSelectionItem(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                modifier = modifier.padding(
-                    vertical = dimen(R.dimen.space_2),
-                    horizontal = dimen(R.dimen.space_4)
-                ).fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        vertical = dimen(R.dimen.space_2),
+                        horizontal = dimen(R.dimen.space_4)
+                    ),
                 text = product.name.value,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 2,
@@ -84,7 +85,7 @@ fun ProductSelectionItem(
                 }
 
                 Text(
-                    text = "${stringResource(R.string.stock)} : ${product.stock.value}",
+                    text = str(R.string.stock_with_value, product.stock.value),
                     fontFamily = BRoya,
                     style = MaterialTheme.typography.bodySmall,
                     color = if (product.stock.value > 0)
