@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetUserInfoUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
-    suspend operator fun invoke(): Flow<Resource<User>> {
+    operator fun invoke(): Flow<Resource<User>> {
         return userRepository.getUserProfile()
     }
 }

@@ -10,6 +10,7 @@ import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductFactory
 import ir.yar.anbar.domain.model.ProductSyncResult
+import ir.yar.anbar.domain.model.SortOrder
 import ir.yar.anbar.domain.model.Subcategory
 import ir.yar.anbar.domain.model.type.Money
 import ir.yar.anbar.domain.usecase.category.GetSubcategoriesUseCase
@@ -325,11 +326,6 @@ class ProductsViewModel @Inject constructor(
         _selectedProduct.value = null
         _selectedProductError.value = null
     }
-}
-
-enum class SortOrder {
-    ASCENDING, // Oldest first
-    DESCENDING // Newest first (default)
 }
 
 sealed interface SaveResult {

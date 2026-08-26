@@ -1,8 +1,8 @@
 package ir.yar.anbar.domain.usecase.product
 
 import ir.yar.anbar.domain.model.Product
+import ir.yar.anbar.domain.model.SortOrder
 import ir.yar.anbar.domain.repository.ProductRepository
-import ir.yar.anbar.ui.viewmodels.SortOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

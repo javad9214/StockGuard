@@ -64,9 +64,16 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-
           ssh-keyscan -p $SERVER_PORT $SERVER_HOST >> ~/.ssh/known_hosts 2>/dev/null
 
+          echo "DEBUG: SERVER_PATH length=${#SERVER_PATH}"
+          echo "DEBUG: SERVER_USER length=${#SERVER_USER}"
+          echo "DEBUG: SERVER_HOST length=${#SERVER_HOST}"
+          echo "DEBUG: SERVER_PORT=$SERVER_PORT"
+
+          echo "DEBUG: testing remote path..."
+          ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" \
+            "echo REMOTE_PWD_CHECK:; pwd; echo REMOTE_PATH_LIST:; ls -lah '$SERVER_PATH' || echo 'PATH DOES NOT EXIST'; echo REMOTE_PATH_VALUE: '$SERVER_PATH'"
 
           echo "Uploading to $SERVER_PATH/$TARGET_NAME ..."
           scp -P "$SERVER_PORT" "$RELEASE_APK" \
@@ -79,6 +86,5 @@ jobs:
              chmod 644 '$TARGET_NAME'; \
              ls -1t StockGuardApp_v*.apk | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -f --; \
              ls -lh"
-
           rm -f ~/.ssh/id_rsa
           echo "🚀 Deployed $TARGET_NAME successfully!"

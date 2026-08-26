@@ -1,6 +1,5 @@
 package ir.yar.anbar.domain.usecase.invoice
 
-import android.util.Log
 import ir.yar.anbar.domain.model.InvoiceId
 import ir.yar.anbar.domain.model.InvoiceType
 import ir.yar.anbar.domain.model.InvoiceWithProducts
@@ -16,8 +15,6 @@ import ir.yar.anbar.domain.usecase.product.IncreaseStockUseCase
 import ir.yar.anbar.domain.usecase.sales.SaveProductSaleSummeryUseCase
 import javax.inject.Inject
 
-const val TAG = "InsertInvoiceUseCase"
-
 class InsertInvoiceUseCase @Inject constructor(
     private val invoiceRepository: InvoiceRepository,
     private val stockMovementRepository: StockMovementRepository,
@@ -28,131 +25,81 @@ class InsertInvoiceUseCase @Inject constructor(
     private val decreaseStockUseCase: DecreaseStockUseCase
 ) {
     suspend operator fun invoke(invoiceWithProducts: InvoiceWithProducts) {
+        // The draft carries a preview id; zero it so Room auto-generates the
+        // real primary key on insert instead of forcing the preview value
+        val draft = invoiceWithProducts.updateInvoiceId(InvoiceId(0))
+        val invoiceId = invoiceRepository.createInvoice(draft.invoice)
 
-        // update invoice id to zero so the Room will create it automatically
-        invoiceWithProducts.invoice.updateInvoiceId(InvoiceId(0))
+        // Re-point every invoice line at the generated id before writing them,
+        // so cross-refs and stock movements reference the persisted invoice
+        val invoice = invoiceWithProducts.updateInvoiceId(InvoiceId(invoiceId))
 
-        // save Invoice
-        val invoiceId = invoiceRepository.createInvoice(invoiceWithProducts.invoice)
-
-        // update invoiceId to all relatives
-        invoiceWithProducts.updateInvoiceId(InvoiceId(invoiceId))
-
-        // save InvoiceProduct
-        invoiceWithProducts.invoiceProducts.forEachIndexed { index, invoiceProduct ->
-            try {
-                invoiceProductRepository.insertCrossRef(invoiceProduct)
-
-            } catch (e: Exception) {
-                Log.e(
-                    TAG,
-                    "invoke: Error processing InvoiceProduct for item $index - ProductId: ${invoiceProduct.productId}",
-                    e
-                )
-                throw e
-            }
+        // Save invoice lines; failures propagate to the caller (ViewModel)
+        invoice.invoiceProducts.forEach { invoiceProduct ->
+            invoiceProductRepository.insertCrossRef(invoiceProduct)
         }
 
-        if (invoiceWithProducts.invoice.invoiceType == InvoiceType.SALE) {
-            insertSaleInvoice(invoiceWithProducts)
-        } else insertPurchaseInvoice(invoiceWithProducts)
-
+        if (invoice.invoice.invoiceType == InvoiceType.SALE) {
+            insertSaleInvoice(invoice)
+        } else {
+            insertPurchaseInvoice(invoice)
+        }
     }
 
     private suspend fun insertSaleInvoice(invoiceWithProducts: InvoiceWithProducts) {
-
         // Update product LastSaleDate
         val updatedProducts = invoiceWithProducts.products.map { product ->
             product.recordSale()
         }
 
-     // Save the updated products with lastSoldDate
+        // Save the updated products with lastSoldDate
         updatedProducts.forEach { updated ->
             productRepository.updateProduct(updated)
         }
 
-     // Decreasing Product Quantity using the UPDATED products
-        updatedProducts.forEachIndexed { index, updatedProduct  ->
-            try {
-                decreaseStockUseCase.invoke(updatedProduct, invoiceWithProducts.invoiceProducts[index].quantity.value)
-            } catch (e: Exception) {
-                Log.e(TAG, "invoke: Error processing DecreaseStockUseCase for item $index - ProductId: ${updatedProduct.id}", e)
-                throw e
-            }
+        // Decrease stock using the UPDATED products
+        updatedProducts.forEachIndexed { index, updatedProduct ->
+            decreaseStockUseCase.invoke(
+                updatedProduct,
+                invoiceWithProducts.invoiceProducts[index].quantity.value
+            )
         }
 
-        // save ProductSalesSummary
-        invoiceWithProducts.invoiceProducts.forEachIndexed { index, invoiceProduct ->
-            try {
-
-                saveProductSaleSummeryUseCase.invoke(invoiceProduct)
-
-            } catch (e: Exception) {
-                Log.e(
-                    TAG,
-                    "invoke: Error processing ProductSalesSummary for item $index - ProductId: ${invoiceProduct.productId}",
-                    e
-                )
-                // Re-throw to maintain original behavior, but with better logging
-                throw e
-            }
+        // Save ProductSalesSummary
+        invoiceWithProducts.invoiceProducts.forEach { invoiceProduct ->
+            saveProductSaleSummeryUseCase.invoke(invoiceProduct)
         }
 
-        // save StockMovement
-        invoiceWithProducts.invoiceProducts.forEachIndexed { index, invoiceProduct ->
-            try {
-                stockMovementRepository.insert(
-                    StockMovementFactory.createSale(
-                        productId = invoiceProduct.productId.value,
-                        quantitySold = invoiceProduct.quantity.value,
-                        invoiceId = invoiceProduct.invoiceId.value,
-                    )
+        // Save StockMovement
+        invoiceWithProducts.invoiceProducts.forEach { invoiceProduct ->
+            stockMovementRepository.insert(
+                StockMovementFactory.createSale(
+                    productId = invoiceProduct.productId.value,
+                    quantitySold = invoiceProduct.quantity.value,
+                    invoiceId = invoiceProduct.invoiceId.value,
                 )
-            } catch (e: Exception) {
-                Log.e(
-                    TAG,
-                    "invoke: Error processing StockMovement for item $index - ProductId: ${invoiceProduct.productId}",
-                    e
-                )
-                throw e
-            }
+            )
         }
     }
 
     private suspend fun insertPurchaseInvoice(invoiceWithProducts: InvoiceWithProducts) {
-
-        // Increasing Product Quantity
-        invoiceWithProducts.products.forEachIndexed { index, product  ->
-            try {
-                increaseStockUseCase.invoke(product, invoiceWithProducts.invoiceProducts[index].quantity.value)
-            } catch (e: Exception) {
-                Log.e(
-                    TAG,
-                    "invoke: Error processing IncreaseStockUseCase for item $index - ProductId: ${product.id}",
-                    e
-                )
-                throw e
-            }
+        // Increase stock
+        invoiceWithProducts.products.forEachIndexed { index, product ->
+            increaseStockUseCase.invoke(
+                product,
+                invoiceWithProducts.invoiceProducts[index].quantity.value
+            )
         }
 
-        // save StockMovement
-        invoiceWithProducts.invoiceProducts.forEachIndexed { index, invoiceProduct ->
-            try {
-                stockMovementRepository.insert(
-                    StockMovementFactory.createPurchase(
-                        productId = invoiceProduct.productId.value,
-                        quantityPurchased = invoiceProduct.quantity.value,
-                        invoiceId = invoiceProduct.invoiceId.value,
-                    )
+        // Save StockMovement
+        invoiceWithProducts.invoiceProducts.forEach { invoiceProduct ->
+            stockMovementRepository.insert(
+                StockMovementFactory.createPurchase(
+                    productId = invoiceProduct.productId.value,
+                    quantityPurchased = invoiceProduct.quantity.value,
+                    invoiceId = invoiceProduct.invoiceId.value,
                 )
-            } catch (e: Exception) {
-                Log.e(
-                    TAG,
-                    "invoke: Error processing StockMovement for item $index - ProductId: ${invoiceProduct.productId}",
-                    e
-                )
-                throw e
-            }
+            )
         }
     }
 }

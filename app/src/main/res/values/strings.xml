@@ -207,6 +207,10 @@
     <string name="Tap_to_start_scanning">Tap to Start Scanning</string>
     <string name="invoice_created_successfully">invoice created successfully</string>
     <string name="finalizing_invoice">Finalizing Invoice</string>
+    <string name="error_failed_to_init_invoice">Failed to initialize invoice: %1$s</string>
+    <string name="error_failed_to_create_invoice">Failed to create invoice: %1$s</string>
+    <string name="add">Add</string>
+    <string name="stock_with_value">Stock: %1$d</string>
 
     <!-- Barcode Scanner View -->
     <string name="barcode_position">Place the product barcode inside the frame!</string>
@@ -317,6 +321,8 @@
     <!-- Sync -->
     <string name="sync_all_products">Sync all products</string>
     <string name="products_synced">Products synced with server</string>
+    <string name="sync_invoices">Sync invoices</string>
+    <string name="invoices_synced">Invoices synced with server</string>
 
     <!-- User Profile -->
     <string name="profile_loading">Loading profile…</string>

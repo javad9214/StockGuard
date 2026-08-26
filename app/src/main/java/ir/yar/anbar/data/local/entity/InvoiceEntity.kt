@@ -1,12 +1,20 @@
 package ir.yar.anbar.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "invoices")
+@Entity(
+    tableName = "invoices",
+    indices = [Index(value = ["serverId"])]
+)
 data class InvoiceEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
+
+    // Link to the server row once it has been pushed; null = local-only.
+    // Pull-sync looks rows up by this, mirroring user_products.serverId.
+    val serverId: Long? = null,
 
     val prefix: String = "INV",         // Fixed prefix, e.g., "INV"
     val invoiceNumber: Long,             // e.g., 12
@@ -25,5 +33,5 @@ data class InvoiceEntity(
     val synced: Boolean = false,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false      // Tombstone: kept until the deletion is pushed
 )

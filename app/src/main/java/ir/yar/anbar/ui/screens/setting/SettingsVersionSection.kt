@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
-import ir.yar.anbar.data.remote.dto.response.UpdateStatus
+import ir.yar.anbar.domain.model.UpdateStatus
 import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.viewmodels.versionupdate.VersionViewModel
 import ir.yar.anbar.utils.VersionUtils

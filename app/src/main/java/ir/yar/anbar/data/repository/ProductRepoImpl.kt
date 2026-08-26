@@ -16,6 +16,7 @@ import ir.yar.anbar.di.ApplicationScope
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.ProductSyncResult
 import ir.yar.anbar.domain.repository.ProductRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -55,6 +56,8 @@ class ProductRepoImpl @Inject constructor(
                 localId = localId,
                 serverId = serverId
             )
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             // Network call threw — local row remains PENDING_CREATE
         }
@@ -94,13 +97,11 @@ class ProductRepoImpl @Inject constructor(
             } else {
                 localDataSource.markProductPendingDelete(existing.id)
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             localDataSource.markProductPendingDelete(existing.id)
         }
-    }
-
-    override suspend fun editProduct(product: Product) {
-        updateProductAndSync(product)
     }
 
     override suspend fun updateProduct(product: Product): Int {
@@ -146,6 +147,8 @@ class ProductRepoImpl @Inject constructor(
                     serverId = serverId
                 )
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             // Network call threw — local row remains PENDING_UPDATE
         }
@@ -171,6 +174,8 @@ class ProductRepoImpl @Inject constructor(
                         localDataSource.updateProduct(merged)
                     }
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 // Offline — serve the local row as-is
             }
@@ -207,6 +212,8 @@ class ProductRepoImpl @Inject constructor(
                 } else {
                     failed++
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 failed++
             }
@@ -232,6 +239,8 @@ class ProductRepoImpl @Inject constructor(
                 } else {
                     failed++
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 failed++
             }
@@ -254,6 +263,8 @@ class ProductRepoImpl @Inject constructor(
                 } else {
                     failed++
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 failed++
             }
@@ -284,6 +295,8 @@ class ProductRepoImpl @Inject constructor(
                 if (pageData.last || pageData.content.isEmpty()) break
                 page++
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             // Offline / server error — keep serving local data
         } finally {

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -34,34 +35,60 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.lazy.items
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
+import ir.yar.anbar.domain.model.Barcode
 import ir.yar.anbar.domain.model.Product
+import ir.yar.anbar.domain.model.ProductFactory
+import ir.yar.anbar.domain.model.ProductId
+import ir.yar.anbar.domain.model.ProductName
 import ir.yar.anbar.ui.components.customnavbars.BottomSheetDragHandle
 import ir.yar.anbar.ui.theme.BHoma
+import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.ui.viewmodels.InvoiceViewModel
 import ir.yar.anbar.ui.viewmodels.ProductsViewModel
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.str
 
+/**
+ * Stateful entry point: wires the shared ViewModels and delegates all rendering
+ * to [AddProductToInvoiceContent], which stays preview- and test-friendly.
+ */
 @Composable
 fun AddProductToInvoice(
-    onClose: () -> Unit = {},
+    onClose: () -> Unit,
     productsViewModel: ProductsViewModel = hiltViewModel(),
-    invoiceViewModel: InvoiceViewModel = hiltViewModel(),
+    invoiceViewModel: InvoiceViewModel = hiltViewModel()
 ) {
     val products by productsViewModel.products.collectAsState()
     val isLoading by productsViewModel.isLoading.collectAsState()
     val searchQuery by productsViewModel.searchQuery.collectAsState()
 
-    fun onProductSelected(product: Product) {
-        invoiceViewModel.addToCurrentInvoice(product, 1)
-        onClose()
-    }
+    AddProductToInvoiceContent(
+        searchQuery = searchQuery,
+        onSearchQueryChange = productsViewModel::updateSearchQuery,
+        products = products,
+        isLoading = isLoading,
+        onClose = onClose,
+        onProductSelected = { product ->
+            invoiceViewModel.addToCurrentInvoice(product, quantity = 1)
+            onClose()
+        }
+    )
+}
 
+@Composable
+fun AddProductToInvoiceContent(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    products: List<Product>,
+    isLoading: Boolean,
+    onClose: () -> Unit,
+    onProductSelected: (Product) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(top = dimen(R.dimen.space_10))
     ) {
@@ -89,7 +116,7 @@ fun AddProductToInvoice(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(dimen(R.dimen.space_4))
                     ) {
                         IconButton(
                             onClick = onClose,
@@ -97,7 +124,7 @@ fun AddProductToInvoice(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "Close"
+                                contentDescription = str(R.string.close)
                             )
                         }
                         Text(
@@ -108,15 +135,15 @@ fun AddProductToInvoice(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_4)))
 
 
                 TextField(
                     value = searchQuery,
-                    onValueChange = { productsViewModel.updateSearchQuery(it) },
+                    onValueChange = onSearchQueryChange,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = dimen(R.dimen.space_4)),
                     placeholder = {
                         Text(
                             text = str(R.string.search_products),
@@ -132,7 +159,7 @@ fun AddProductToInvoice(
                     },
                     trailingIcon = {
                         if (searchQuery.isNotBlank()) {
-                            IconButton(onClick = { productsViewModel.updateSearchQuery("") }) {
+                            IconButton(onClick = { onSearchQueryChange("") }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = str(R.string.clear_search)
@@ -152,13 +179,13 @@ fun AddProductToInvoice(
 
 
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .padding(16.dp)
+                        .padding(dimen(R.dimen.space_4))
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
@@ -172,19 +199,19 @@ fun AddProductToInvoice(
                         )
                     } else {
                         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
 
-                            items(products, key = { it.id.value }) { product ->
-                                ProductSelectionItem(
-                                    product = product,
-                                    onClick = { onProductSelected(product) },
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                )
+                                items(products, key = { it.id.value }) { product ->
+                                    ProductSelectionItem(
+                                        product = product,
+                                        onClick = { onProductSelected(product) },
+                                        modifier = Modifier.padding(vertical = dimen(R.dimen.space_1))
+                                    )
+                                }
                             }
                         }
-                            }
                     }
                 }
             }
@@ -193,12 +220,34 @@ fun AddProductToInvoice(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, heightDp = 720)
 @Composable
-fun AddProductToInvoicePreview() {
-    MaterialTheme {
-        // In a real scenario, the ViewModel would be provided by Hilt
-        // This is just a preview, so we're not showing actual data
-        AddProductToInvoice()
+private fun AddProductToInvoiceContentPreview() {
+    ComposeTrainerTheme {
+        AddProductToInvoiceContent(
+            searchQuery = "",
+            onSearchQueryChange = {},
+            products = listOf(
+                previewProduct(1, "شیر پرچرب ۱ لیتری", 35000, 12),
+                previewProduct(2, "پنیر سفید ایرانی", 89000, 4),
+                previewProduct(3, "ماست موسیر ۵۰۰ گرمی", 62000, 0)
+            ),
+            isLoading = false,
+            onClose = {},
+            onProductSelected = {}
+        )
     }
 }
+
+private fun previewProduct(
+    id: Long,
+    name: String,
+    price: Long,
+    stock: Int
+): Product = ProductFactory.createBasic(
+    name = ProductName(name),
+    barcode = null,
+    price = price,
+    costPrice = price / 2,
+    initialStock = stock
+).copy(id = ProductId(id))

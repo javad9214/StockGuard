@@ -223,6 +223,10 @@
     <string name="Tap_to_start_scanning">برای شروع اسکن ضربه بزنید</string>
     <string name="invoice_created_successfully">فاکتور با موفقیت ثبت گردید!</string>
     <string name="finalizing_invoice">درحال نهایی سازی فاکتور ...</string>
+    <string name="error_failed_to_init_invoice">خطا در راه‌اندازی فاکتور: %1$s</string>
+    <string name="error_failed_to_create_invoice">خطا در ثبت فاکتور: %1$s</string>
+    <string name="add">افزودن</string>
+    <string name="stock_with_value">موجودی: %1$d</string>
     
     <!-- Barcode Scanner View -->
     <string name="barcode_position">موقعیت بارکد در داخل قاب</string>
@@ -323,6 +327,8 @@
     <!-- Sync -->
     <string name="sync_all_products">همگام‌سازی همه محصولات</string>
     <string name="products_synced">محصولات با سرور همگام‌سازی شدند</string>
+    <string name="sync_invoices">همگام‌سازی فاکتورها</string>
+    <string name="invoices_synced">فاکتورها با سرور همگام‌سازی شدند</string>
 
     <!-- User Profile -->
     <string name="profile_loading">در حال بارگذاری پروفایل…</string>

@@ -8,14 +8,8 @@ import javax.inject.Inject
 class GetInvoiceReportCountUseCase @Inject constructor(
     private val invoiceRepository: InvoiceRepository
 ) {
-
     operator fun invoke(timeRange: TimeRange): Flow<Int> {
         val (start, end) = timeRange.getStartAndEndTimes()
         return invoiceRepository.getTotalInvoicesBetweenDates(start, end)
-    }
-
-
-    companion object {
-        private const val TAG = "GetInvoiceReportCountUseCase"
     }
 }

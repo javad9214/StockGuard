@@ -253,7 +253,9 @@ fun MainScreen(
                         onClose = {
                             navController.popBackStack()
                         },
-                        navController = navController,
+                        onAddNewProduct = { barcode ->
+                            navController.navigate(Screen.ProductCreate.createRoute(barcode = barcode))
+                        },
                         homeViewModel = sharedHomeViewModel
                     )
                 }

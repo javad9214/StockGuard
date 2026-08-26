@@ -1,7 +1,7 @@
 package ir.yar.anbar.ui.viewmodels.versionupdate
 
-import ir.yar.anbar.data.remote.dto.response.AppVersionInfo
-import ir.yar.anbar.data.remote.dto.response.UpdateStatus
+import ir.yar.anbar.domain.model.AppVersionInfo
+import ir.yar.anbar.domain.model.UpdateStatus
 
 
 /**

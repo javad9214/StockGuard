@@ -5,7 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ir.yar.anbar.data.remote.dto.response.UpdateStatus
+import ir.yar.anbar.domain.model.UpdateStatus
 import ir.yar.anbar.domain.usecase.versionupdate.CheckAppVersionUseCase
 import ir.yar.anbar.utils.VersionUtils
 import dagger.hilt.android.lifecycle.HiltViewModel

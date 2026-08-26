@@ -1,10 +1,9 @@
 package ir.yar.anbar.data.local.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import ir.yar.anbar.data.local.entity.InvoiceProductCrossRefEntity
 
 @Dao
@@ -13,27 +12,16 @@ interface InvoiceProductDao {
     @Insert
     suspend fun insertCrossRef(crossRef: InvoiceProductCrossRefEntity)
 
-    @Delete
-    suspend fun deleteCrossRef(crossRef: InvoiceProductCrossRefEntity)
+    //region Server-sync
 
-    @Transaction
-    @Query(
-        """
-        SELECT  ip.*
-        FROM invoice_products AS ip 
-        WHERE ip.invoiceId = :invoiceId
-    """
-    )
-    suspend fun getInvoiceWithProducts(invoiceId: Long): List<InvoiceProductCrossRefEntity>
+    @Query("SELECT * FROM invoice_products WHERE invoiceId = :invoiceId")
+    suspend fun getCrossRefsForInvoice(invoiceId: Long): List<InvoiceProductCrossRefEntity>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCrossRefs(crossRefs: List<InvoiceProductCrossRefEntity>)
 
-    @Transaction
-    @Query(
-        """
-        SELECT  ip.*
-        FROM invoice_products AS ip 
-        WHERE ip.invoiceId = :invoiceId
-    """
-    )
-    suspend fun getAllInvoiceWithProducts(invoiceId: Long): List<InvoiceProductCrossRefEntity>
+    @Query("DELETE FROM invoice_products WHERE invoiceId = :invoiceId")
+    suspend fun deleteCrossRefsForInvoice(invoiceId: Long)
+
+    //endregion
 }

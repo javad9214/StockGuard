@@ -7,7 +7,6 @@ import dagger.hilt.components.SingletonComponent
 import ir.yar.anbar.domain.repository.ProductRepository
 import ir.yar.anbar.domain.repository.ServerMainProductRepository
 import ir.yar.anbar.domain.usecase.product.AddProductUseCase
-import ir.yar.anbar.domain.usecase.product.CheckProductStockUseCase
 import ir.yar.anbar.domain.usecase.product.DecreaseStockUseCase
 import ir.yar.anbar.domain.usecase.product.DeleteProductUseCase
 import ir.yar.anbar.domain.usecase.product.EditProductUseCase
@@ -16,7 +15,6 @@ import ir.yar.anbar.domain.usecase.product.GetProductByBarcodeUseCase
 import ir.yar.anbar.domain.usecase.product.GetProductByQueryUseCase
 import ir.yar.anbar.domain.usecase.product.GetProductsByIDsUseCase
 import ir.yar.anbar.domain.usecase.product.IncreaseStockUseCase
-import ir.yar.anbar.domain.usecase.servermainproduct.AddNewProductToMainServerUseCase
 import ir.yar.anbar.domain.usecase.servermainproduct.GetAllMainProductsUseCase
 import ir.yar.anbar.domain.usecase.servermainproduct.GetSearchedMainProductsUseCase
 import javax.inject.Singleton
@@ -36,12 +34,6 @@ object ProductUseCaseModule {
     fun provideGetProductsByQueryUseCase(
         repository: ProductRepository
     ): GetProductByQueryUseCase = GetProductByQueryUseCase(repository)
-
-    @Provides
-    @Singleton
-    fun provideCheckProductStockUseCase(
-        repository: ProductRepository
-    ): CheckProductStockUseCase = CheckProductStockUseCase(repository)
 
     @Provides
     @Singleton
@@ -98,10 +90,4 @@ object ProductUseCaseModule {
     fun provideGetSearchedMainProductsUseCase(
         repository: ServerMainProductRepository
     ): GetSearchedMainProductsUseCase = GetSearchedMainProductsUseCase(repository)
-
-    @Provides
-    @Singleton
-    fun provideAddNewProductToMainServerUseCase(
-        repository: ServerMainProductRepository
-    ): AddNewProductToMainServerUseCase = AddNewProductToMainServerUseCase(repository)
 }
