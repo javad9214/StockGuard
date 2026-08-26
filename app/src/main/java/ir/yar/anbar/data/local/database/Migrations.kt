@@ -90,3 +90,15 @@ val MIGRATION_4_5: Migration = object : Migration(4, 5) {
         db.execSQL("ALTER TABLE `user_products` ADD COLUMN `subcategoryName` TEXT")
     }
 }
+
+/**
+ * v6 links invoices to their server rows for invoice sync. Existing rows are
+ * local-only (serverId stays null); they get a serverId the first time the
+ * push-sync uploads them.
+ */
+val MIGRATION_5_6: Migration = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE `invoices` ADD COLUMN `serverId` INTEGER")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_invoices_serverId` ON `invoices` (`serverId`)")
+    }
+}

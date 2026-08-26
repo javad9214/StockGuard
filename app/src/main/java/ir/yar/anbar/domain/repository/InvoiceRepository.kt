@@ -2,6 +2,7 @@ package ir.yar.anbar.domain.repository
 
 
 import ir.yar.anbar.domain.model.Invoice
+import ir.yar.anbar.domain.model.InvoiceSyncResult
 import ir.yar.anbar.domain.model.InvoiceWithProducts
 import ir.yar.anbar.domain.model.TopSellingProductInfo
 import kotlinx.coroutines.flow.Flow
@@ -9,6 +10,12 @@ import kotlinx.coroutines.flow.Flow
 interface InvoiceRepository {
 
     suspend fun createInvoice(invoice: Invoice): Long
+
+    /**
+     * Pushes every locally pending invoice change (creates and deletes) to the
+     * server, then pulls server-side changes back into the local DB.
+     */
+    suspend fun syncInvoices(): InvoiceSyncResult
 
     /**
      * Get a single invoice and its products by invoice ID. The returned InvoiceWithProducts

@@ -82,6 +82,15 @@ fun InvoicesListScreen(
         }
     }
 
+    // Confirm finished sync passes with a Snackbar
+    val invoicesSyncedMessage = str(R.string.invoices_synced)
+    LaunchedEffect(uiState.lastSyncResult) {
+        uiState.lastSyncResult?.let {
+            snackbarHostState.showSnackbar(invoicesSyncedMessage)
+            invoiceListViewModel.onEvent(InvoiceListEvent.ClearSyncResult)
+        }
+    }
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -94,6 +103,7 @@ fun InvoicesListScreen(
                     sortNewestFirst = uiState.sortNewestFirst,
                     selectedTypeFilter = uiState.selectedTypeFilter,
                     hasInvoices = uiState.filteredInvoices.isNotEmpty(),
+                    isSyncing = uiState.isSyncing,
                     onEvent = invoiceListViewModel::onEvent
                 )
 
@@ -187,6 +197,7 @@ private fun InvoiceListTopBar(
     sortNewestFirst: Boolean,
     selectedTypeFilter: InvoiceType?,
     hasInvoices: Boolean,
+    isSyncing: Boolean = false,
     onEvent: (InvoiceListEvent) -> Unit
 ) {
     Row(
@@ -208,9 +219,11 @@ private fun InvoiceListTopBar(
                 sortNewestFirst = sortNewestFirst,
                 selectedTypeFilter = selectedTypeFilter,
                 hasInvoices = hasInvoices,
+                isSyncing = isSyncing,
                 onSort = { onEvent(InvoiceListEvent.ToggleSortOrder) },
                 onFilterChange = { type -> onEvent(InvoiceListEvent.FilterByType(type)) },
-                onDeleteMode = { onEvent(InvoiceListEvent.ToggleSelectionMode) }
+                onDeleteMode = { onEvent(InvoiceListEvent.ToggleSelectionMode) },
+                onSync = { onEvent(InvoiceListEvent.SyncInvoices) }
             )
         }
     }
@@ -258,9 +271,11 @@ private fun NormalModeTopBar(
     sortNewestFirst: Boolean,
     selectedTypeFilter: InvoiceType?,
     hasInvoices: Boolean,
+    isSyncing: Boolean = false,
     onSort: () -> Unit,
     onFilterChange: (InvoiceType?) -> Unit,
-    onDeleteMode: () -> Unit
+    onDeleteMode: () -> Unit,
+    onSync: () -> Unit = {}
 ) {
     Text(
         str(R.string.sale_invoices),
@@ -269,6 +284,23 @@ private fun NormalModeTopBar(
     )
 
     Row {
+        // Sync invoices button
+        IconButton(
+            onClick = onSync,
+            enabled = !isSyncing
+        ) {
+            if (isSyncing) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(dimen(R.dimen.size_sm))
+                )
+            } else {
+                Icon(
+                    painter = painterResource(id = R.drawable.sync_24px),
+                    contentDescription = str(R.string.sync_invoices)
+                )
+            }
+        }
+
         // Filter button
         InvoiceTypeFilterMenu(
             selectedType = selectedTypeFilter,

@@ -327,6 +327,8 @@
     <!-- Sync -->
     <string name="sync_all_products">همگام‌سازی همه محصولات</string>
     <string name="products_synced">محصولات با سرور همگام‌سازی شدند</string>
+    <string name="sync_invoices">همگام‌سازی فاکتورها</string>
+    <string name="invoices_synced">فاکتورها با سرور همگام‌سازی شدند</string>
 
     <!-- User Profile -->
     <string name="profile_loading">در حال بارگذاری پروفایل…</string>

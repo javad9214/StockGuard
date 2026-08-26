@@ -321,6 +321,8 @@
     <!-- Sync -->
     <string name="sync_all_products">Sync all products</string>
     <string name="products_synced">Products synced with server</string>
+    <string name="sync_invoices">Sync invoices</string>
+    <string name="invoices_synced">Invoices synced with server</string>
 
     <!-- User Profile -->
     <string name="profile_loading">Loading profile…</string>

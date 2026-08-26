@@ -2,11 +2,13 @@ package ir.yar.anbar.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ir.yar.anbar.domain.model.InvoiceSyncResult
 import ir.yar.anbar.domain.model.InvoiceType
 import ir.yar.anbar.domain.model.InvoiceWithProducts
 import ir.yar.anbar.domain.usecase.invoice.DeleteInvoiceUseCase
 import ir.yar.anbar.domain.usecase.invoice.GetAllInvoicesOldestFirstUseCase
 import ir.yar.anbar.domain.usecase.invoice.GetAllInvoiceUseCase
+import ir.yar.anbar.domain.usecase.invoice.SyncInvoicesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -25,7 +27,9 @@ data class InvoiceListUiState(
     val selectedTypeFilter: InvoiceType? = null,
     val isSelectionMode: Boolean = false,
     val selectedInvoices: Set<Long> = emptySet(),
-    val showDeleteConfirmationDialog: Boolean = false
+    val showDeleteConfirmationDialog: Boolean = false,
+    val isSyncing: Boolean = false,
+    val lastSyncResult: InvoiceSyncResult? = null
 )
 
 /**
@@ -41,6 +45,8 @@ sealed class InvoiceListEvent {
     data object DismissDeleteConfirmation : InvoiceListEvent()
     data class DeleteInvoice(val invoiceId: Long) : InvoiceListEvent()
     data object DeleteSelectedInvoices : InvoiceListEvent()
+    data object SyncInvoices : InvoiceListEvent()
+    data object ClearSyncResult : InvoiceListEvent()
     data object ClearError : InvoiceListEvent()
 }
 
@@ -48,7 +54,8 @@ sealed class InvoiceListEvent {
 class InvoiceListViewModel @Inject constructor(
     private val deleteInvoiceUseCase: DeleteInvoiceUseCase,
     private val getAllInvoiceUseCase: GetAllInvoiceUseCase,
-    private val getAllInvoicesOldestFirstUseCase: GetAllInvoicesOldestFirstUseCase
+    private val getAllInvoicesOldestFirstUseCase: GetAllInvoicesOldestFirstUseCase,
+    private val syncInvoicesUseCase: SyncInvoicesUseCase
 ) : ViewModel() {
 
     // Single source of truth for UI state
@@ -73,6 +80,8 @@ class InvoiceListViewModel @Inject constructor(
             is InvoiceListEvent.DismissDeleteConfirmation -> dismissDeleteConfirmation()
             is InvoiceListEvent.DeleteInvoice -> deleteInvoice(event.invoiceId)
             is InvoiceListEvent.DeleteSelectedInvoices -> deleteSelectedInvoices()
+            is InvoiceListEvent.SyncInvoices -> syncInvoices()
+            is InvoiceListEvent.ClearSyncResult -> clearSyncResult()
             is InvoiceListEvent.ClearError -> clearError()
         }
     }
@@ -212,6 +221,31 @@ class InvoiceListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    /**
+     * Push local invoices to the server and pull server changes back.
+     * Room's reactive flows refresh the list — no manual reload needed.
+     */
+    private fun syncInvoices() {
+        if (_uiState.value.isSyncing) return // a sync pass is already running
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isSyncing = true) }
+            try {
+                val result = syncInvoicesUseCase()
+                _uiState.update { it.copy(lastSyncResult = result) }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(errorMessage = "Failed to sync invoices: ${e.message}")
+                }
+            } finally {
+                _uiState.update { it.copy(isSyncing = false) }
+            }
+        }
+    }
+
+    private fun clearSyncResult() {
+        _uiState.update { it.copy(lastSyncResult = null) }
     }
 
     // Selection Mode Functions
