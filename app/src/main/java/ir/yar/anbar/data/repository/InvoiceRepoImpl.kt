@@ -18,9 +18,6 @@ import ir.yar.anbar.data.remote.dto.response.InvoiceResponseDto
 import ir.yar.anbar.domain.model.Invoice
 import ir.yar.anbar.domain.model.InvoiceSyncResult
 import ir.yar.anbar.domain.model.InvoiceWithProducts
-import ir.yar.anbar.domain.model.TopSellingProductInfo
-import ir.yar.anbar.domain.model.toDomain
-import ir.yar.anbar.domain.model.toEntity
 import ir.yar.anbar.domain.repository.InvoiceRepository
 import ir.yar.anbar.di.ApplicationScope
 import kotlinx.coroutines.CancellationException
@@ -309,12 +306,6 @@ class InvoiceRepoImpl @Inject constructor(
 
     //endregion
 
-    override fun getInvoiceWithProducts(invoiceId: Long): Flow<InvoiceWithProducts> {
-        return invoiceDao.getInvoiceWithProducts(invoiceId).map { relation ->
-            mapToInvoiceWithProducts(relation)
-        }
-    }
-
     override fun getAllInvoices(): Flow<List<InvoiceWithProducts>> {
         // Local-first: DB rows emit immediately. In parallel, pull the server's
         // copy so invoices created on other devices appear here through
@@ -354,29 +345,6 @@ class InvoiceRepoImpl @Inject constructor(
             lastInvoice.invoiceNumber + 1
         } else {
             1000 // Start from 1000 if no invoices exist
-        }
-    }
-
-    // Analytics methods
-    override suspend fun getTotalSalesForMonth(yearMonth: String): Long {
-        return invoiceDao.getTotalSalesForMonth(yearMonth)
-    }
-
-    override suspend fun getTotalInvoicesForMonth(yearMonth: String): Int {
-        return invoiceDao.getTotalInvoicesForMonth(yearMonth)
-    }
-
-    override suspend fun getTotalQuantityForMonth(yearMonth: String): Int {
-        return invoiceDao.getTotalQuantityForMonth(yearMonth)
-    }
-
-    override suspend fun getTopSellingProductsForMonth(yearMonth: String): List<TopSellingProductInfo> {
-        return invoiceDao.getTopSellingProductsForMonth(yearMonth).map {
-            TopSellingProductInfo(
-                name = it.name,
-                totalQuantity = it.totalQuantity,
-                totalSales = it.totalSales
-            )
         }
     }
 

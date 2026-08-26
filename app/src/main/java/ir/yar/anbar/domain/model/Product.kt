@@ -1,10 +1,6 @@
 package ir.yar.anbar.domain.model
 
 
-import ir.yar.anbar.data.local.entity.UserProductEntity
-import ir.yar.anbar.data.remote.dto.CatalogProductDto
-import ir.yar.anbar.data.remote.dto.CatalogStatus
-import ir.yar.anbar.data.remote.dto.request.UserProductRequestDto
 import ir.yar.anbar.domain.model.type.Money
 import java.math.BigDecimal
 import java.math.RoundingMode

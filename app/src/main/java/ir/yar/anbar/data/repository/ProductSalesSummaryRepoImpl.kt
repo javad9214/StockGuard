@@ -1,15 +1,12 @@
 package ir.yar.anbar.data.repository
 
 import ir.yar.anbar.data.local.dao.ProductSalesSummaryDao
+import ir.yar.anbar.data.mapper.toDomain
+import ir.yar.anbar.data.mapper.toEntity
 import ir.yar.anbar.domain.model.ProductSalesSummary
-import ir.yar.anbar.domain.model.analyze.DailySalesData
-import ir.yar.anbar.domain.model.toDomain
-import ir.yar.anbar.domain.model.toEntity
 import ir.yar.anbar.domain.repository.ProductSalesSummaryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.time.Instant
-import java.time.ZoneId
 import javax.inject.Inject
 
 class ProductSalesSummaryRepoImpl @Inject constructor(
@@ -45,20 +42,5 @@ class ProductSalesSummaryRepoImpl @Inject constructor(
         date: Long
     ): ProductSalesSummary? {
         return productSalesSummaryDao.getByProductAndDate(productId, date)?.toDomain()
-    }
-
-    override fun getDailySalesBetween(startDate: Long, endDate: Long): Flow<List<DailySalesData>> {
-        return productSalesSummaryDao.getDailySalesBetween(startDate, endDate)
-            .map { entities ->
-                entities.map { entity ->
-                    DailySalesData(
-                        date = Instant.ofEpochMilli(entity.date)
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDate(),
-                        totalRevenue = entity.totalRevenue,
-                        totalCost = entity.totalCost
-                    )
-                }
-            }
     }
 }

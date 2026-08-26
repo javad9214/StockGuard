@@ -7,7 +7,6 @@ import dagger.hilt.components.SingletonComponent
 import ir.yar.anbar.domain.repository.InvoiceRepository
 import ir.yar.anbar.domain.repository.ProductRepository
 import ir.yar.anbar.domain.repository.ProductSalesSummaryRepository
-import ir.yar.anbar.domain.usecase.analytics.GetAnalyticsDataUseCase
 import ir.yar.anbar.domain.usecase.analytics.GetInvoiceReportCountUseCase
 import ir.yar.anbar.domain.usecase.analytics.GetLowStockProductsUseCase
 import ir.yar.anbar.domain.usecase.analytics.GetTotalProfitPriceUseCase
@@ -22,12 +21,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AnalyzeUseCaseModule {
 
-
-    @Provides
-    @Singleton
-    fun provideGetAnalyticsDataUseCase(
-        invoiceRepository: InvoiceRepository
-    ): GetAnalyticsDataUseCase = GetAnalyticsDataUseCase(invoiceRepository)
 
     @Provides
     @Singleton

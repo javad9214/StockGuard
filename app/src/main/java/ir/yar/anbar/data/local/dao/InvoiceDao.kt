@@ -23,9 +23,6 @@ interface InvoiceDao {
 
     //region Server-sync
 
-    @Query("SELECT * FROM invoices WHERE serverId = :serverId LIMIT 1")
-    suspend fun getInvoiceByServerId(serverId: Long): InvoiceEntity?
-
     @Query("SELECT * FROM invoices WHERE serverId IN (:serverIds)")
     suspend fun getInvoicesByServerIds(serverIds: List<Long>): List<InvoiceEntity>
 
@@ -48,10 +45,6 @@ interface InvoiceDao {
     @Query("SELECT * FROM invoices ORDER BY invoiceNumber DESC LIMIT 1")
     suspend fun getLastInvoice(): InvoiceEntity?
 
-    @Transaction
-    @Query("SELECT * FROM invoices WHERE id = :invoiceId")
-    fun getInvoiceWithProducts(invoiceId: Long): Flow<InvoiceWithProductsRelation>
-
     // Tombstones are filtered out so a delete pending its push disappears
     // from the UI immediately
     @Transaction
@@ -61,56 +54,6 @@ interface InvoiceDao {
     @Transaction
     @Query("SELECT * FROM invoices WHERE isDeleted = 0 ORDER BY createdAt ASC")
     fun getAllInvoiceWithProductsOldestFirst(): Flow<List<InvoiceWithProductsRelation>>
-
-    @Query(
-        """
-        SELECT COALESCE(SUM(p.price * ip.quantity), 0) as totalSales
-        FROM invoices AS i
-        INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
-        INNER JOIN user_products AS p ON ip.productId = p.id
-        WHERE strftime('%Y-%m', datetime(i.invoiceDate / 1000, 'unixepoch')) = :yearMonth
-        AND i.isDeleted = 0
-    """
-    )
-    suspend fun getTotalSalesForMonth(yearMonth: String): Long
-
-    @Query(
-        """
-        SELECT COUNT(DISTINCT i.id) as invoiceCount
-        FROM invoices AS i
-        WHERE strftime('%Y-%m', datetime(i.invoiceDate / 1000, 'unixepoch')) = :yearMonth
-        AND i.isDeleted = 0
-    """
-    )
-    suspend fun getTotalInvoicesForMonth(yearMonth: String): Int
-
-    @Query(
-        """
-        SELECT COALESCE(SUM(ip.quantity), 0) as totalQuantity
-        FROM invoices AS i
-        INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
-        WHERE strftime('%Y-%m', datetime(i.invoiceDate / 1000, 'unixepoch')) = :yearMonth
-        AND i.isDeleted = 0
-    """
-    )
-    suspend fun getTotalQuantityForMonth(yearMonth: String): Int
-
-    @Query(
-        """
-        SELECT p.name, 
-               SUM(ip.quantity) as totalQuantity,
-               SUM(p.price * ip.quantity) as totalSales
-        FROM invoices AS i
-        INNER JOIN invoice_products AS ip ON i.id = ip.invoiceId
-        INNER JOIN user_products AS p ON ip.productId = p.id
-        WHERE strftime('%Y-%m', datetime(i.invoiceDate / 1000, 'unixepoch')) = :yearMonth
-        AND i.isDeleted = 0
-        GROUP BY p.id, p.name
-        ORDER BY totalQuantity DESC
-        LIMIT 3
-    """
-    )
-    suspend fun getTopSellingProductsForMonth(yearMonth: String): List<TopSellingProduct>
 
     @Query(
         """
@@ -145,9 +88,3 @@ interface InvoiceDao {
     )
     fun getTotalInvoicesBetweenDates(startDate: Long, endDate: Long): Flow<Int>
 }
-
-data class TopSellingProduct(
-    val name: String,
-    val totalQuantity: Int,
-    val totalSales: Long
-)
