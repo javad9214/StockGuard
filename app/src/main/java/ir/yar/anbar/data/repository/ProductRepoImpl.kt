@@ -44,22 +44,25 @@ class ProductRepoImpl @Inject constructor(
             )
         )
 
-        // 2. Push to the server. Any failure keeps the local row unsynced
+        // 2. Push to the server in the background — callers resume as soon as
+        //    the local write lands. Any failure keeps the local row unsynced
         //    so a future sync pass can retry it.
-        try {
-            val response = remoteDataSource.createCustomProduct(
-                product = product.toRequestDto(),
-                imageSource = imageSource ?: product.image?.localUri
-            )
-            val serverId = (response as? ApiResponse.Success)?.data?.data ?: return
-            localDataSource.markProductSynced(
-                localId = localId,
-                serverId = serverId
-            )
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            // Network call threw — local row remains PENDING_CREATE
+        applicationScope.launch {
+            try {
+                val response = remoteDataSource.createCustomProduct(
+                    product = product.toRequestDto(),
+                    imageSource = imageSource ?: product.image?.localUri
+                )
+                val serverId = (response as? ApiResponse.Success)?.data?.data ?: return@launch
+                localDataSource.markProductSynced(
+                    localId = localId,
+                    serverId = serverId
+                )
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Network call threw — local row remains PENDING_CREATE
+            }
         }
     }
 
@@ -110,7 +113,8 @@ class ProductRepoImpl @Inject constructor(
 
     /**
      * Updates the row locally as PENDING_UPDATE (preserving the server link),
-     * then pushes the change to the server. Any failure keeps the row pending.
+     * then pushes the change to the server in the background. Any failure
+     * keeps the row pending so a future sync pass can retry it.
      */
     private suspend fun updateProductAndSync(product: Product): Int {
         val existing = localDataSource.getProductById(product.id.value)
@@ -135,22 +139,24 @@ class ProductRepoImpl @Inject constructor(
 
         if (serverId == null) return rowsUpdated // local-only product, nothing to push
 
-        try {
-            val response = remoteDataSource.updateProduct(
-                id = serverId,
-                product = product.toRequestDto(),
-                imageSource = product.image?.localUri?.takeUnless(imageFileManager::isServerImage)
-            )
-            if ((response as? ApiResponse.Success)?.data?.success == true) {
-                localDataSource.markProductSynced(
-                    localId = product.id.value,
-                    serverId = serverId
+        applicationScope.launch {
+            try {
+                val response = remoteDataSource.updateProduct(
+                    id = serverId,
+                    product = product.toRequestDto(),
+                    imageSource = product.image?.localUri?.takeUnless(imageFileManager::isServerImage)
                 )
+                if ((response as? ApiResponse.Success)?.data?.success == true) {
+                    localDataSource.markProductSynced(
+                        localId = product.id.value,
+                        serverId = serverId
+                    )
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Network call threw — local row remains PENDING_UPDATE
             }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            // Network call threw — local row remains PENDING_UPDATE
         }
         return rowsUpdated
     }
