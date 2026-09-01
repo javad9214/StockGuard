@@ -263,17 +263,7 @@ fun AddProduct(
                         }
                     }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
 
-                SubcategoryDropdownField(
-                    subcategories = subcategories,
-                    selectedId = subcategoryId,
-                    fallbackName = product?.subcategoryName?.value,
-                    onSelect = {
-                        subcategoryId = it
-                        isDirty = true
-                    }
-                )
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Cost and sale price read as a comparison on wide screens,

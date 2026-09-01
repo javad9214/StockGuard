@@ -2,8 +2,10 @@ package ir.yar.anbar.ui.components.image
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -46,9 +48,26 @@ fun ImagePickerBox(
     var showDialog by remember { mutableStateOf(false) }
     var cameraUri by remember { mutableStateOf<Uri?>(null) }
 
+    // Photo Picker: its grants survive process death without persistable
+    // permission handling. On devices where the system falls back to the
+    // document picker the grant is temporary, so take the persistable
+    // permission — not every provider supports persistable grants, hence
+    // the try/catch. The picked Uri is stored long-term in
+    // ProductImage.localUri, so losing the grant breaks image loads
+    // after an app restart.
     val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri -> uri?.let { onImageSelected(it) } }
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let { picked ->
+            runCatching {
+                context.contentResolver.takePersistableUriPermission(
+                    picked,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            }
+            onImageSelected(picked)
+        }
+    }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
@@ -93,7 +112,7 @@ fun ImagePickerBox(
                 Text(
                     text = "برای افزودن تصویر کلیک کنید",
                     fontFamily = BKoodak,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -107,7 +126,11 @@ fun ImagePickerBox(
                 Column {
                     TextButton(onClick = {
                         showDialog = false
-                        galleryLauncher.launch("image/*")
+                        galleryLauncher.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                            )
+                        )
                     }) { Text("انتخاب از گالری") }
 
                     TextButton(onClick = {
