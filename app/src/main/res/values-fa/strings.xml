@@ -255,6 +255,9 @@
     <string name="profit_margin_hint">سود: %1$s (%2$s٪)</string>
     <string name="warning_selling_below_cost">هشدار: قیمت فروش از قیمت خرید بیشتر نیست</string>
     <string name="none">هیچ‌کدام</string>
+    <string name="error_camera_permission_denied">برای گرفتن عکس، دسترسی به دوربین لازم است</string>
+    <string name="remove_image">حذف تصویر</string>
+    <string name="error_image_load_failed">بارگذاری تصویر ناموفق بود</string>
     <string name="discard_changes_message">تغییرات ذخیره‌نشده دور ریخته شود؟</string>
     <string name="discard">دور بینداز</string>
     <string name="add_product_button">افزودن محصول</string>

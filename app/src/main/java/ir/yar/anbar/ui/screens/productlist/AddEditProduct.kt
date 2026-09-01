@@ -374,6 +374,10 @@ fun AddProduct(
                     onImageSelected = {
                         imageUri = it
                         isDirty = true
+                    },
+                    onImageRemoved = {
+                        imageUri = null
+                        isDirty = true
                     }
                 )
 
