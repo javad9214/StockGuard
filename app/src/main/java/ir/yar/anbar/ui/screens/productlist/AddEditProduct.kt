@@ -149,12 +149,14 @@ fun AddProduct(
         mutableStateOf(initialBarcode ?: product?.barcode?.value ?: "")
     }
 
+    // Prices are stored in cents — the form works in display units, so the
+    // prefill must convert or an edited product shows 100x its real price
     var salePrice by remember(product) {
-        mutableStateOf(product?.price?.amount?.toString() ?: "")
+        mutableStateOf(product?.price?.toDisplayAmount()?.toString() ?: "")
     }
 
     var costPrice by remember(product) {
-        mutableStateOf(product?.costPrice?.amount?.toString() ?: "")
+        mutableStateOf(product?.costPrice?.toDisplayAmount()?.toString() ?: "")
     }
 
     var subcategoryId by remember(product) {
@@ -185,7 +187,9 @@ fun AddProduct(
     val discardText = stringResource(R.string.discard)
     val cancelText = stringResource(R.string.cancel)
     val requestClose = {
-        if (isDirty) {
+        if (isSaving) {
+            // A save is in flight — ignore close requests so it can't be abandoned
+        } else if (isDirty) {
             confirmyHostState.show(
                 message = discardMessage,
                 type = ConfirmyType.ERROR,
@@ -197,7 +201,7 @@ fun AddProduct(
             onNavigateBack()
         }
     }
-    BackHandler(enabled = isDirty) { requestClose() }
+    BackHandler(enabled = isDirty && !isSaving) { requestClose() }
 
     // A failed edit-mode load must not degrade into the create form —
     // saving that would silently duplicate the product
@@ -307,31 +311,35 @@ fun AddProduct(
                             )
                         }
                     } else {
-                        PriceField(
-                            value = costPrice,
-                            onValueChange = {
-                                costPrice = it.replace(",", "")
-                                costTouched = true
-                                isDirty = true
-                            },
-                            label = R.string.cost_price,
-                            iconRes = R.drawable.input_circle_24px,
-                            colorScheme = MaterialTheme.colorScheme.costPrice,
-                            isError = isCostError
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        PriceField(
-                            value = salePrice,
-                            onValueChange = {
-                                salePrice = it.replace(",", "")
-                                saleTouched = true
-                                isDirty = true
-                            },
-                            label = R.string.sale_price,
-                            iconRes = R.drawable.output_circle_24px,
-                            colorScheme = MaterialTheme.colorScheme.salePrice,
-                            isError = isSaleError
-                        )
+                        // BoxWithConstraints has no implicit vertical layout —
+                        // the stacked fields must go in a Column
+                        Column {
+                            PriceField(
+                                value = costPrice,
+                                onValueChange = {
+                                    costPrice = it.replace(",", "")
+                                    costTouched = true
+                                    isDirty = true
+                                },
+                                label = R.string.cost_price,
+                                iconRes = R.drawable.input_circle_24px,
+                                colorScheme = MaterialTheme.colorScheme.costPrice,
+                                isError = isCostError
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            PriceField(
+                                value = salePrice,
+                                onValueChange = {
+                                    salePrice = it.replace(",", "")
+                                    saleTouched = true
+                                    isDirty = true
+                                },
+                                label = R.string.sale_price,
+                                iconRes = R.drawable.output_circle_24px,
+                                colorScheme = MaterialTheme.colorScheme.salePrice,
+                                isError = isSaleError
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -340,12 +348,13 @@ fun AddProduct(
                 // profitable, error-colored when selling below cost
                 if (costAmount != null && saleAmount != null) {
                     val profit = saleAmount.amount - costAmount.amount
-                    val marginPercent = profit * 100 / costAmount.amount
+                    // Money.amount is Long — divide as Double or the margin truncates
+                    val marginPercent = profit * 100.0 / costAmount.amount
                     Text(
                         text = stringResource(
                             R.string.profit_margin_hint,
-                            PriceValidator.formatPrice(profit.toString()),
-                            marginPercent
+                            PriceValidator.formatPrice(profit),
+                            String.format("%.1f", marginPercent)
                         ),
                         fontFamily = BKoodak,
                         fontWeight = FontWeight.Bold,
@@ -357,6 +366,16 @@ fun AddProduct(
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
+                    if (saleAmount.amount <= costAmount.amount) {
+                        Spacer(modifier = Modifier.height(dimen(R.dimen.space_1)))
+                        Text(
+                            text = stringResource(R.string.warning_selling_below_cost),
+                            fontFamily = BKoodak,
+                            fontSize = dimenTextSize(R.dimen.text_size_sm),
+                            color = MaterialTheme.colorScheme.customError,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
@@ -724,6 +743,16 @@ private fun SubcategoryDropdownField(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
+            // Only offer clearing once something is actually selected
+            if (selectedId.isNotEmpty()) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.none)) },
+                    onClick = {
+                        onSelect("")
+                        expanded = false
+                    }
+                )
+            }
             subcategories.forEach { subcategory ->
                 DropdownMenuItem(
                     text = { Text(subcategory.name) },

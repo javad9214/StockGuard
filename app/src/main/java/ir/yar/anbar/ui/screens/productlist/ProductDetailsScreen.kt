@@ -174,11 +174,12 @@ fun ProductDetailsContent(
 
     // Local state for price and stock edits
     var stockValue by remember(product.stock) { mutableStateOf(product.stock.value.toString()) }
-    var priceValue by remember(product.price) { mutableStateOf(product.price.amount.toString()) }
+    // Stored in cents, edited in display units — prefill must convert
+    var priceValue by remember(product.price) { mutableStateOf(product.price.toDisplayAmount().toString()) }
 
-    // Price validation
+    // Price validation (decimal display amounts, e.g. "100" or "12.5")
     val isPriceValid = remember(priceValue) {
-        priceValue.isEmpty() || priceValue.all { it.isDigit() }
+        priceValue.isEmpty() || Money.parsePositiveOrNull(priceValue) != null
     }
 
     val isFormValid = stockValue.isNotEmpty() && stockValue.toIntOrNull() != null && isPriceValid
@@ -321,7 +322,7 @@ fun ProductDetailsContent(
                     isError = !isPriceValid,
                     supportingText = {
                         if (!isPriceValid) {
-                            Text("Invalid price format")
+                            Text(str(R.string.error_enter_valid_price))
                         }
                     },
                     trailingIcon = {
@@ -384,7 +385,9 @@ fun ProductDetailsContent(
                 onClick = {
                     val updatedProduct = product.copy(
                         stock = StockQuantity(stockValue.toIntOrNull() ?: product.stock.value),
-                        price = Money(priceValue.toLongOrNull() ?: product.price.amount),
+                        // Parse display units into cents; keep the current
+                        // price when the field was left blank/invalid
+                        price = Money.parsePositiveOrNull(priceValue) ?: product.price,
                     )
                     onSave(updatedProduct)
                 },

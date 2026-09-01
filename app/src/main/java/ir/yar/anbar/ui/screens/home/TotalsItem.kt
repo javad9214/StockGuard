@@ -63,7 +63,7 @@ fun TotalsItem(
                     horizontalArrangement = Arrangement.SpaceBetween) {
 
                     Text(
-                        text = PriceValidator.formatPrice(totalSales.amount.toString()),
+                        text = PriceValidator.formatPrice(totalSales.amount),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         fontSize = dimenTextSize(R.dimen.text_size_lg)
@@ -100,7 +100,7 @@ fun TotalsItem(
                 Row ( verticalAlignment = Alignment.CenterVertically) {
 
                     Text(
-                        text = PriceValidator.formatPrice(totalProfit.amount.toString()),
+                        text = PriceValidator.formatPrice(totalProfit.amount),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         fontSize = dimenTextSize(R.dimen.text_size_lg)

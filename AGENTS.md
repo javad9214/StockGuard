@@ -55,6 +55,12 @@ fix(invoice): clamp sale quantity to stock when scanning a duplicate product
 Closes #142
 ```
 
+**Workflow rule**
+
+- After completing a code-changing task, ALWAYS provide a ready-to-use
+  Conventional Commit message for the work just done. Present the message;
+  do not commit or push unless explicitly asked.
+
 ---
 
 ## Rule 2: Clean Architecture & Best Practices

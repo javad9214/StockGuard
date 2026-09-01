@@ -330,7 +330,7 @@ private fun InvoiceHeaderCard(
 
             InfoRow(
                 label = str(R.string.total),
-                value = formatPrice(invoiceWithProducts.calculateTotalAmount().amount.toString()),
+                value = formatPrice(invoiceWithProducts.calculateTotalAmount()),
                 isAmount = true
             )
         }
@@ -450,7 +450,7 @@ private fun ProductItemCard(
             }
 
             Text(
-                formatPrice(product.price.amount.toString()),
+                formatPrice(product.price),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .weight(1f)
@@ -470,7 +470,7 @@ private fun ProductItemCard(
             )
 
             Text(
-                text = formatPrice(invoiceProduct.calculateTotalRevenue().amount.toString()),
+                text = formatPrice(invoiceProduct.calculateTotalRevenue()),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -519,7 +519,7 @@ private fun InvoiceTotalSection(
 
                 Row {
                     Text(
-                        formatPrice(invoiceWithProducts.calculateTotalCost().amount.toString()),
+                        formatPrice(invoiceWithProducts.calculateTotalCost()),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -561,7 +561,8 @@ private fun InfoRow(
         if (isAmount) {
             Row {
                 Text(
-                    formatPrice(value),
+                    // Amount values arrive already formatted in display units
+                    value,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -576,7 +577,7 @@ private fun InfoRow(
             }
         } else {
             Text(
-                formatPrice(value),
+                value,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 fontFamily = BMitra,

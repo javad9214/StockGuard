@@ -79,7 +79,7 @@ fun ProductSelectionItem(
                     )
                     Text(
                         modifier = Modifier.padding(start = dimen(R.dimen.space_1)),
-                        text = PriceValidator.formatPrice(product.price.amount.toString()),
+                        text = PriceValidator.formatPrice(product.price),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }

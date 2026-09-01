@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
+import ir.yar.anbar.domain.model.type.Money
 import ir.yar.anbar.ui.components.image.ProductThumbnail
 import ir.yar.anbar.ui.screens.productlist.AddProductTopBar
 import ir.yar.anbar.ui.screens.productlist.PriceField
@@ -173,11 +174,16 @@ fun AddProductPriceBottomSheet(
             // Save Button
             SaveButton(
                 onSave = {
-                    val salePrice = salePriceText.toLongOrNull() ?: 0L
-                    val costPrice = costPriceText.toLongOrNull() ?: 0L
-                    onSave(salePrice, costPrice)
+                    // Parse display units into cents — the raw text must not
+                    // be treated as an amount in cents
+                    val saleAmount = Money.parsePositiveOrNull(salePriceText)
+                    val costAmount = Money.parsePositiveOrNull(costPriceText)
+                    if (saleAmount != null && costAmount != null) {
+                        onSave(saleAmount.amount, costAmount.amount)
+                    }
                 },
-                enabled = salePriceText.isNotBlank() && costPriceText.isNotBlank(),
+                enabled = Money.parsePositiveOrNull(salePriceText) != null &&
+                    Money.parsePositiveOrNull(costPriceText) != null,
                 modifier = Modifier.fillMaxWidth()
             )
 

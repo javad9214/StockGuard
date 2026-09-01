@@ -146,7 +146,7 @@ fun LowStockProductItem(
                     val reorderValue = cost.amount * quantity.value
                     StockInfoRow(
                         label = str(R.string.reorder_cost),
-                        value = reorderValue.toString(),
+                        value = formatPrice(reorderValue),
                         icon = R.drawable.dollar_circle,
                         iconDescription = str(R.string.reorder_cost),
                         isAmount = true,
@@ -246,7 +246,8 @@ private fun StockInfoRow(
 
             if (isAmount) {
                 Text(
-                    formatPrice(value),
+                    // Amount values arrive already formatted in display units
+                    value,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = textColor
