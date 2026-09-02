@@ -58,7 +58,7 @@ fun BottomTotalSection(
             )
 
             Text(
-                text = PriceValidator.formatPrice(totalPrice.toString()),
+                text = PriceValidator.formatPrice(totalPrice),
                 style = MaterialTheme.typography.titleMedium,
                 fontFamily = BHoma,
                 fontWeight = FontWeight.Bold,

@@ -232,7 +232,7 @@ private fun SalesMetricRow(
                 horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_1))
             ) {
                 Text(
-                    text = formatPrice(revenue.toString()),
+                    text = formatPrice(revenue),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -314,7 +314,7 @@ private fun ProfitInfoRow(
             )
 
             Text(
-                formatPrice(amount.toString()),
+                formatPrice(amount),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = profitColor

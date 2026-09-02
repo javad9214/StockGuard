@@ -236,7 +236,12 @@
     <string name="error_sale_price_invalid">Sale price must be a positive number</string>
     <string name="error_cost_price_invalid">Cost price must be a positive number</string>
     <string name="error_enter_valid_price">Enter a valid price</string>
-    <string name="profit_margin_hint">Profit: %1$s (%2$d%%)</string>
+    <string name="profit_margin_hint">Profit: %1$s (%2$s%%)</string>
+    <string name="warning_selling_below_cost">Warning: sale price is not higher than cost price</string>
+    <string name="none">None</string>
+    <string name="error_camera_permission_denied">Camera access is required to take a photo</string>
+    <string name="remove_image">Remove image</string>
+    <string name="error_image_load_failed">Could not load image</string>
     <string name="discard_changes_message">Discard unsaved changes?</string>
     <string name="discard">Discard</string>
     <string name="add_product_button">Add Product</string>

@@ -246,7 +246,7 @@ fun InvoiceItem(
                             .padding(end = dimen(R.dimen.space_1))
                     )
                     Text(
-                        text = PriceValidator.formatPrice(invoice.totalAmount?.amount.toString()),
+                        text = PriceValidator.formatPrice(invoice.totalAmount?.amount ?: 0L),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary

@@ -13,7 +13,6 @@ import ir.yar.anbar.domain.usecase.invoice.DeleteInvoiceUseCase
 import ir.yar.anbar.domain.usecase.invoice.GetAllInvoiceUseCase
 import ir.yar.anbar.domain.usecase.invoice.GetAllInvoicesOldestFirstUseCase
 import ir.yar.anbar.domain.usecase.invoice.GetInvoiceNumberUseCase
-import ir.yar.anbar.domain.usecase.invoice.GetInvoiceWithDetailsUseCase
 import ir.yar.anbar.domain.usecase.invoice.InitInvoiceWithProductsUseCase
 import ir.yar.anbar.domain.usecase.invoice.InsertInvoiceUseCase
 import ir.yar.anbar.domain.usecase.product.DecreaseStockUseCase
@@ -45,12 +44,6 @@ object InvoiceUseCaseModule {
         repository: InvoiceRepository
     ): GetAllInvoicesOldestFirstUseCase = GetAllInvoicesOldestFirstUseCase(repository)
 
-
-    @Provides
-    @Singleton
-    fun provideGetInvoiceWithDetailsUseCase(
-        repository: InvoiceRepository
-    ): GetInvoiceWithDetailsUseCase = GetInvoiceWithDetailsUseCase(repository)
 
     @Provides
     @Singleton

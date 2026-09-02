@@ -126,7 +126,7 @@ fun InvoiceProductItem(
                     }
 
                     Text(
-                        text = PriceValidator.formatPrice(priceToShow.toString()),
+                        text = PriceValidator.formatPrice(priceToShow),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontFamily = BKoodak,
                             fontWeight = FontWeight.Bold,
@@ -259,7 +259,7 @@ fun InvoiceProductItem(
                             }
 
                             Text(
-                                text = PriceValidator.formatPrice(itemTotal.amount.toString()),
+                                text = PriceValidator.formatPrice(itemTotal),
                                 modifier = Modifier
                                     .align(Alignment.Bottom)
                                     .padding(end = dimen(R.dimen.space_1)),

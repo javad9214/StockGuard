@@ -324,7 +324,7 @@ fun ProductItem(
                             Spacer(modifier = Modifier.width(4.dp))
 
                             Text(
-                                text = PriceValidator.formatPrice(product.price.amount.toString()),
+                                text = PriceValidator.formatPrice(product.price),
                                 fontSize = dimenTextSize(R.dimen.text_size_md),
                                 fontFamily = BHoma
                             )
@@ -374,7 +374,7 @@ fun ProductItem(
                             Spacer(modifier = Modifier.width(4.dp))
 
                             Text(
-                                text = PriceValidator.formatPrice(product.costPrice.amount.toString()),
+                                text = PriceValidator.formatPrice(product.costPrice),
                                 fontSize = dimenTextSize(R.dimen.text_size_sm), // Smaller
                                 fontFamily = BHoma
                             )

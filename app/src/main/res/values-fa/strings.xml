@@ -252,7 +252,12 @@
     <string name="error_sale_price_invalid">قیمت فروش باید عددی مثبت باشد</string>
     <string name="error_cost_price_invalid">قیمت خرید باید عددی مثبت باشد</string>
     <string name="error_enter_valid_price">قیمت معتبر وارد کنید</string>
-    <string name="profit_margin_hint">سود: %1$s (%2$d٪)</string>
+    <string name="profit_margin_hint">سود: %1$s (%2$s٪)</string>
+    <string name="warning_selling_below_cost">هشدار: قیمت فروش از قیمت خرید بیشتر نیست</string>
+    <string name="none">هیچ‌کدام</string>
+    <string name="error_camera_permission_denied">برای گرفتن عکس، دسترسی به دوربین لازم است</string>
+    <string name="remove_image">حذف تصویر</string>
+    <string name="error_image_load_failed">بارگذاری تصویر ناموفق بود</string>
     <string name="discard_changes_message">تغییرات ذخیره‌نشده دور ریخته شود؟</string>
     <string name="discard">دور بینداز</string>
     <string name="add_product_button">افزودن محصول</string>

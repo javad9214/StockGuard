@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ir.yar.anbar.domain.model.InvoiceProduct
 import ir.yar.anbar.domain.model.Product
+import ir.yar.anbar.utils.price.PriceValidator
 
 @Composable
 fun EditableProductItem(
@@ -36,7 +37,7 @@ fun EditableProductItem(
                 Text("Qty: ${item.quantity}", style = MaterialTheme.typography.bodySmall)
             }
             Text(
-                text = item.calculateTotalRevenue().amount.toString(),
+                text = PriceValidator.formatPrice(item.calculateTotalRevenue()),
                 style = MaterialTheme.typography.titleMedium
             )
             IconButton(onClick = onRemove) {

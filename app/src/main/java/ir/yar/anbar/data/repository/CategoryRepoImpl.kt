@@ -7,8 +7,8 @@ import ir.yar.anbar.data.local.entity.CategoryEntity
 import ir.yar.anbar.data.local.entity.SubcategoryEntity
 import ir.yar.anbar.data.remote.api.ApiServiceCategory
 import ir.yar.anbar.data.remote.dto.response.CategoryWithSubcategoriesDto
+import ir.yar.anbar.data.mapper.toDomain
 import ir.yar.anbar.domain.model.Subcategory
-import ir.yar.anbar.domain.model.toDomain
 import ir.yar.anbar.domain.repository.CategoryRepository
 import javax.inject.Inject
 

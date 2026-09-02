@@ -229,7 +229,7 @@ fun ServerProductItem(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 textAlign = TextAlign.Start,
-                                text = PriceValidator.formatPrice(product.price.amount.toString()),
+                                text = PriceValidator.formatPrice(product.price),
                                 fontSize = dimenTextSize(R.dimen.text_size_md),
                                 fontFamily = BHoma
                             )

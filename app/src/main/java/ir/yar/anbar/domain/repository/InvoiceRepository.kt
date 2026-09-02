@@ -4,7 +4,6 @@ package ir.yar.anbar.domain.repository
 import ir.yar.anbar.domain.model.Invoice
 import ir.yar.anbar.domain.model.InvoiceSyncResult
 import ir.yar.anbar.domain.model.InvoiceWithProducts
-import ir.yar.anbar.domain.model.TopSellingProductInfo
 import kotlinx.coroutines.flow.Flow
 
 interface InvoiceRepository {
@@ -16,12 +15,6 @@ interface InvoiceRepository {
      * server, then pulls server-side changes back into the local DB.
      */
     suspend fun syncInvoices(): InvoiceSyncResult
-
-    /**
-     * Get a single invoice and its products by invoice ID. The returned InvoiceWithProducts
-     * includes both itemized invoice products and the corresponding full product details (products property).
-     */
-    fun getInvoiceWithProducts(invoiceId: Long): Flow<InvoiceWithProducts>
 
     /**
      * Get all invoices, each including both invoice product lines and the corresponding
@@ -37,15 +30,6 @@ interface InvoiceRepository {
     suspend fun deleteInvoice(invoiceId: Long)
 
     suspend fun getNextInvoiceNumberId(): Long
-
-    // Analytics methods
-    suspend fun getTotalSalesForMonth(yearMonth: String): Long
-
-    suspend fun getTotalInvoicesForMonth(yearMonth: String): Int
-
-    suspend fun getTotalQuantityForMonth(yearMonth: String): Int
-
-    suspend fun getTopSellingProductsForMonth(yearMonth: String): List<TopSellingProductInfo>
 
     fun getTotalProfitBetweenDates(start: Long, end: Long): Flow<Long>
 
