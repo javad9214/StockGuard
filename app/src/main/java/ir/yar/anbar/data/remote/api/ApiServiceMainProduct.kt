@@ -27,15 +27,15 @@ interface ApiServiceMainProduct {
         @Query("size") size: Int = 20
     ): ApiResponse<PagedResponseDto<CatalogProductDto>>
 
-    @POST("products")
+    @POST(ApiConstants.API + ApiConstants.ADMIN_CATALOG + "products")
     suspend fun createProduct(@Body product: CatalogProductDto): ApiResponse<ResponseDto<Long>>
 
-    @PUT("products/{id}")
+    @PUT(ApiConstants.API + ApiConstants.ADMIN_CATALOG + "products/{id}")
     suspend fun updateProduct(
         @Path("id") id: Long,
         @Body product: CatalogProductDto
-    ): ApiResponse<ResponseDto<String>>
+    ): ApiResponse<ResponseDto<Unit>>
 
-    @DELETE("products/{id}")
-    suspend fun deleteProduct(@Path("id") id: Long): ApiResponse<ResponseDto<String>>
+    @DELETE(ApiConstants.API + ApiConstants.ADMIN_CATALOG + "products/{id}")
+    suspend fun deleteProduct(@Path("id") id: Long): ApiResponse<ResponseDto<Unit>>
 }
