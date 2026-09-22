@@ -2,7 +2,7 @@ package ir.yar.anbar.data.remote.api
 
 import com.skydoves.sandwich.ApiResponse
 import ir.yar.anbar.data.remote.dto.request.UserProductRequestDto
-import ir.yar.anbar.data.remote.dto.response.ApiResponseDto
+import ir.yar.anbar.data.remote.dto.response.ResponseDto
 import ir.yar.anbar.data.remote.dto.response.PagedResponseDto
 import ir.yar.anbar.data.remote.dto.response.UserProductResponseDto
 import okhttp3.MultipartBody
@@ -31,7 +31,7 @@ interface ApiServiceUserProduct {
     suspend fun createCustomProduct(
         @Part("product") product: UserProductRequestDto,
         @Part image: MultipartBody.Part?
-    ): ApiResponse<ApiResponseDto<Long>>
+    ): ApiResponse<ResponseDto<Long>>
 
     @Multipart
     @POST("api/products/adopt/{catalogProductId}")
@@ -39,7 +39,7 @@ interface ApiServiceUserProduct {
         @Path("catalogProductId") catalogProductId: Long,
         @Part("product") product: UserProductRequestDto,
         @Part image: MultipartBody.Part?
-    ): ApiResponse<ApiResponseDto<Long>>
+    ): ApiResponse<ResponseDto<Long>>
 
     @Multipart
     @PUT("api/products/{id}")
@@ -47,10 +47,10 @@ interface ApiServiceUserProduct {
         @Path("id") id: Long,
         @Part("product") product: UserProductRequestDto,
         @Part image: MultipartBody.Part?
-    ): ApiResponse<ApiResponseDto<Unit>>
+    ): ApiResponse<ResponseDto<Unit>>
 
     @DELETE("api/products/{id}")
-    suspend fun deleteProduct(@Path("id") id: Long): ApiResponse<ApiResponseDto<Unit>>
+    suspend fun deleteProduct(@Path("id") id: Long): ApiResponse<ResponseDto<Unit>>
 
     @GET("api/products/search")
     suspend fun searchProducts(

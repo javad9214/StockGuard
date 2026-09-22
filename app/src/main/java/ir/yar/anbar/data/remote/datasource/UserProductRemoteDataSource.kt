@@ -3,7 +3,7 @@ package ir.yar.anbar.data.remote.datasource
 import com.skydoves.sandwich.ApiResponse
 import ir.yar.anbar.data.remote.api.ApiServiceUserProduct
 import ir.yar.anbar.data.remote.dto.request.UserProductRequestDto
-import ir.yar.anbar.data.remote.dto.response.ApiResponseDto
+import ir.yar.anbar.data.remote.dto.response.ResponseDto
 import ir.yar.anbar.data.remote.dto.response.PagedResponseDto
 import ir.yar.anbar.data.remote.dto.response.UserProductResponseDto
 import ir.yar.anbar.data.util.ProductImageFileManager
@@ -35,7 +35,7 @@ class UserProductRemoteDataSource @Inject constructor(
     suspend fun createCustomProduct(
         product: UserProductRequestDto,
         imageSource: String?
-    ): ApiResponse<ApiResponseDto<Long>> =
+    ): ApiResponse<ResponseDto<Long>> =
         apiService.createCustomProduct(product, imageFileManager.createUploadPart(imageSource))
 
     /** Adopt a catalog product into the user's inventory; returns the new server ID */
@@ -43,7 +43,7 @@ class UserProductRemoteDataSource @Inject constructor(
         catalogProductId: Long,
         product: UserProductRequestDto,
         imageSource: String?
-    ): ApiResponse<ApiResponseDto<Long>> =
+    ): ApiResponse<ResponseDto<Long>> =
         apiService.adoptCatalogProduct(
             catalogProductId,
             product,
@@ -55,11 +55,11 @@ class UserProductRemoteDataSource @Inject constructor(
         id: Long,
         product: UserProductRequestDto,
         imageSource: String?
-    ): ApiResponse<ApiResponseDto<Unit>> =
+    ): ApiResponse<ResponseDto<Unit>> =
         apiService.updateProduct(id, product, imageFileManager.createUploadPart(imageSource))
 
     /** Delete a product on the server (soft delete) */
-    suspend fun deleteProduct(id: Long): ApiResponse<ApiResponseDto<Unit>> =
+    suspend fun deleteProduct(id: Long): ApiResponse<ResponseDto<Unit>> =
         apiService.deleteProduct(id)
 
     /** Search the user's products (paginated) */

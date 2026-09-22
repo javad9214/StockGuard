@@ -2,7 +2,7 @@ package ir.yar.anbar.data.remote.api
 
 import com.skydoves.sandwich.ApiResponse
 import ir.yar.anbar.data.remote.dto.CatalogProductDto
-import ir.yar.anbar.data.remote.dto.response.ApiResponseDto
+import ir.yar.anbar.data.remote.dto.response.ResponseDto
 import ir.yar.anbar.data.remote.dto.response.PagedResponseDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -28,14 +28,14 @@ interface ApiServiceMainProduct {
     ): ApiResponse<PagedResponseDto<CatalogProductDto>>
 
     @POST("products")
-    suspend fun createProduct(@Body product: CatalogProductDto): ApiResponse<ApiResponseDto<Long>>
+    suspend fun createProduct(@Body product: CatalogProductDto): ApiResponse<ResponseDto<Long>>
 
     @PUT("products/{id}")
     suspend fun updateProduct(
         @Path("id") id: Long,
         @Body product: CatalogProductDto
-    ): ApiResponse<ApiResponseDto<String>>
+    ): ApiResponse<ResponseDto<String>>
 
     @DELETE("products/{id}")
-    suspend fun deleteProduct(@Path("id") id: Long): ApiResponse<ApiResponseDto<String>>
+    suspend fun deleteProduct(@Path("id") id: Long): ApiResponse<ResponseDto<String>>
 }

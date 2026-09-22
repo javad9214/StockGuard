@@ -3,7 +3,7 @@ package ir.yar.anbar.data.remote.datasource
 import com.skydoves.sandwich.ApiResponse
 import ir.yar.anbar.data.remote.api.ApiServiceInvoice
 import ir.yar.anbar.data.remote.dto.request.InvoiceSyncRequestDto
-import ir.yar.anbar.data.remote.dto.response.ApiResponseDto
+import ir.yar.anbar.data.remote.dto.response.ResponseDto
 import ir.yar.anbar.data.remote.dto.response.InvoicePullResponseDto
 import ir.yar.anbar.data.remote.dto.response.SyncedInvoiceDto
 import javax.inject.Inject
@@ -19,7 +19,7 @@ class InvoiceRemoteDataSource @Inject constructor(
     /** Push a batch of local invoices; returns localId → serverId mappings */
     suspend fun pushInvoices(
         invoices: List<InvoiceSyncRequestDto>
-    ): ApiResponse<ApiResponseDto<List<SyncedInvoiceDto>>> =
+    ): ApiResponse<ResponseDto<List<SyncedInvoiceDto>>> =
         apiService.pushInvoices(invoices)
 
     /** Pull invoices changed on the server since the cursor (paged) */
@@ -27,6 +27,6 @@ class InvoiceRemoteDataSource @Inject constructor(
         since: Long,
         page: Int = 0,
         size: Int = 50
-    ): ApiResponse<ApiResponseDto<InvoicePullResponseDto>> =
+    ): ApiResponse<ResponseDto<InvoicePullResponseDto>> =
         apiService.pullInvoices(since, page, size)
 }

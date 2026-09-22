@@ -4,7 +4,7 @@ package ir.yar.anbar.data.remote.util
 import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.retrofit.statusCode
-import ir.yar.anbar.data.remote.dto.response.ApiResponseDto
+import ir.yar.anbar.data.remote.dto.response.ResponseDto
 import ir.yar.anbar.domain.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -54,10 +54,10 @@ object ApiResponseHandler {
     }.flowOn(Dispatchers.IO)
 
     /**
-     *  Handles ApiResponseDto format with success/error fields
+     *  Handles ResponseDto
      */
     inline fun <T, R> handleApiResponseWithMessage(
-        crossinline apiCall: suspend () -> ApiResponse<ApiResponseDto<T>>,
+        crossinline apiCall: suspend () -> ApiResponse<ResponseDto<T>>,
         crossinline mapper: (T) -> R
     ): Flow<Resource<R>> = flow {
         emit(Resource.Loading())
@@ -65,13 +65,13 @@ object ApiResponseHandler {
         try {
             when (val response = apiCall()) {
                 is ApiResponse.Success -> {
-                    val apiResponseDto = response.data
-                    if (apiResponseDto.success && apiResponseDto.data != null) {
-                        emit(Resource.Success(mapper(apiResponseDto.data)))
+                    val responseDto = response.data
+                    if (responseDto.isOk && responseDto.info != null) {
+                        emit(Resource.Success(mapper(responseDto.info)))
                     } else {
                         emit(
                             Resource.Error(
-                                message = apiResponseDto.error ?: "Unknown error occurred"
+                                message = responseDto.resMessage ?: "Unknown error occurred"
                             )
                         )
                     }
@@ -141,23 +141,23 @@ object ApiResponseHandler {
 
 
     /**
-     * Handles ApiResponseDto format with success/error fields without mapping
+     * Handles ResponseDto without mapping
      */
     inline fun <T : Any> handleApiResponseWithMessage(
-        crossinline apiCall: suspend () -> ApiResponse<ApiResponseDto<T>>
+        crossinline apiCall: suspend () -> ApiResponse<ResponseDto<T>>
     ): Flow<Resource<T>> = flow {
         emit(Resource.Loading())
 
         try {
             when (val response = apiCall()) {
                 is ApiResponse.Success -> {
-                    val apiResponseDto = response.data
-                    if (apiResponseDto.success && apiResponseDto.data != null) {
-                        emit(Resource.Success(apiResponseDto.data))
+                    val responseDto = response.data
+                    if (responseDto.isOk && responseDto.info != null) {
+                        emit(Resource.Success(responseDto.info))
                     } else {
                         emit(
                             Resource.Error(
-                                message = apiResponseDto.error ?: "Unknown error occurred"
+                                message = responseDto.resMessage ?: "Unknown error occurred"
                             )
                         )
                     }
@@ -221,20 +221,20 @@ object ApiResponseHandler {
 
 
     /**
-     *  Handles ApiResponseDto format with success/error fields for simple suspend functions (not Flow)
+     *  Handles ResponseDto for simple suspend functions (not Flow)
      */
     suspend inline fun <T> handleApiResponseSuspendWithMessage(
-        crossinline apiCall: suspend () -> ApiResponse<ApiResponseDto<T>>
+        crossinline apiCall: suspend () -> ApiResponse<ResponseDto<T>>
     ): Resource<T> {
         return try {
             when (val response = apiCall()) {
                 is ApiResponse.Success -> {
-                    val apiResponseDto = response.data
-                    if (apiResponseDto.success && apiResponseDto.data != null) {
-                        Resource.Success(apiResponseDto.data)
+                    val responseDto = response.data
+                    if (responseDto.isOk && responseDto.info != null) {
+                        Resource.Success(responseDto.info)
                     } else {
                         Resource.Error(
-                            message = apiResponseDto.error ?: "Unknown error occurred"
+                            message = responseDto.resMessage ?: "Unknown error occurred"
                         )
                     }
                 }

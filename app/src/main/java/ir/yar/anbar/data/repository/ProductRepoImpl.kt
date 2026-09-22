@@ -53,7 +53,7 @@ class ProductRepoImpl @Inject constructor(
                     product = product.toRequestDto(),
                     imageSource = imageSource ?: product.image?.localUri
                 )
-                val serverId = (response as? ApiResponse.Success)?.data?.data ?: return@launch
+                val serverId = (response as? ApiResponse.Success)?.data?.takeIf { it.isOk }?.info ?: return@launch
                 localDataSource.markProductSynced(
                     localId = localId,
                     serverId = serverId
@@ -95,7 +95,7 @@ class ProductRepoImpl @Inject constructor(
         // PENDING_DELETE so a future sync pass can retry the server delete.
         try {
             val response = remoteDataSource.deleteProduct(serverId)
-            if ((response as? ApiResponse.Success)?.data?.success == true) {
+            if ((response as? ApiResponse.Success)?.data?.isOk == true) {
                 localDataSource.deleteProduct(existing)
             } else {
                 localDataSource.markProductPendingDelete(existing.id)
@@ -146,7 +146,7 @@ class ProductRepoImpl @Inject constructor(
                     product = product.toRequestDto(),
                     imageSource = product.image?.localUri?.takeUnless(imageFileManager::isServerImage)
                 )
-                if ((response as? ApiResponse.Success)?.data?.success == true) {
+                if ((response as? ApiResponse.Success)?.data?.isOk == true) {
                     localDataSource.markProductSynced(
                         localId = product.id.value,
                         serverId = serverId
@@ -211,7 +211,7 @@ class ProductRepoImpl @Inject constructor(
                     product = entity.toDomain().toRequestDto(),
                     imageSource = entity.imageLocalPath
                 )
-                val serverId = (response as? ApiResponse.Success)?.data?.data
+                val serverId = (response as? ApiResponse.Success)?.data?.takeIf { it.isOk }?.info
                 if (serverId != null) {
                     localDataSource.markProductSynced(entity.id, serverId)
                     created++
@@ -239,7 +239,7 @@ class ProductRepoImpl @Inject constructor(
                     product = entity.toDomain().toRequestDto(),
                     imageSource = entity.imageLocalPath?.takeUnless(imageFileManager::isServerImage)
                 )
-                if ((response as? ApiResponse.Success)?.data?.success == true) {
+                if ((response as? ApiResponse.Success)?.data?.isOk == true) {
                     localDataSource.markProductSynced(entity.id, serverId)
                     updated++
                 } else {
@@ -263,7 +263,7 @@ class ProductRepoImpl @Inject constructor(
             }
             try {
                 val response = remoteDataSource.deleteProduct(serverId)
-                if ((response as? ApiResponse.Success)?.data?.success == true) {
+                if ((response as? ApiResponse.Success)?.data?.isOk == true) {
                     localDataSource.deleteProduct(entity)
                     deleted++
                 } else {
