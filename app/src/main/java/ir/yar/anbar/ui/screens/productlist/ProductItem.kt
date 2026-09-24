@@ -78,6 +78,7 @@ fun ProductItem(
     onEdit: () -> Unit,
     onDisable: () -> Unit,
     onDelete: () -> Unit,
+    onSync: () -> Unit = {},
     onProductClick: () -> Unit = {}
 ) {
     var showDeleteConfirmation by remember { mutableStateOf(false) }
@@ -132,6 +133,14 @@ fun ProductItem(
                                     onClick = {
                                         showMenu = false
                                         onDisable()
+                                    }
+                                ),
+                                BottomSheetMenuItem(
+                                    text = str(R.string.sync),
+                                    icon = painterResource(id = R.drawable.sync_24px),
+                                    onClick = {
+                                        showMenu = false
+                                        onSync()
                                     }
                                 ),
                                 BottomSheetMenuItem(
@@ -433,6 +442,7 @@ fun ProductItemPreview() {
             onEdit = { /* Preview: Edit clicked */ },
             onDisable = { /* Preview: Disable clicked */ },
             onDelete = { /* Preview: Delete clicked */ },
+            onSync = { /* Preview: Sync clicked */ },
             onProductClick = { /* Preview: Product clicked */ }
         )
     }
@@ -472,6 +482,7 @@ fun ProductItemWithoutBarcodePreview() {
             onEdit = { },
             onDisable = { },
             onDelete = { },
+            onSync = { },
             onProductClick = { }
         )
     }

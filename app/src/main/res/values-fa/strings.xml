@@ -336,6 +336,9 @@
     <!-- Sync -->
     <string name="sync_all_products">همگام‌سازی همه محصولات</string>
     <string name="products_synced">محصولات با سرور همگام‌سازی شدند</string>
+    <string name="sync">همگام سازی</string>
+    <string name="product_synced">محصول با سرور همگام‌سازی شد</string>
+    <string name="product_sync_failed">همگام‌سازی محصول ناموفق بود</string>
     <string name="sync_invoices">همگام‌سازی فاکتورها</string>
     <string name="invoices_synced">فاکتورها با سرور همگام‌سازی شدند</string>
 

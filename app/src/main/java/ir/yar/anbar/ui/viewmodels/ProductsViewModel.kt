@@ -25,6 +25,7 @@ import ir.yar.anbar.domain.usecase.product.GetProductByQueryUseCase
 import ir.yar.anbar.domain.usecase.product.IncreaseStockUseCase
 import ir.yar.anbar.domain.usecase.product.SyncAllProductsUseCase
 import ir.yar.anbar.domain.usecase.userpreferences.GetDefaultUnitUseCase
+import ir.yar.anbar.domain.usecase.product.SyncSingleProductUseCase
 import ir.yar.anbar.utils.barcode.BarcodeGenerator
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -60,8 +61,9 @@ class ProductsViewModel @Inject constructor(
     private val increaseStockUseCase: IncreaseStockUseCase,
     private val decreaseStockUseCase: DecreaseStockUseCase,
     private val syncAllProductsUseCase: SyncAllProductsUseCase,
-    private val getSubcategoriesUseCase: GetSubcategoriesUseCase,
-    private val getDefaultUnitUseCase: GetDefaultUnitUseCase
+    private val getDefaultUnitUseCase: GetDefaultUnitUseCase,
+    private val syncSingleProductUseCase: SyncSingleProductUseCase,
+    private val getSubcategoriesUseCase: GetSubcategoriesUseCase
 ) : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
@@ -134,6 +136,12 @@ class ProductsViewModel @Inject constructor(
 
     private val _lastSyncResult = MutableStateFlow<ProductSyncResult?>(null)
     val lastSyncResult: StateFlow<ProductSyncResult?> get() = _lastSyncResult
+
+    // One-shot outcome of syncing one product from its list item menu. A
+    // SharedFlow (not StateFlow) so consecutive identical results each emit
+    // and the snackbar fires every time
+    private val _singleSyncEvent = MutableSharedFlow<ProductSyncResult>()
+    val singleSyncEvent: SharedFlow<ProductSyncResult> = _singleSyncEvent.asSharedFlow()
 
     // One-shot outcome of saveProduct — the screen collects this to navigate on
     // Success and surface an error Snackbar on Error, instead of navigating
@@ -254,6 +262,18 @@ class ProductsViewModel @Inject constructor(
             _isSyncing.value = true
             try {
                 _lastSyncResult.value = syncAllProductsUseCase()
+            } finally {
+                _isSyncing.value = false
+            }
+        }
+    }
+
+    fun syncSingleProduct(product: Product) {
+        if (_isSyncing.value) return // a sync pass is already running
+        viewModelScope.launch {
+            _isSyncing.value = true
+            try {
+                _singleSyncEvent.emit(syncSingleProductUseCase(product.id.value))
             } finally {
                 _isSyncing.value = false
             }

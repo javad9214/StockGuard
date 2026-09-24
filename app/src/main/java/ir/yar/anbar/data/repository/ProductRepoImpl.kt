@@ -284,6 +284,64 @@ class ProductRepoImpl @Inject constructor(
         )
     }
 
+    override suspend fun syncSingleProduct(productId: Long): ProductSyncResult {
+        // getProductById() filters out soft-deleted rows, so a PENDING_DELETE
+        // product resolves to null and reports nothing to push
+        val entity = localDataSource.getProductById(productId)
+            ?: return ProductSyncResult()
+
+        return when (entity.syncStatus) {
+            UserProductEntity.SYNC_STATUS_PENDING_CREATE -> {
+                try {
+                    val response = remoteDataSource.createCustomProduct(
+                        product = entity.toDomain().toRequestDto(),
+                        imageSource = entity.imageLocalPath
+                    )
+                    val serverId = (response as? ApiResponse.Success)?.data?.takeIf { it.isOk }?.info
+                    if (serverId != null) {
+                        localDataSource.markProductSynced(entity.id, serverId)
+                        ProductSyncResult(created = 1)
+                    } else {
+                        ProductSyncResult(failed = 1)
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    ProductSyncResult(failed = 1)
+                }
+            }
+
+            UserProductEntity.SYNC_STATUS_PENDING_UPDATE -> {
+                val serverId = entity.serverId
+                if (serverId == null) {
+                    // Row lost its server link — leave it pending for manual inspection
+                    ProductSyncResult(failed = 1)
+                } else {
+                    try {
+                        val response = remoteDataSource.updateProduct(
+                            id = serverId,
+                            product = entity.toDomain().toRequestDto(),
+                            imageSource = entity.imageLocalPath?.takeUnless(imageFileManager::isServerImage)
+                        )
+                        if ((response as? ApiResponse.Success)?.data?.isOk == true) {
+                            localDataSource.markProductSynced(entity.id, serverId)
+                            ProductSyncResult(updated = 1)
+                        } else {
+                            ProductSyncResult(failed = 1)
+                        }
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        ProductSyncResult(failed = 1)
+                    }
+                }
+            }
+
+            // Already synced — nothing to push
+            else -> ProductSyncResult()
+        }
+    }
+
     /**
      * Pulls every page of the user's products from the server and merges them into
      * the local DB. Never blocks callers on failures — the local table stays as-is.

@@ -106,12 +106,24 @@ fun ProductScreen(
     // Snackbar host for sync results
     val syncSnackyHostState = rememberSnackyHostState()
     val productsSyncedMessage = str(R.string.products_synced)
+    val productSyncedMessage = str(R.string.product_synced)
+    val productSyncFailedMessage = str(R.string.product_sync_failed)
 
     LaunchedEffect(lastSyncResult) {
         lastSyncResult?.let {
             syncSnackyHostState.show(
                 message = productsSyncedMessage,
                 type = SnackyType.INFO
+            )
+        }
+    }
+
+    // One-shot feedback for single-product syncs from the item menu
+    LaunchedEffect(Unit) {
+        productsViewModel.singleSyncEvent.collect { result ->
+            syncSnackyHostState.show(
+                message = if (result.hasFailures) productSyncFailedMessage else productSyncedMessage,
+                type = if (result.hasFailures) SnackyType.ERROR else SnackyType.SUCCESS
             )
         }
     }
@@ -178,6 +190,7 @@ fun ProductScreen(
             onSearchQueryChange = { productsViewModel.updateSearchQuery(it) },
             onSortOrderSelected = { productsViewModel.updateSortOrder(it) },
             onSyncAllProducts = { productsViewModel.syncAllProducts() },
+            onSyncProduct = { productsViewModel.syncSingleProduct(it) },
             onAddProduct = {
 
                 navController.navigate(Screen.ProductCreate.createRoute(barcode = scannedBarcode))
@@ -269,6 +282,7 @@ fun ProductScreenContent(
     onSearchQueryChange: (String) -> Unit,
     onSortOrderSelected: (SortOrder) -> Unit,
     onSyncAllProducts: () -> Unit = {},
+    onSyncProduct: (Product) -> Unit = {},
     onAddProduct: () -> Unit,
     onEditProduct: (Product) -> Unit,
     onDisableProduct: (Product) -> Unit,
@@ -409,6 +423,7 @@ fun ProductScreenContent(
                         onEdit = { onEditProduct(product) },
                         onDisable = { onDisableProduct(product) },
                         onDelete = { onDeleteProduct(product) },
+                        onSync = { onSyncProduct(product) },
                         onProductClick = {
                             // navController.navigate(Screen.ProductDetails.createRoute(product.id.value))
                         }
