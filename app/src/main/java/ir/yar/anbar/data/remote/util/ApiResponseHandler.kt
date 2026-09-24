@@ -28,7 +28,7 @@ object ApiResponseHandler {
     internal fun ApiResponse.Failure.Error.envelopeMessage(): String {
         val body = runCatching { errorBody?.string() }.getOrNull()
         val resMessage = body?.let {
-            runCatching { gson.fromJson(it, ResponseDto<Unit>::class.java).resMessage }.getOrNull()
+            runCatching { gson.fromJson(it, ResponseDto::class.java).resMessage }.getOrNull()
         }
         return resMessage ?: "HTTP ${statusCode.code}"
     }
