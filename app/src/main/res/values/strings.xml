@@ -40,6 +40,9 @@
     <string name="system_default">System Default</string>
     <string name="stock_runout_limit">Stock runout alert limit</string>
     <string name="default_unit">Default Unit</string>
+    <string name="visible_units">Visible Units</string>
+    <string name="visible_units_summary">Showing %1$d of %2$d units in the dropdown</string>
+    <string name="choose_units">Choose Units</string>
 
     <!-- DATES -->
     <string name="today">TODAY</string>

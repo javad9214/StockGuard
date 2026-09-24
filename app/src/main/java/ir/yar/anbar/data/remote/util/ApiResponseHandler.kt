@@ -1,8 +1,9 @@
 package ir.yar.anbar.data.remote.util
 
 
+import com.google.gson.Gson
 import com.skydoves.sandwich.ApiResponse
-import com.skydoves.sandwich.message
+import com.skydoves.sandwich.retrofit.errorBody
 import com.skydoves.sandwich.retrofit.statusCode
 import ir.yar.anbar.data.remote.dto.response.ResponseDto
 import ir.yar.anbar.domain.util.Resource
@@ -13,6 +14,24 @@ import kotlinx.coroutines.flow.flowOn
 
 
 object ApiResponseHandler {
+
+    @PublishedApi
+    internal val gson = Gson()
+
+    /**
+     * The server's error bodies carry the same {resCode, resMessage} envelope
+     * as success bodies (BaseController.generateErrorResponse), so surface
+     * resMessage. Non-envelope bodies (e.g. Spring Security 401 JSON) and
+     * unreadable bodies fall back to the HTTP status code.
+     */
+    @PublishedApi
+    internal fun ApiResponse.Failure.Error.envelopeMessage(): String {
+        val body = runCatching { errorBody?.string() }.getOrNull()
+        val resMessage = body?.let {
+            runCatching { gson.fromJson(it, ResponseDto<Unit>::class.java).resMessage }.getOrNull()
+        }
+        return resMessage ?: "HTTP ${statusCode.code}"
+    }
 
     /**
      * Handles ApiResponse and converts it to Flow<Resource<T>>
@@ -31,7 +50,7 @@ object ApiResponseHandler {
                 is ApiResponse.Failure.Error -> {
                     emit(
                         Resource.Error(
-                            message = response.message(),
+                            message = response.envelopeMessage(),
                             code = response.statusCode.code
                         )
                     )
@@ -79,7 +98,7 @@ object ApiResponseHandler {
                 is ApiResponse.Failure.Error -> {
                     emit(
                         Resource.Error(
-                            message = response.message(),
+                            message = response.envelopeMessage(),
                             code = response.statusCode.code
                         )
                     )
@@ -117,7 +136,7 @@ object ApiResponseHandler {
                 is ApiResponse.Failure.Error -> {
                     emit(
                         Resource.Error(
-                            message = response.message(),
+                            message = response.envelopeMessage(),
                             code = response.statusCode.code
                         )
                     )
@@ -165,7 +184,7 @@ object ApiResponseHandler {
                 is ApiResponse.Failure.Error -> {
                     emit(
                         Resource.Error(
-                            message = response.message(),
+                            message = response.envelopeMessage(),
                             code = response.statusCode.code
                         )
                     )
@@ -202,7 +221,7 @@ object ApiResponseHandler {
                 }
                 is ApiResponse.Failure.Error -> {
                     Resource.Error(
-                        message = response.message(),
+                        message = response.envelopeMessage(),
                         code = response.statusCode.code
                     )
                 }
@@ -240,7 +259,7 @@ object ApiResponseHandler {
                 }
                 is ApiResponse.Failure.Error -> {
                     Resource.Error(
-                        message = response.message(),
+                        message = response.envelopeMessage(),
                         code = response.statusCode.code
                     )
                 }
@@ -270,7 +289,7 @@ object ApiResponseHandler {
                 }
                 is ApiResponse.Failure.Error -> {
                     Resource.Error(
-                        message = response.message(),
+                        message = response.envelopeMessage(),
                         code = response.statusCode.code
                     )
                 }

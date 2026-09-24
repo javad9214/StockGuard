@@ -25,6 +25,7 @@ import ir.yar.anbar.domain.usecase.product.GetProductByQueryUseCase
 import ir.yar.anbar.domain.usecase.product.IncreaseStockUseCase
 import ir.yar.anbar.domain.usecase.product.SyncAllProductsUseCase
 import ir.yar.anbar.domain.usecase.userpreferences.GetDefaultUnitUseCase
+import ir.yar.anbar.domain.usecase.userpreferences.GetVisibleUnitsUseCase
 import ir.yar.anbar.domain.usecase.product.SyncSingleProductUseCase
 import ir.yar.anbar.utils.barcode.BarcodeGenerator
 import kotlinx.coroutines.CancellationException
@@ -63,7 +64,8 @@ class ProductsViewModel @Inject constructor(
     private val syncAllProductsUseCase: SyncAllProductsUseCase,
     private val getDefaultUnitUseCase: GetDefaultUnitUseCase,
     private val syncSingleProductUseCase: SyncSingleProductUseCase,
-    private val getSubcategoriesUseCase: GetSubcategoriesUseCase
+    private val getSubcategoriesUseCase: GetSubcategoriesUseCase,
+    private val getVisibleUnitsUseCase: GetVisibleUnitsUseCase
 ) : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
@@ -83,6 +85,15 @@ class ProductsViewModel @Inject constructor(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             UserPreferencesRepository.DEFAULT_UNIT
+        )
+
+    // Units the form's unit picker offers; all of them until the DataStore
+    // preference arrives
+    val visibleUnits: StateFlow<Set<String>> = getVisibleUnitsUseCase()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            UserPreferencesRepository.DEFAULT_VISIBLE_UNITS
         )
 
     // Inputs of the products pipeline — mutations only update these and the

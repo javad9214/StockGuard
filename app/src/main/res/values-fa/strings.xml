@@ -54,6 +54,9 @@
     <string name="system_default">پیش فرض سیستم</string>
     <string name="stock_runout_limit">حد هشدار اتمام موجودی</string>
     <string name="default_unit">واحد پیش‌فرض</string>
+    <string name="visible_units">واحدهای نمایشی</string>
+    <string name="visible_units_summary">نمایش %1$d واحد از %2$d واحد در منوی انتخاب</string>
+    <string name="choose_units">انتخاب واحدها</string>
 
 
     <!-- DATES -->
