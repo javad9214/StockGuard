@@ -13,6 +13,7 @@ import ir.yar.anbar.domain.model.ProductSyncResult
 import ir.yar.anbar.domain.model.SortOrder
 import ir.yar.anbar.domain.model.Subcategory
 import ir.yar.anbar.domain.model.type.Money
+import ir.yar.anbar.domain.repository.UserPreferencesRepository
 import ir.yar.anbar.domain.usecase.category.GetSubcategoriesUseCase
 import ir.yar.anbar.domain.usecase.product.AddProductUseCase
 import ir.yar.anbar.domain.usecase.product.DecreaseStockUseCase
@@ -23,6 +24,7 @@ import ir.yar.anbar.domain.usecase.product.GetProductByIdUseCase
 import ir.yar.anbar.domain.usecase.product.GetProductByQueryUseCase
 import ir.yar.anbar.domain.usecase.product.IncreaseStockUseCase
 import ir.yar.anbar.domain.usecase.product.SyncAllProductsUseCase
+import ir.yar.anbar.domain.usecase.userpreferences.GetDefaultUnitUseCase
 import ir.yar.anbar.utils.barcode.BarcodeGenerator
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -58,7 +60,8 @@ class ProductsViewModel @Inject constructor(
     private val increaseStockUseCase: IncreaseStockUseCase,
     private val decreaseStockUseCase: DecreaseStockUseCase,
     private val syncAllProductsUseCase: SyncAllProductsUseCase,
-    private val getSubcategoriesUseCase: GetSubcategoriesUseCase
+    private val getSubcategoriesUseCase: GetSubcategoriesUseCase,
+    private val getDefaultUnitUseCase: GetDefaultUnitUseCase
 ) : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
@@ -70,6 +73,15 @@ class ProductsViewModel @Inject constructor(
     // decoration, so a failed load just leaves the dropdown empty.
     private val _subcategories = MutableStateFlow<List<Subcategory>>(emptyList())
     val subcategories: StateFlow<List<Subcategory>> get() = _subcategories
+
+    // Unit pre-selected on the add-product form; seeded with the domain
+    // default (PIECE) until the DataStore preference arrives
+    val defaultUnit: StateFlow<String> = getDefaultUnitUseCase()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            UserPreferencesRepository.DEFAULT_UNIT
+        )
 
     // Inputs of the products pipeline — mutations only update these and the
     // single collector below reacts, so a slow older query can never

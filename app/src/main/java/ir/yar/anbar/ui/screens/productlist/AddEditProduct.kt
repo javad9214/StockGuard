@@ -114,6 +114,7 @@ fun AddProduct(
     val isLoading by productsViewModel.isLoading.collectAsState()
     val isSaving by productsViewModel.isSaving.collectAsState()
     val subcategories by productsViewModel.subcategories.collectAsState()
+    val defaultUnit by productsViewModel.defaultUnit.collectAsState()
     val snackyHostState = rememberSnackyHostState()
     val confirmyHostState = rememberConfirmyHostState()
 
@@ -170,9 +171,15 @@ fun AddProduct(
         mutableStateOf(product?.stock?.value?.toString() ?: "")
     }
 
-    // The wire value is the exact server enum name; null = no unit selected
-    var selectedUnit by remember(product) {
-        mutableStateOf(UnitOfMeasure.fromName(product?.unit?.value))
+    // The wire value is the exact server enum name. Edits start from the
+    // product's own unit; new products pre-select the persisted default
+    // (PIECE out of the box), which may arrive one frame after first
+    // composition — hence the key re-initializing the selection
+    var selectedUnit by remember(product, defaultUnit) {
+        mutableStateOf(
+            UnitOfMeasure.fromName(product?.unit?.value)
+                ?: UnitOfMeasure.fromName(defaultUnit)
+        )
     }
 
     val isEditMode = product != null

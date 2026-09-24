@@ -3,8 +3,11 @@ package ir.yar.anbar.ui.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ir.yar.anbar.domain.model.UnitOfMeasure
 import ir.yar.anbar.domain.repository.UserPreferencesRepository
+import ir.yar.anbar.domain.usecase.userpreferences.GetDefaultUnitUseCase
 import ir.yar.anbar.domain.usecase.userpreferences.GetStockRunoutLimitUseCase
+import ir.yar.anbar.domain.usecase.userpreferences.SaveDefaultUnitUseCase
 import ir.yar.anbar.domain.usecase.userpreferences.SaveStockRunoutLimitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -23,6 +26,8 @@ data class SettingUiState(
     // Seeded from the domain default so the pre-emission value matches what
     // the DataStore flow will deliver for a never-saved preference
     val stockRunoutLimit: Int = UserPreferencesRepository.DEFAULT_STOCK_RUNOUT_LIMIT,
+    // Exact UnitOfMeasure enum name, same seeding rationale as above
+    val defaultUnit: String = UserPreferencesRepository.DEFAULT_UNIT,
     val errorMessage: String? = null
 ) {
     companion object {
@@ -38,7 +43,9 @@ data class SettingUiState(
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val getStockRunoutLimitUseCase: GetStockRunoutLimitUseCase,
-    private val saveStockRunoutLimitUseCase: SaveStockRunoutLimitUseCase
+    private val saveStockRunoutLimitUseCase: SaveStockRunoutLimitUseCase,
+    private val getDefaultUnitUseCase: GetDefaultUnitUseCase,
+    private val saveDefaultUnitUseCase: SaveDefaultUnitUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingUiState())
@@ -59,6 +66,7 @@ class SettingViewModel @Inject constructor(
     init {
         observeStockRunoutLimit()
         observeLimitSaveRequests()
+        observeDefaultUnit()
     }
 
     private fun observeStockRunoutLimit() {
@@ -121,6 +129,48 @@ class SettingViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(stockRunoutLimit = limit)
         lastRequestedLimit = limit
         limitSaveRequests.tryEmit(limit)
+    }
+
+    private fun observeDefaultUnit() {
+        viewModelScope.launch {
+            try {
+                getDefaultUnitUseCase().collectLatest { unit ->
+                    _uiState.value = _uiState.value.copy(defaultUnit = unit)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to observe default unit", e)
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = e.message ?: "Unknown error"
+                )
+            }
+        }
+    }
+
+    // A dropdown emits one discrete selection, so — unlike the slider — no
+    // debounce is needed; just write through
+    fun saveDefaultUnit(unit: String) {
+        if (UnitOfMeasure.fromName(unit) == null) {
+            // Unreachable from the selector, which only offers enum values —
+            // a rejection means a programmatic caller is out of sync
+            Log.w(TAG, "Rejected unknown default unit: $unit")
+            return
+        }
+
+        _uiState.value = _uiState.value.copy(defaultUnit = unit)
+        viewModelScope.launch {
+            try {
+                saveDefaultUnitUseCase(unit)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to save default unit: $unit", e)
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = e.message ?: "Unknown error"
+                )
+            }
+        }
     }
 
     // Called by the screen once the error snackbar has been shown, so the same
