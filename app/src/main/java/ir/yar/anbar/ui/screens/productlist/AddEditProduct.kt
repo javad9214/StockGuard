@@ -87,6 +87,12 @@ import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.price.PriceValidator
 import ir.yar.anbar.utils.price.ThousandSeparatorTransformation
+import kotlinx.coroutines.delay
+
+// Barcode auto-lookup (add mode): real-world barcodes are at least EAN-8,
+// and typing bursts collapse into one call after a short pause
+private const val MIN_LOOKUP_BARCODE_LENGTH = 8
+private const val BARCODE_LOOKUP_DEBOUNCE_MS = 700L
 
 @Composable
 fun AddProduct(
@@ -113,6 +119,8 @@ fun AddProduct(
     val productLoadError by productsViewModel.selectedProductError.collectAsState()
     val isLoading by productsViewModel.isLoading.collectAsState()
     val isSaving by productsViewModel.isSaving.collectAsState()
+    val isBarcodeLookupLoading by productsViewModel.isBarcodeLookupLoading.collectAsState()
+    val barcodeLookupResult by productsViewModel.barcodeLookupResult.collectAsState()
     val subcategories by productsViewModel.subcategories.collectAsState()
     val defaultUnit by productsViewModel.defaultUnit.collectAsState()
     val visibleUnits by productsViewModel.visibleUnits.collectAsState()
@@ -184,6 +192,42 @@ fun AddProduct(
     }
 
     val isEditMode = product != null
+
+    // Add mode only — typing or scanning a barcode looks it up against the
+    // server's Daryamart catalog. The delay doubles as the debounce:
+    // restarting this effect on every barcode change cancels the previous
+    // wait, so keystroke bursts collapse into one call
+    LaunchedEffect(barcode, isEditMode) {
+        if (isEditMode || barcode.length < MIN_LOOKUP_BARCODE_LENGTH) return@LaunchedEffect
+        delay(BARCODE_LOOKUP_DEBOUNCE_MS)
+        productsViewModel.lookupBarcode(barcode)
+    }
+
+    val barcodeLookupFailedMessage = stringResource(R.string.barcode_lookup_failed)
+
+    // Auto-fill from a finished lookup: name → product name, sellPrice →
+    // sale price. A result for a barcode the user has already changed away
+    // from is stale and ignored; failures surface the server's fa message
+    // (e.g. «محصولی با این بارکد یافت نشد») so the user knows why nothing
+    // was filled
+    LaunchedEffect(barcodeLookupResult) {
+        val result = barcodeLookupResult ?: return@LaunchedEffect
+        if (isEditMode || result.barcode != barcode) return@LaunchedEffect
+        val found = result.product
+        if (found != null) {
+            found.name?.takeIf { it.isNotBlank() }?.let { name = it }
+            // sellPrice arrives in display units — the same unit the field
+            // itself holds, so no cents conversion is needed
+            found.sellPrice?.let { salePrice = it.toString() }
+            isDirty = true
+        } else {
+            snackyHostState.show(
+                message = result.errorMessage ?: barcodeLookupFailedMessage,
+                type = SnackyType.ERROR,
+                duration = SnackyDuration.LONG
+            )
+        }
+    }
 
     // Single parse per recomposition — feeds the button gate, the inline
     // field errors, and the live profit hint
@@ -281,7 +325,8 @@ fun AddProduct(
                             barcode = newValue
                             isDirty = true
                         }
-                    }
+                    },
+                    isLookingUp = isBarcodeLookupLoading
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -590,7 +635,8 @@ private fun ProductNameField(
 @Composable
 private fun BarcodeField(
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    isLookingUp: Boolean = false
 ) {
 
     // Context for MediaPlayer
@@ -635,11 +681,20 @@ private fun BarcodeField(
             )
         },
         trailingIcon = {
-            Icon(
-                painter = painterResource(id = R.drawable.barcode_24px),
-                contentDescription = stringResource(R.string.barcode_optional),
-                tint = MaterialTheme.colorScheme.outline
-            )
+            // Swapped for a spinner while the Daryamart lookup is running,
+            // so the auto-fill that follows doesn't feel like it came from nowhere
+            if (isLookingUp) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(dimen(R.dimen.size_sm)),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Icon(
+                    painter = painterResource(id = R.drawable.barcode_24px),
+                    contentDescription = stringResource(R.string.barcode_optional),
+                    tint = MaterialTheme.colorScheme.outline
+                )
+            }
         },
         modifier = Modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions.Default.copy(

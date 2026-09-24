@@ -42,6 +42,7 @@
     <!-- Barcode scan -->
     <string name="error_no_product_for_barcode">محصولی با بارکد %1$s یافت نشد</string>
     <string name="error_product_search_failed">خطا در جستجوی محصول: %1$s</string>
+    <string name="barcode_lookup_failed">جستجوی بارکد ناموفق بود</string>
 
     <!-- Setting -->
     <string name="setting">تنظیمات</string>

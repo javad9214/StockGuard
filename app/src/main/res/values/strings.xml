@@ -28,6 +28,7 @@
     <!-- Barcode scan -->
     <string name="error_no_product_for_barcode">No product found with barcode: %1$s</string>
     <string name="error_product_search_failed">Error searching for product: %1$s</string>
+    <string name="barcode_lookup_failed">Barcode lookup failed</string>
 
     <!-- Setting -->
     <string name="setting">Setting</string>

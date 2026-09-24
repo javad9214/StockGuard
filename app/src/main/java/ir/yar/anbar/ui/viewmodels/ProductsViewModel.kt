@@ -13,7 +13,9 @@ import ir.yar.anbar.domain.model.ProductSyncResult
 import ir.yar.anbar.domain.model.SortOrder
 import ir.yar.anbar.domain.model.Subcategory
 import ir.yar.anbar.domain.model.type.Money
+import ir.yar.anbar.domain.model.BarcodeProduct
 import ir.yar.anbar.domain.repository.UserPreferencesRepository
+import ir.yar.anbar.domain.usecase.barcode.LookupBarcodeUseCase
 import ir.yar.anbar.domain.usecase.category.GetSubcategoriesUseCase
 import ir.yar.anbar.domain.usecase.product.AddProductUseCase
 import ir.yar.anbar.domain.usecase.product.DecreaseStockUseCase
@@ -27,10 +29,12 @@ import ir.yar.anbar.domain.usecase.product.SyncAllProductsUseCase
 import ir.yar.anbar.domain.usecase.userpreferences.GetDefaultUnitUseCase
 import ir.yar.anbar.domain.usecase.userpreferences.GetVisibleUnitsUseCase
 import ir.yar.anbar.domain.usecase.product.SyncSingleProductUseCase
+import ir.yar.anbar.domain.util.Resource
 import ir.yar.anbar.utils.barcode.BarcodeGenerator
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -65,7 +69,8 @@ class ProductsViewModel @Inject constructor(
     private val getDefaultUnitUseCase: GetDefaultUnitUseCase,
     private val syncSingleProductUseCase: SyncSingleProductUseCase,
     private val getSubcategoriesUseCase: GetSubcategoriesUseCase,
-    private val getVisibleUnitsUseCase: GetVisibleUnitsUseCase
+    private val getVisibleUnitsUseCase: GetVisibleUnitsUseCase,
+    private val lookupBarcodeUseCase: LookupBarcodeUseCase
 ) : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
@@ -162,6 +167,45 @@ class ProductsViewModel @Inject constructor(
 
     private val _isSaving = MutableStateFlow(false)
     val isSaving: StateFlow<Boolean> get() = _isSaving
+
+    // Outcome of a Daryamart barcode lookup. Carries the barcode it was
+    // issued for, so a stale result arriving after the user already changed
+    // the field can be ignored by the screen
+    private val _barcodeLookupResult = MutableStateFlow<BarcodeLookupResult?>(null)
+    val barcodeLookupResult: StateFlow<BarcodeLookupResult?> get() = _barcodeLookupResult
+
+    private val _isBarcodeLookupLoading = MutableStateFlow(false)
+    val isBarcodeLookupLoading: StateFlow<Boolean> get() = _isBarcodeLookupLoading
+
+    // Only the newest lookup may write its result — cancelled so a slow
+    // response for a previously typed barcode can't overwrite a newer one
+    private var barcodeLookupJob: Job? = null
+
+    /**
+     * Resolves a barcode against the server's Daryamart lookup. The result
+     * (product or the server's fa error message) lands in [barcodeLookupResult];
+     * the screen decides what to do with it.
+     */
+    fun lookupBarcode(barcode: String) {
+        if (barcode.isBlank()) return
+        barcodeLookupJob?.cancel()
+        barcodeLookupJob = viewModelScope.launch {
+            _isBarcodeLookupLoading.value = true
+            try {
+                lookupBarcodeUseCase(barcode).collect { resource ->
+                    when (resource) {
+                        is Resource.Loading -> Unit
+                        is Resource.Success -> _barcodeLookupResult.value =
+                            BarcodeLookupResult(barcode, resource.data)
+                        is Resource.Error -> _barcodeLookupResult.value =
+                            BarcodeLookupResult(barcode, null, resource.message)
+                    }
+                }
+            } finally {
+                _isBarcodeLookupLoading.value = false
+            }
+        }
+    }
 
     init {
         loadSubcategories()
@@ -387,3 +431,9 @@ sealed interface SaveResult {
     data object Success : SaveResult
     data class Error(val message: String) : SaveResult
 }
+
+data class BarcodeLookupResult(
+    val barcode: String,
+    val product: BarcodeProduct?,
+    val errorMessage: String? = null
+)
