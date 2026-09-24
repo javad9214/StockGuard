@@ -40,12 +40,15 @@ import ir.yar.anbar.utils.str
  * State is hoisted: [selected] comes from the persisted preference and
  * [onSelect] writes it back. A default unit always exists (PIECE out of the
  * box), so — unlike the product form's picker — there is no "none" option.
+ * The dropdown offers only [visibleUnits] (plus the current selection, so it
+ * can always be changed away from).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UnitSelector(
     selected: UnitOfMeasure?,
-    onSelect: (UnitOfMeasure) -> Unit
+    onSelect: (UnitOfMeasure) -> Unit,
+    visibleUnits: Set<String> = UnitOfMeasure.values().map { it.name }.toSet()
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -108,15 +111,17 @@ fun UnitSelector(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    UnitOfMeasure.values().forEach { unit ->
-                        DropdownMenuItem(
-                            text = { Text(unit.faName) },
-                            onClick = {
-                                onSelect(unit)
-                                expanded = false
-                            }
-                        )
-                    }
+                    UnitOfMeasure.values()
+                        .filter { it.name in visibleUnits || it == selected }
+                        .forEach { unit ->
+                            DropdownMenuItem(
+                                text = { Text(unit.faName) },
+                                onClick = {
+                                    onSelect(unit)
+                                    expanded = false
+                                }
+                            )
+                        }
                 }
             }
         }

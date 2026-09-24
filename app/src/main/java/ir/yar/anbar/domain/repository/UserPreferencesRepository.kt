@@ -15,6 +15,11 @@ interface UserPreferencesRepository {
         // chosen one. Must be a valid UnitOfMeasure enum name — the strict
         // enum contract forbids anything else on the wire
         val DEFAULT_UNIT: String = UnitOfMeasure.PIECE.name
+
+        // Units offered in the unit pickers. Seeded with every enum name so
+        // fresh installs see the full list; entries are enum names only
+        val DEFAULT_VISIBLE_UNITS: Set<String> =
+            UnitOfMeasure.values().map { it.name }.toSet()
     }
 
     suspend fun saveStockRunoutLimit(limit: Int)
@@ -24,4 +29,8 @@ interface UserPreferencesRepository {
     suspend fun saveDefaultUnit(unit: String)
 
     val defaultUnit: Flow<String>
+
+    suspend fun saveVisibleUnits(units: Set<String>)
+
+    val visibleUnits: Flow<Set<String>>
 }

@@ -111,7 +111,13 @@ fun SettingScreen(
 
             UnitSelector(
                 selected = UnitOfMeasure.fromName(uiState.defaultUnit),
-                onSelect = { settingViewModel.saveDefaultUnit(it.name) }
+                onSelect = { settingViewModel.saveDefaultUnit(it.name) },
+                visibleUnits = uiState.visibleUnits
+            )
+
+            VisibleUnitsSelector(
+                visibleUnits = uiState.visibleUnits,
+                onChange = { settingViewModel.saveVisibleUnits(it) }
             )
 
             SettingsVersionSection()

@@ -8,8 +8,10 @@ import dagger.hilt.components.SingletonComponent
 import ir.yar.anbar.domain.repository.UserPreferencesRepository
 import ir.yar.anbar.domain.usecase.userpreferences.GetDefaultUnitUseCase
 import ir.yar.anbar.domain.usecase.userpreferences.GetStockRunoutLimitUseCase
+import ir.yar.anbar.domain.usecase.userpreferences.GetVisibleUnitsUseCase
 import ir.yar.anbar.domain.usecase.userpreferences.SaveDefaultUnitUseCase
 import ir.yar.anbar.domain.usecase.userpreferences.SaveStockRunoutLimitUseCase
+import ir.yar.anbar.domain.usecase.userpreferences.SaveVisibleUnitsUseCase
 import javax.inject.Singleton
 
 @Module
@@ -40,4 +42,16 @@ object UserPreferencesModule {
     fun provideSaveDefaultUnitUseCase(
         repository: UserPreferencesRepository
     ): SaveDefaultUnitUseCase = SaveDefaultUnitUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideGetVisibleUnitsUseCase(
+        repository: UserPreferencesRepository
+    ): GetVisibleUnitsUseCase = GetVisibleUnitsUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideSaveVisibleUnitsUseCase(
+        repository: UserPreferencesRepository
+    ): SaveVisibleUnitsUseCase = SaveVisibleUnitsUseCase(repository)
 }

@@ -115,6 +115,7 @@ fun AddProduct(
     val isSaving by productsViewModel.isSaving.collectAsState()
     val subcategories by productsViewModel.subcategories.collectAsState()
     val defaultUnit by productsViewModel.defaultUnit.collectAsState()
+    val visibleUnits by productsViewModel.visibleUnits.collectAsState()
     val snackyHostState = rememberSnackyHostState()
     val confirmyHostState = rememberConfirmyHostState()
 
@@ -307,6 +308,7 @@ fun AddProduct(
                             selectedUnit = it
                             isDirty = true
                         },
+                        visibleUnits = visibleUnits,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -696,6 +698,7 @@ private fun InitialStockField(
 private fun UnitDropdownField(
     selected: UnitOfMeasure?,
     onSelect: (UnitOfMeasure?) -> Unit,
+    visibleUnits: Set<String> = UnitOfMeasure.values().map { it.name }.toSet(),
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -750,15 +753,20 @@ private fun UnitDropdownField(
                     }
                 )
             }
-            UnitOfMeasure.values().forEach { unit ->
-                DropdownMenuItem(
-                    text = { Text(unit.faName) },
-                    onClick = {
-                        onSelect(unit)
-                        expanded = false
-                    }
-                )
-            }
+            // Offer the visible units (settings-controlled), always keeping
+            // the current selection listed so it can still be changed away
+            // from even when hidden
+            UnitOfMeasure.values()
+                .filter { it.name in visibleUnits || it == selected }
+                .forEach { unit ->
+                    DropdownMenuItem(
+                        text = { Text(unit.faName) },
+                        onClick = {
+                            onSelect(unit)
+                            expanded = false
+                        }
+                    )
+                }
         }
     }
 }
