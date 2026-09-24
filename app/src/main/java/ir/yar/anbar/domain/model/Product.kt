@@ -328,7 +328,8 @@ object ProductFactory {
         description: String,
         subcategoryId: Int,
         supplierId: Int,
-        unit: String,
+        // Exact server enum name (e.g. KILOGRAM); null = product without a unit
+        unit: String? = null,
         initialStock: Int,
         minStockLevel: Int,
         maxStockLevel: Int,
@@ -349,7 +350,7 @@ object ProductFactory {
             else null,
             subcategoryId = SubcategoryId(subcategoryId),
             supplierId = SupplierId(supplierId),
-            unit = ProductUnit(unit),
+            unit = unit?.let { ProductUnit(it) },
             stock = StockQuantity(initialStock),
             minStockLevel = StockQuantity(minStockLevel),
             maxStockLevel = StockQuantity(maxStockLevel),

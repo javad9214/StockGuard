@@ -52,6 +52,7 @@ import ir.yar.anbar.domain.model.StockQuantity
 import ir.yar.anbar.domain.model.SubcategoryId
 import ir.yar.anbar.domain.model.SubcategoryName
 import ir.yar.anbar.domain.model.SupplierId
+import ir.yar.anbar.domain.model.UnitOfMeasure
 import ir.yar.anbar.domain.model.type.Money
 import ir.yar.anbar.ui.components.image.ProductThumbnail
 import ir.yar.anbar.ui.components.image.ZoomableImageDialog
@@ -414,7 +415,7 @@ fun ProductItemPreview() {
         subcategoryId = SubcategoryId(4),
         subcategoryName = SubcategoryName("نوشیدنی"),
         supplierId = SupplierId(2),
-        unit = ProductUnit("pcs"),
+        unit = ProductUnit(UnitOfMeasure.PIECE.name),
         stock = StockQuantity(30),
         minStockLevel = StockQuantity(5),
         maxStockLevel = StockQuantity(100),
@@ -452,7 +453,7 @@ fun ProductItemWithoutBarcodePreview() {
         subcategoryId = SubcategoryId(3), // sample subcategory
         subcategoryName = SubcategoryName("تنقلات"),
         supplierId = SupplierId(1),
-        unit = ProductUnit("pcs"),
+        unit = ProductUnit(UnitOfMeasure.PIECE.name),
         stock = StockQuantity(5),
         minStockLevel = StockQuantity(1),
         maxStockLevel = StockQuantity(20),

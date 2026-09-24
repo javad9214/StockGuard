@@ -220,6 +220,8 @@
     <string name="edit_product_title">Edit Product</string>
     <string name="product_name">Product Name</string>
     <string name="barcode_optional">Barcode (Optional)</string>
+    <string name="initial_stock">Initial Stock</string>
+    <string name="unit_optional">Unit (Optional)</string>
     <string name="cost_price">Cost Price</string>
     <string name="sale_price">Sale Price</string>
     <string name="category_id_optional">Category ID (Optional)</string>
@@ -235,6 +237,7 @@
     <string name="error_product_name_required">Product name is required</string>
     <string name="error_sale_price_invalid">Sale price must be a positive number</string>
     <string name="error_cost_price_invalid">Cost price must be a positive number</string>
+    <string name="error_initial_stock_invalid">Initial stock must be between 0 and 1,000,000</string>
     <string name="error_enter_valid_price">Enter a valid price</string>
     <string name="profit_margin_hint">Profit: %1$s (%2$s%%)</string>
     <string name="warning_selling_below_cost">Warning: sale price is not higher than cost price</string>

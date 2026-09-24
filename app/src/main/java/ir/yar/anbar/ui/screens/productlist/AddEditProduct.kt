@@ -62,6 +62,7 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Subcategory
+import ir.yar.anbar.domain.model.UnitOfMeasure
 import ir.yar.anbar.domain.model.type.Money
 import ir.yar.anbar.ui.components.image.ImagePickerBox
 import ir.yar.anbar.ui.components.barcodescanner.CompactBarcodeScanner
@@ -161,6 +162,17 @@ fun AddProduct(
 
     var subcategoryId by remember(product) {
         mutableStateOf(product?.subcategoryId?.value?.toString() ?: "")
+    }
+
+    // Initial stock in the chosen unit — prefilled with the current stock in
+    // edit mode; blank keeps the existing stock (0 for a new product)
+    var initialStock by remember(product) {
+        mutableStateOf(product?.stock?.value?.toString() ?: "")
+    }
+
+    // The wire value is the exact server enum name; null = no unit selected
+    var selectedUnit by remember(product) {
+        mutableStateOf(UnitOfMeasure.fromName(product?.unit?.value))
     }
 
     val isEditMode = product != null
@@ -263,6 +275,34 @@ fun AddProduct(
                         }
                     }
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Initial stock and its unit of measure sit side by side —
+                // the number stays short so both fit even on narrow phones
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_4))
+                ) {
+                    InitialStockField(
+                        value = initialStock,
+                        onValueChange = { newValue ->
+                            // Digits only, at most 7 — StockQuantity caps at 1,000,000
+                            if (newValue.all { it.isDigit() } && newValue.length <= 7) {
+                                initialStock = newValue
+                                isDirty = true
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                    UnitDropdownField(
+                        selected = selectedUnit,
+                        onSelect = {
+                            selectedUnit = it
+                            isDirty = true
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -398,7 +438,9 @@ fun AddProduct(
                     salePrice = salePrice,
                     costPrice = costPrice,
                     subcategoryId = subcategoryId,
-                    localImageUri = imageUri?.toString()
+                    localImageUri = imageUri?.toString(),
+                    initialStock = initialStock,
+                    unit = selectedUnit?.name
                 )
             },
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -606,6 +648,112 @@ private fun BarcodeField(
             fontSize = dimenTextSize(R.dimen.text_size_md)
         )
     )
+}
+
+@Composable
+private fun InitialStockField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = {
+            Text(
+                stringResource(R.string.initial_stock),
+                fontFamily = BKoodak,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        modifier = modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Number
+        ),
+        shape = RoundedCornerShape(12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+        ),
+        singleLine = true,
+        textStyle = TextStyle(
+            fontFamily = BKoodak,
+            fontWeight = FontWeight.Bold,
+            fontSize = dimenTextSize(R.dimen.text_size_md)
+        )
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun UnitDropdownField(
+    selected: UnitOfMeasure?,
+    onSelect: (UnitOfMeasure?) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        modifier = modifier
+    ) {
+        // faName is the display label; the enum name is what gets saved
+        OutlinedTextField(
+            value = selected?.faName ?: "",
+            onValueChange = {},
+            readOnly = true,
+            label = {
+                Text(
+                    stringResource(R.string.unit_optional),
+                    fontFamily = BKoodak,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline
+            ),
+            singleLine = true,
+            textStyle = TextStyle(
+                fontFamily = BKoodak,
+                fontWeight = FontWeight.Bold,
+                fontSize = dimenTextSize(R.dimen.text_size_md)
+            )
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            // Only offer clearing once a unit is actually selected
+            if (selected != null) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.none)) },
+                    onClick = {
+                        onSelect(null)
+                        expanded = false
+                    }
+                )
+            }
+            UnitOfMeasure.values().forEach { unit ->
+                DropdownMenuItem(
+                    text = { Text(unit.faName) },
+                    onClick = {
+                        onSelect(unit)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
 }
 
 @Composable

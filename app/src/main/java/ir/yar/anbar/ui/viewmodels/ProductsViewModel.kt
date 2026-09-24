@@ -155,7 +155,9 @@ class ProductsViewModel @Inject constructor(
         salePrice: String,
         costPrice: String,
         subcategoryId: String,
-        localImageUri: String?
+        localImageUri: String?,
+        initialStock: String = "",
+        unit: String? = null
     ) {
         if (_isSaving.value) return // a save is already in flight
         // Validate and parse before building the product — invalid input must
@@ -175,6 +177,16 @@ class ProductsViewModel @Inject constructor(
             return
         }
         val product = _selectedProduct.value
+        // Blank keeps the existing stock in edit mode (0 for a new product).
+        // The range must be validated here because StockQuantity throws
+        // inside the factory, which runs outside the try/catch below
+        val stockQuantity = initialStock.trim().toIntOrNull()
+            ?: product?.stock?.value
+            ?: 0
+        if (stockQuantity !in 0..1_000_000) {
+            rejectSave(context.getString(R.string.error_initial_stock_invalid))
+            return
+        }
         val newProduct = ProductFactory.createComplete(
             id = product?.id?.value ?: 0,
             name = name,
@@ -184,10 +196,10 @@ class ProductsViewModel @Inject constructor(
             description = product?.description?.value ?: "",
             subcategoryId = subcategoryId.toIntOrNull() ?: product?.subcategoryId?.value ?: 0,
             supplierId = product?.supplierId?.value ?: 0,
-            unit = product?.unit?.value ?: "",
+            unit = unit,
             localImageUri = localImageUri,
             remoteImageUrl = product?.image?.remoteUrl,
-            initialStock = product?.stock?.value ?: 0,
+            initialStock = stockQuantity,
             minStockLevel = product?.minStockLevel?.value ?: 0,
             maxStockLevel = product?.maxStockLevel?.value ?: 0,
             tags = product?.tags?.value ?: ""
