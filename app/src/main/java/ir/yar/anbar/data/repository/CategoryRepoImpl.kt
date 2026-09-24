@@ -25,7 +25,7 @@ class CategoryRepoImpl @Inject constructor(
 
     private suspend fun refreshFromServer() {
         val categories = try {
-            (apiServiceCategory.getCategories() as? ApiResponse.Success)?.data?.data
+            (apiServiceCategory.getCategories() as? ApiResponse.Success)?.data?.takeIf { it.isOk }?.info
         } catch (e: Exception) {
             null // offline or malformed response — serve the local cache instead
         } ?: return

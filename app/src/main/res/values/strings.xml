@@ -28,6 +28,7 @@
     <!-- Barcode scan -->
     <string name="error_no_product_for_barcode">No product found with barcode: %1$s</string>
     <string name="error_product_search_failed">Error searching for product: %1$s</string>
+    <string name="barcode_lookup_failed">Barcode lookup failed</string>
 
     <!-- Setting -->
     <string name="setting">Setting</string>
@@ -39,6 +40,10 @@
     <string name="light">Light</string>
     <string name="system_default">System Default</string>
     <string name="stock_runout_limit">Stock runout alert limit</string>
+    <string name="default_unit">Default Unit</string>
+    <string name="visible_units">Visible Units</string>
+    <string name="visible_units_summary">Showing %1$d of %2$d units in the dropdown</string>
+    <string name="choose_units">Choose Units</string>
 
     <!-- DATES -->
     <string name="today">TODAY</string>
@@ -220,6 +225,8 @@
     <string name="edit_product_title">Edit Product</string>
     <string name="product_name">Product Name</string>
     <string name="barcode_optional">Barcode (Optional)</string>
+    <string name="initial_stock">Initial Stock</string>
+    <string name="unit_optional">Unit (Optional)</string>
     <string name="cost_price">Cost Price</string>
     <string name="sale_price">Sale Price</string>
     <string name="category_id_optional">Category ID (Optional)</string>
@@ -235,6 +242,7 @@
     <string name="error_product_name_required">Product name is required</string>
     <string name="error_sale_price_invalid">Sale price must be a positive number</string>
     <string name="error_cost_price_invalid">Cost price must be a positive number</string>
+    <string name="error_initial_stock_invalid">Initial stock must be between 0 and 1,000,000</string>
     <string name="error_enter_valid_price">Enter a valid price</string>
     <string name="profit_margin_hint">Profit: %1$s (%2$s%%)</string>
     <string name="warning_selling_below_cost">Warning: sale price is not higher than cost price</string>
@@ -326,6 +334,9 @@
     <!-- Sync -->
     <string name="sync_all_products">Sync all products</string>
     <string name="products_synced">Products synced with server</string>
+    <string name="sync">Sync</string>
+    <string name="product_synced">Product synced with server</string>
+    <string name="product_sync_failed">Product sync failed</string>
     <string name="sync_invoices">Sync invoices</string>
     <string name="invoices_synced">Invoices synced with server</string>
 

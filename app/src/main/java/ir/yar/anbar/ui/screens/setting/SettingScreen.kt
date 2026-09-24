@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.BuildConfig
 import ir.yar.anbar.R
+import ir.yar.anbar.domain.model.UnitOfMeasure
 import ir.yar.anbar.ui.components.util.SnackyDuration
 import ir.yar.anbar.ui.components.util.SnackyHost
 import ir.yar.anbar.ui.components.util.SnackyType
@@ -106,6 +107,17 @@ fun SettingScreen(
             StockRunoutLimitSelector(
                 limit = uiState.stockRunoutLimit,
                 onLimitChange = { settingViewModel.saveStockRunoutLimit(it) }
+            )
+
+            UnitSelector(
+                selected = UnitOfMeasure.fromName(uiState.defaultUnit),
+                onSelect = { settingViewModel.saveDefaultUnit(it.name) },
+                visibleUnits = uiState.visibleUnits
+            )
+
+            VisibleUnitsSelector(
+                visibleUnits = uiState.visibleUnits,
+                onChange = { settingViewModel.saveVisibleUnits(it) }
             )
 
             SettingsVersionSection()

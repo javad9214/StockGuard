@@ -1,10 +1,11 @@
 package ir.yar.anbar.data.remote.util
 
 
+import com.google.gson.Gson
 import com.skydoves.sandwich.ApiResponse
-import com.skydoves.sandwich.message
+import com.skydoves.sandwich.retrofit.errorBody
 import com.skydoves.sandwich.retrofit.statusCode
-import ir.yar.anbar.data.remote.dto.response.ApiResponseDto
+import ir.yar.anbar.data.remote.dto.response.ResponseDto
 import ir.yar.anbar.domain.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +14,24 @@ import kotlinx.coroutines.flow.flowOn
 
 
 object ApiResponseHandler {
+
+    @PublishedApi
+    internal val gson = Gson()
+
+    /**
+     * The server's error bodies carry the same {resCode, resMessage} envelope
+     * as success bodies (BaseController.generateErrorResponse), so surface
+     * resMessage. Non-envelope bodies (e.g. Spring Security 401 JSON) and
+     * unreadable bodies fall back to the HTTP status code.
+     */
+    @PublishedApi
+    internal fun ApiResponse.Failure.Error.envelopeMessage(): String {
+        val body = runCatching { errorBody?.string() }.getOrNull()
+        val resMessage = body?.let {
+            runCatching { gson.fromJson(it, ResponseDto::class.java).resMessage }.getOrNull()
+        }
+        return resMessage ?: "HTTP ${statusCode.code}"
+    }
 
     /**
      * Handles ApiResponse and converts it to Flow<Resource<T>>
@@ -31,7 +50,7 @@ object ApiResponseHandler {
                 is ApiResponse.Failure.Error -> {
                     emit(
                         Resource.Error(
-                            message = response.message(),
+                            message = response.envelopeMessage(),
                             code = response.statusCode.code
                         )
                     )
@@ -54,10 +73,10 @@ object ApiResponseHandler {
     }.flowOn(Dispatchers.IO)
 
     /**
-     *  Handles ApiResponseDto format with success/error fields
+     *  Handles ResponseDto
      */
     inline fun <T, R> handleApiResponseWithMessage(
-        crossinline apiCall: suspend () -> ApiResponse<ApiResponseDto<T>>,
+        crossinline apiCall: suspend () -> ApiResponse<ResponseDto<T>>,
         crossinline mapper: (T) -> R
     ): Flow<Resource<R>> = flow {
         emit(Resource.Loading())
@@ -65,13 +84,13 @@ object ApiResponseHandler {
         try {
             when (val response = apiCall()) {
                 is ApiResponse.Success -> {
-                    val apiResponseDto = response.data
-                    if (apiResponseDto.success && apiResponseDto.data != null) {
-                        emit(Resource.Success(mapper(apiResponseDto.data)))
+                    val responseDto = response.data
+                    if (responseDto.isOk && responseDto.info != null) {
+                        emit(Resource.Success(mapper(responseDto.info)))
                     } else {
                         emit(
                             Resource.Error(
-                                message = apiResponseDto.error ?: "Unknown error occurred"
+                                message = responseDto.resMessage ?: "Unknown error occurred"
                             )
                         )
                     }
@@ -79,7 +98,7 @@ object ApiResponseHandler {
                 is ApiResponse.Failure.Error -> {
                     emit(
                         Resource.Error(
-                            message = response.message(),
+                            message = response.envelopeMessage(),
                             code = response.statusCode.code
                         )
                     )
@@ -117,7 +136,7 @@ object ApiResponseHandler {
                 is ApiResponse.Failure.Error -> {
                     emit(
                         Resource.Error(
-                            message = response.message(),
+                            message = response.envelopeMessage(),
                             code = response.statusCode.code
                         )
                     )
@@ -141,23 +160,23 @@ object ApiResponseHandler {
 
 
     /**
-     * Handles ApiResponseDto format with success/error fields without mapping
+     * Handles ResponseDto without mapping
      */
     inline fun <T : Any> handleApiResponseWithMessage(
-        crossinline apiCall: suspend () -> ApiResponse<ApiResponseDto<T>>
+        crossinline apiCall: suspend () -> ApiResponse<ResponseDto<T>>
     ): Flow<Resource<T>> = flow {
         emit(Resource.Loading())
 
         try {
             when (val response = apiCall()) {
                 is ApiResponse.Success -> {
-                    val apiResponseDto = response.data
-                    if (apiResponseDto.success && apiResponseDto.data != null) {
-                        emit(Resource.Success(apiResponseDto.data))
+                    val responseDto = response.data
+                    if (responseDto.isOk && responseDto.info != null) {
+                        emit(Resource.Success(responseDto.info))
                     } else {
                         emit(
                             Resource.Error(
-                                message = apiResponseDto.error ?: "Unknown error occurred"
+                                message = responseDto.resMessage ?: "Unknown error occurred"
                             )
                         )
                     }
@@ -165,7 +184,7 @@ object ApiResponseHandler {
                 is ApiResponse.Failure.Error -> {
                     emit(
                         Resource.Error(
-                            message = response.message(),
+                            message = response.envelopeMessage(),
                             code = response.statusCode.code
                         )
                     )
@@ -202,7 +221,7 @@ object ApiResponseHandler {
                 }
                 is ApiResponse.Failure.Error -> {
                     Resource.Error(
-                        message = response.message(),
+                        message = response.envelopeMessage(),
                         code = response.statusCode.code
                     )
                 }
@@ -221,26 +240,26 @@ object ApiResponseHandler {
 
 
     /**
-     *  Handles ApiResponseDto format with success/error fields for simple suspend functions (not Flow)
+     *  Handles ResponseDto for simple suspend functions (not Flow)
      */
     suspend inline fun <T> handleApiResponseSuspendWithMessage(
-        crossinline apiCall: suspend () -> ApiResponse<ApiResponseDto<T>>
+        crossinline apiCall: suspend () -> ApiResponse<ResponseDto<T>>
     ): Resource<T> {
         return try {
             when (val response = apiCall()) {
                 is ApiResponse.Success -> {
-                    val apiResponseDto = response.data
-                    if (apiResponseDto.success && apiResponseDto.data != null) {
-                        Resource.Success(apiResponseDto.data)
+                    val responseDto = response.data
+                    if (responseDto.isOk && responseDto.info != null) {
+                        Resource.Success(responseDto.info)
                     } else {
                         Resource.Error(
-                            message = apiResponseDto.error ?: "Unknown error occurred"
+                            message = responseDto.resMessage ?: "Unknown error occurred"
                         )
                     }
                 }
                 is ApiResponse.Failure.Error -> {
                     Resource.Error(
-                        message = response.message(),
+                        message = response.envelopeMessage(),
                         code = response.statusCode.code
                     )
                 }
@@ -270,7 +289,7 @@ object ApiResponseHandler {
                 }
                 is ApiResponse.Failure.Error -> {
                     Resource.Error(
-                        message = response.message(),
+                        message = response.envelopeMessage(),
                         code = response.statusCode.code
                     )
                 }

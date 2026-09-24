@@ -52,6 +52,7 @@ import ir.yar.anbar.domain.model.StockQuantity
 import ir.yar.anbar.domain.model.SubcategoryId
 import ir.yar.anbar.domain.model.SubcategoryName
 import ir.yar.anbar.domain.model.SupplierId
+import ir.yar.anbar.domain.model.UnitOfMeasure
 import ir.yar.anbar.domain.model.type.Money
 import ir.yar.anbar.ui.components.image.ProductThumbnail
 import ir.yar.anbar.ui.components.image.ZoomableImageDialog
@@ -77,6 +78,7 @@ fun ProductItem(
     onEdit: () -> Unit,
     onDisable: () -> Unit,
     onDelete: () -> Unit,
+    onSync: () -> Unit = {},
     onProductClick: () -> Unit = {}
 ) {
     var showDeleteConfirmation by remember { mutableStateOf(false) }
@@ -131,6 +133,14 @@ fun ProductItem(
                                     onClick = {
                                         showMenu = false
                                         onDisable()
+                                    }
+                                ),
+                                BottomSheetMenuItem(
+                                    text = str(R.string.sync),
+                                    icon = painterResource(id = R.drawable.sync_24px),
+                                    onClick = {
+                                        showMenu = false
+                                        onSync()
                                     }
                                 ),
                                 BottomSheetMenuItem(
@@ -414,7 +424,7 @@ fun ProductItemPreview() {
         subcategoryId = SubcategoryId(4),
         subcategoryName = SubcategoryName("نوشیدنی"),
         supplierId = SupplierId(2),
-        unit = ProductUnit("pcs"),
+        unit = ProductUnit(UnitOfMeasure.PIECE.name),
         stock = StockQuantity(30),
         minStockLevel = StockQuantity(5),
         maxStockLevel = StockQuantity(100),
@@ -432,6 +442,7 @@ fun ProductItemPreview() {
             onEdit = { /* Preview: Edit clicked */ },
             onDisable = { /* Preview: Disable clicked */ },
             onDelete = { /* Preview: Delete clicked */ },
+            onSync = { /* Preview: Sync clicked */ },
             onProductClick = { /* Preview: Product clicked */ }
         )
     }
@@ -452,7 +463,7 @@ fun ProductItemWithoutBarcodePreview() {
         subcategoryId = SubcategoryId(3), // sample subcategory
         subcategoryName = SubcategoryName("تنقلات"),
         supplierId = SupplierId(1),
-        unit = ProductUnit("pcs"),
+        unit = ProductUnit(UnitOfMeasure.PIECE.name),
         stock = StockQuantity(5),
         minStockLevel = StockQuantity(1),
         maxStockLevel = StockQuantity(20),
@@ -471,6 +482,7 @@ fun ProductItemWithoutBarcodePreview() {
             onEdit = { },
             onDisable = { },
             onDelete = { },
+            onSync = { },
             onProductClick = { }
         )
     }

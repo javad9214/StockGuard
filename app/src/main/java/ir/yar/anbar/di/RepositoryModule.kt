@@ -1,6 +1,8 @@
 package ir.yar.anbar.di
 
+import ir.yar.anbar.data.remote.api.ApiServiceBarcode
 import ir.yar.anbar.data.remote.api.ApiServiceMainProduct
+import ir.yar.anbar.data.repository.BarcodeLookupRepoImpl
 import ir.yar.anbar.data.repository.CategoryRepoImpl
 import ir.yar.anbar.data.repository.InvoiceProductRepoImpl
 import ir.yar.anbar.data.repository.InvoiceRepoImpl
@@ -10,6 +12,7 @@ import ir.yar.anbar.data.repository.ServerMainProductRepoImpl
 import ir.yar.anbar.data.repository.StockMovementRepoImpl
 import ir.yar.anbar.data.repository.UserPreferencesRepositoryImpl
 import ir.yar.anbar.data.repository.UserRepoImpl
+import ir.yar.anbar.domain.repository.BarcodeLookupRepository
 import ir.yar.anbar.domain.repository.CategoryRepository
 import ir.yar.anbar.domain.repository.InvoiceProductRepository
 import ir.yar.anbar.domain.repository.InvoiceRepository
@@ -71,6 +74,14 @@ object RepositoryModule {
         apiServiceMainProduct: ApiServiceMainProduct
     ): ServerMainProductRepository {
         return ServerMainProductRepoImpl(apiServiceMainProduct = apiServiceMainProduct)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBarcodeLookupRepository(
+        apiServiceBarcode: ApiServiceBarcode
+    ): BarcodeLookupRepository {
+        return BarcodeLookupRepoImpl(apiServiceBarcode = apiServiceBarcode)
     }
 
     @Provides

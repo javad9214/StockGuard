@@ -3,9 +3,14 @@ package ir.yar.anbar.ui.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ir.yar.anbar.domain.model.UnitOfMeasure
 import ir.yar.anbar.domain.repository.UserPreferencesRepository
+import ir.yar.anbar.domain.usecase.userpreferences.GetDefaultUnitUseCase
 import ir.yar.anbar.domain.usecase.userpreferences.GetStockRunoutLimitUseCase
+import ir.yar.anbar.domain.usecase.userpreferences.GetVisibleUnitsUseCase
+import ir.yar.anbar.domain.usecase.userpreferences.SaveDefaultUnitUseCase
 import ir.yar.anbar.domain.usecase.userpreferences.SaveStockRunoutLimitUseCase
+import ir.yar.anbar.domain.usecase.userpreferences.SaveVisibleUnitsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.FlowPreview
@@ -23,6 +28,10 @@ data class SettingUiState(
     // Seeded from the domain default so the pre-emission value matches what
     // the DataStore flow will deliver for a never-saved preference
     val stockRunoutLimit: Int = UserPreferencesRepository.DEFAULT_STOCK_RUNOUT_LIMIT,
+    // Exact UnitOfMeasure enum name, same seeding rationale as above
+    val defaultUnit: String = UserPreferencesRepository.DEFAULT_UNIT,
+    // Enum names offered in the unit pickers
+    val visibleUnits: Set<String> = UserPreferencesRepository.DEFAULT_VISIBLE_UNITS,
     val errorMessage: String? = null
 ) {
     companion object {
@@ -38,7 +47,11 @@ data class SettingUiState(
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val getStockRunoutLimitUseCase: GetStockRunoutLimitUseCase,
-    private val saveStockRunoutLimitUseCase: SaveStockRunoutLimitUseCase
+    private val saveStockRunoutLimitUseCase: SaveStockRunoutLimitUseCase,
+    private val getDefaultUnitUseCase: GetDefaultUnitUseCase,
+    private val saveDefaultUnitUseCase: SaveDefaultUnitUseCase,
+    private val getVisibleUnitsUseCase: GetVisibleUnitsUseCase,
+    private val saveVisibleUnitsUseCase: SaveVisibleUnitsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingUiState())
@@ -59,6 +72,8 @@ class SettingViewModel @Inject constructor(
     init {
         observeStockRunoutLimit()
         observeLimitSaveRequests()
+        observeDefaultUnit()
+        observeVisibleUnits()
     }
 
     private fun observeStockRunoutLimit() {
@@ -121,6 +136,92 @@ class SettingViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(stockRunoutLimit = limit)
         lastRequestedLimit = limit
         limitSaveRequests.tryEmit(limit)
+    }
+
+    private fun observeDefaultUnit() {
+        viewModelScope.launch {
+            try {
+                getDefaultUnitUseCase().collectLatest { unit ->
+                    _uiState.value = _uiState.value.copy(defaultUnit = unit)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to observe default unit", e)
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = e.message ?: "Unknown error"
+                )
+            }
+        }
+    }
+
+    // A dropdown emits one discrete selection, so — unlike the slider — no
+    // debounce is needed; just write through
+    fun saveDefaultUnit(unit: String) {
+        if (UnitOfMeasure.fromName(unit) == null) {
+            // Unreachable from the selector, which only offers enum values —
+            // a rejection means a programmatic caller is out of sync
+            Log.w(TAG, "Rejected unknown default unit: $unit")
+            return
+        }
+
+        _uiState.value = _uiState.value.copy(defaultUnit = unit)
+        viewModelScope.launch {
+            try {
+                saveDefaultUnitUseCase(unit)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to save default unit: $unit", e)
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = e.message ?: "Unknown error"
+                )
+            }
+        }
+    }
+
+    private fun observeVisibleUnits() {
+        viewModelScope.launch {
+            try {
+                getVisibleUnitsUseCase().collectLatest { units ->
+                    _uiState.value = _uiState.value.copy(visibleUnits = units)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to observe visible units", e)
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = e.message ?: "Unknown error"
+                )
+            }
+        }
+    }
+
+    fun saveVisibleUnits(units: Set<String>) {
+        // Unknown names are dropped so a stale value can never reach the
+        // pickers; an empty result is rejected outright — hiding every unit
+        // would leave the dropdowns with nothing to offer
+        val valid = units.mapNotNull { UnitOfMeasure.fromName(it)?.name }.toSet()
+        if (valid.isEmpty()) {
+            // Unreachable from the dialog, whose confirm button disables on
+            // an empty selection — a rejection means a caller is out of sync
+            Log.w(TAG, "Rejected empty visible units set")
+            return
+        }
+
+        _uiState.value = _uiState.value.copy(visibleUnits = valid)
+        viewModelScope.launch {
+            try {
+                saveVisibleUnitsUseCase(valid)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to save visible units", e)
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = e.message ?: "Unknown error"
+                )
+            }
+        }
     }
 
     // Called by the screen once the error snackbar has been shown, so the same

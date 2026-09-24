@@ -2,7 +2,7 @@ package ir.yar.anbar.data.remote.api
 
 import com.skydoves.sandwich.ApiResponse
 import ir.yar.anbar.data.remote.dto.request.InvoiceSyncRequestDto
-import ir.yar.anbar.data.remote.dto.response.ApiResponseDto
+import ir.yar.anbar.data.remote.dto.response.ResponseDto
 import ir.yar.anbar.data.remote.dto.response.InvoicePullResponseDto
 import ir.yar.anbar.data.remote.dto.response.SyncedInvoiceDto
 import retrofit2.http.Body
@@ -20,7 +20,7 @@ interface ApiServiceInvoice {
     @POST("api/invoices/sync")
     suspend fun pushInvoices(
         @Body invoices: List<InvoiceSyncRequestDto>
-    ): ApiResponse<ApiResponseDto<List<SyncedInvoiceDto>>>
+    ): ApiResponse<ResponseDto<List<SyncedInvoiceDto>>>
 
     /**
      * Pull sync: invoices changed on the server since the cursor, including
@@ -32,5 +32,5 @@ interface ApiServiceInvoice {
         @Query("since") since: Long,
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 50
-    ): ApiResponse<ApiResponseDto<InvoicePullResponseDto>>
+    ): ApiResponse<ResponseDto<InvoicePullResponseDto>>
 }

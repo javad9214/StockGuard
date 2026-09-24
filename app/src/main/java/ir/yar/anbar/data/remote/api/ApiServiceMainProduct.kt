@@ -2,7 +2,8 @@ package ir.yar.anbar.data.remote.api
 
 import com.skydoves.sandwich.ApiResponse
 import ir.yar.anbar.data.remote.dto.CatalogProductDto
-import ir.yar.anbar.data.remote.dto.response.ApiResponseDto
+import ir.yar.anbar.data.remote.dto.request.CatalogProductRequestDto
+import ir.yar.anbar.data.remote.dto.response.ResponseDto
 import ir.yar.anbar.data.remote.dto.response.PagedResponseDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -27,15 +28,15 @@ interface ApiServiceMainProduct {
         @Query("size") size: Int = 20
     ): ApiResponse<PagedResponseDto<CatalogProductDto>>
 
-    @POST("products")
-    suspend fun createProduct(@Body product: CatalogProductDto): ApiResponse<ApiResponseDto<Long>>
+    @POST(ApiConstants.API + ApiConstants.ADMIN_CATALOG + "products")
+    suspend fun createProduct(@Body product: CatalogProductRequestDto): ApiResponse<ResponseDto<Long>>
 
-    @PUT("products/{id}")
+    @PUT(ApiConstants.API + ApiConstants.ADMIN_CATALOG + "products/{id}")
     suspend fun updateProduct(
         @Path("id") id: Long,
-        @Body product: CatalogProductDto
-    ): ApiResponse<ApiResponseDto<String>>
+        @Body product: CatalogProductRequestDto
+    ): ApiResponse<ResponseDto<Unit>>
 
-    @DELETE("products/{id}")
-    suspend fun deleteProduct(@Path("id") id: Long): ApiResponse<ApiResponseDto<String>>
+    @DELETE(ApiConstants.API + ApiConstants.ADMIN_CATALOG + "products/{id}")
+    suspend fun deleteProduct(@Path("id") id: Long): ApiResponse<ResponseDto<Unit>>
 }

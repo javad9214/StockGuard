@@ -42,6 +42,7 @@
     <!-- Barcode scan -->
     <string name="error_no_product_for_barcode">محصولی با بارکد %1$s یافت نشد</string>
     <string name="error_product_search_failed">خطا در جستجوی محصول: %1$s</string>
+    <string name="barcode_lookup_failed">جستجوی بارکد ناموفق بود</string>
 
     <!-- Setting -->
     <string name="setting">تنظیمات</string>
@@ -53,6 +54,10 @@
     <string name="light">روشن</string>
     <string name="system_default">پیش فرض سیستم</string>
     <string name="stock_runout_limit">حد هشدار اتمام موجودی</string>
+    <string name="default_unit">واحد پیش‌فرض</string>
+    <string name="visible_units">واحدهای نمایشی</string>
+    <string name="visible_units_summary">نمایش %1$d واحد از %2$d واحد در منوی انتخاب</string>
+    <string name="choose_units">انتخاب واحدها</string>
 
 
     <!-- DATES -->
@@ -236,6 +241,8 @@
     <string name="edit_product_title">ویرایش محصول</string>
     <string name="product_name">نام محصول</string>
     <string name="barcode_optional">بارکد</string>
+    <string name="initial_stock">موجودی اولیه</string>
+    <string name="unit_optional">واحد (اختیاری)</string>
     <string name="cost_price">قیمت خرید</string>
     <string name="sale_price">قیمت فروش</string>
     <string name="category_id_optional">شناسه دسته‌بندی (اختیاری)</string>
@@ -251,6 +258,7 @@
     <string name="error_product_name_required">نام محصول الزامی است</string>
     <string name="error_sale_price_invalid">قیمت فروش باید عددی مثبت باشد</string>
     <string name="error_cost_price_invalid">قیمت خرید باید عددی مثبت باشد</string>
+    <string name="error_initial_stock_invalid">موجودی اولیه باید بین ۰ تا ۱٬۰۰۰٬۰۰۰ باشد</string>
     <string name="error_enter_valid_price">قیمت معتبر وارد کنید</string>
     <string name="profit_margin_hint">سود: %1$s (%2$s٪)</string>
     <string name="warning_selling_below_cost">هشدار: قیمت فروش از قیمت خرید بیشتر نیست</string>
@@ -332,6 +340,9 @@
     <!-- Sync -->
     <string name="sync_all_products">همگام‌سازی همه محصولات</string>
     <string name="products_synced">محصولات با سرور همگام‌سازی شدند</string>
+    <string name="sync">همگام سازی</string>
+    <string name="product_synced">محصول با سرور همگام‌سازی شد</string>
+    <string name="product_sync_failed">همگام‌سازی محصول ناموفق بود</string>
     <string name="sync_invoices">همگام‌سازی فاکتورها</string>
     <string name="invoices_synced">فاکتورها با سرور همگام‌سازی شدند</string>
 

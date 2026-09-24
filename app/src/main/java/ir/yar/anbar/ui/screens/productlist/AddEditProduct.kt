@@ -62,6 +62,7 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Subcategory
+import ir.yar.anbar.domain.model.UnitOfMeasure
 import ir.yar.anbar.domain.model.type.Money
 import ir.yar.anbar.ui.components.image.ImagePickerBox
 import ir.yar.anbar.ui.components.barcodescanner.CompactBarcodeScanner
@@ -86,6 +87,12 @@ import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.price.PriceValidator
 import ir.yar.anbar.utils.price.ThousandSeparatorTransformation
+import kotlinx.coroutines.delay
+
+// Barcode auto-lookup (add mode): real-world barcodes are at least EAN-8,
+// and typing bursts collapse into one call after a short pause
+private const val MIN_LOOKUP_BARCODE_LENGTH = 8
+private const val BARCODE_LOOKUP_DEBOUNCE_MS = 700L
 
 @Composable
 fun AddProduct(
@@ -112,7 +119,11 @@ fun AddProduct(
     val productLoadError by productsViewModel.selectedProductError.collectAsState()
     val isLoading by productsViewModel.isLoading.collectAsState()
     val isSaving by productsViewModel.isSaving.collectAsState()
+    val isBarcodeLookupLoading by productsViewModel.isBarcodeLookupLoading.collectAsState()
+    val barcodeLookupResult by productsViewModel.barcodeLookupResult.collectAsState()
     val subcategories by productsViewModel.subcategories.collectAsState()
+    val defaultUnit by productsViewModel.defaultUnit.collectAsState()
+    val visibleUnits by productsViewModel.visibleUnits.collectAsState()
     val snackyHostState = rememberSnackyHostState()
     val confirmyHostState = rememberConfirmyHostState()
 
@@ -163,7 +174,60 @@ fun AddProduct(
         mutableStateOf(product?.subcategoryId?.value?.toString() ?: "")
     }
 
+    // Initial stock in the chosen unit — prefilled with the current stock in
+    // edit mode; blank keeps the existing stock (0 for a new product)
+    var initialStock by remember(product) {
+        mutableStateOf(product?.stock?.value?.toString() ?: "")
+    }
+
+    // The wire value is the exact server enum name. Edits start from the
+    // product's own unit; new products pre-select the persisted default
+    // (PIECE out of the box), which may arrive one frame after first
+    // composition — hence the key re-initializing the selection
+    var selectedUnit by remember(product, defaultUnit) {
+        mutableStateOf(
+            UnitOfMeasure.fromName(product?.unit?.value)
+                ?: UnitOfMeasure.fromName(defaultUnit)
+        )
+    }
+
     val isEditMode = product != null
+
+    // Add mode only — typing or scanning a barcode looks it up against the
+    // server's Daryamart catalog. The delay doubles as the debounce:
+    // restarting this effect on every barcode change cancels the previous
+    // wait, so keystroke bursts collapse into one call
+    LaunchedEffect(barcode, isEditMode) {
+        if (isEditMode || barcode.length < MIN_LOOKUP_BARCODE_LENGTH) return@LaunchedEffect
+        delay(BARCODE_LOOKUP_DEBOUNCE_MS)
+        productsViewModel.lookupBarcode(barcode)
+    }
+
+    val barcodeLookupFailedMessage = stringResource(R.string.barcode_lookup_failed)
+
+    // Auto-fill from a finished lookup: name → product name, sellPrice →
+    // sale price. A result for a barcode the user has already changed away
+    // from is stale and ignored; failures surface the server's fa message
+    // (e.g. «محصولی با این بارکد یافت نشد») so the user knows why nothing
+    // was filled
+    LaunchedEffect(barcodeLookupResult) {
+        val result = barcodeLookupResult ?: return@LaunchedEffect
+        if (isEditMode || result.barcode != barcode) return@LaunchedEffect
+        val found = result.product
+        if (found != null) {
+            found.name?.takeIf { it.isNotBlank() }?.let { name = it }
+            // sellPrice arrives in display units — the same unit the field
+            // itself holds, so no cents conversion is needed
+            found.sellPrice?.let { salePrice = it.toString() }
+            isDirty = true
+        } else {
+            snackyHostState.show(
+                message = result.errorMessage ?: barcodeLookupFailedMessage,
+                type = SnackyType.ERROR,
+                duration = SnackyDuration.LONG
+            )
+        }
+    }
 
     // Single parse per recomposition — feeds the button gate, the inline
     // field errors, and the live profit hint
@@ -261,8 +325,38 @@ fun AddProduct(
                             barcode = newValue
                             isDirty = true
                         }
-                    }
+                    },
+                    isLookingUp = isBarcodeLookupLoading
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Initial stock and its unit of measure sit side by side —
+                // the number stays short so both fit even on narrow phones
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_4))
+                ) {
+                    InitialStockField(
+                        value = initialStock,
+                        onValueChange = { newValue ->
+                            // Digits only, at most 7 — StockQuantity caps at 1,000,000
+                            if (newValue.all { it.isDigit() } && newValue.length <= 7) {
+                                initialStock = newValue
+                                isDirty = true
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                    UnitDropdownField(
+                        selected = selectedUnit,
+                        onSelect = {
+                            selectedUnit = it
+                            isDirty = true
+                        },
+                        visibleUnits = visibleUnits,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -398,7 +492,9 @@ fun AddProduct(
                     salePrice = salePrice,
                     costPrice = costPrice,
                     subcategoryId = subcategoryId,
-                    localImageUri = imageUri?.toString()
+                    localImageUri = imageUri?.toString(),
+                    initialStock = initialStock,
+                    unit = selectedUnit?.name
                 )
             },
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -539,7 +635,8 @@ private fun ProductNameField(
 @Composable
 private fun BarcodeField(
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    isLookingUp: Boolean = false
 ) {
 
     // Context for MediaPlayer
@@ -584,11 +681,20 @@ private fun BarcodeField(
             )
         },
         trailingIcon = {
-            Icon(
-                painter = painterResource(id = R.drawable.barcode_24px),
-                contentDescription = stringResource(R.string.barcode_optional),
-                tint = MaterialTheme.colorScheme.outline
-            )
+            // Swapped for a spinner while the Daryamart lookup is running,
+            // so the auto-fill that follows doesn't feel like it came from nowhere
+            if (isLookingUp) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(dimen(R.dimen.size_sm)),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Icon(
+                    painter = painterResource(id = R.drawable.barcode_24px),
+                    contentDescription = stringResource(R.string.barcode_optional),
+                    tint = MaterialTheme.colorScheme.outline
+                )
+            }
         },
         modifier = Modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions.Default.copy(
@@ -606,6 +712,118 @@ private fun BarcodeField(
             fontSize = dimenTextSize(R.dimen.text_size_md)
         )
     )
+}
+
+@Composable
+private fun InitialStockField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = {
+            Text(
+                stringResource(R.string.initial_stock),
+                fontFamily = BKoodak,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        modifier = modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Number
+        ),
+        shape = RoundedCornerShape(12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+        ),
+        singleLine = true,
+        textStyle = TextStyle(
+            fontFamily = BKoodak,
+            fontWeight = FontWeight.Bold,
+            fontSize = dimenTextSize(R.dimen.text_size_md)
+        )
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun UnitDropdownField(
+    selected: UnitOfMeasure?,
+    onSelect: (UnitOfMeasure?) -> Unit,
+    visibleUnits: Set<String> = UnitOfMeasure.values().map { it.name }.toSet(),
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        modifier = modifier
+    ) {
+        // faName is the display label; the enum name is what gets saved
+        OutlinedTextField(
+            value = selected?.faName ?: "",
+            onValueChange = {},
+            readOnly = true,
+            label = {
+                Text(
+                    stringResource(R.string.unit_optional),
+                    fontFamily = BKoodak,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline
+            ),
+            singleLine = true,
+            textStyle = TextStyle(
+                fontFamily = BKoodak,
+                fontWeight = FontWeight.Bold,
+                fontSize = dimenTextSize(R.dimen.text_size_md)
+            )
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            // Only offer clearing once a unit is actually selected
+            if (selected != null) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.none)) },
+                    onClick = {
+                        onSelect(null)
+                        expanded = false
+                    }
+                )
+            }
+            // Offer the visible units (settings-controlled), always keeping
+            // the current selection listed so it can still be changed away
+            // from even when hidden
+            UnitOfMeasure.values()
+                .filter { it.name in visibleUnits || it == selected }
+                .forEach { unit ->
+                    DropdownMenuItem(
+                        text = { Text(unit.faName) },
+                        onClick = {
+                            onSelect(unit)
+                            expanded = false
+                        }
+                    )
+                }
+        }
+    }
 }
 
 @Composable

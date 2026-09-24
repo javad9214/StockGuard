@@ -148,7 +148,7 @@ class InvoiceRepoImpl @Inject constructor(
             try {
                 val response = remoteDataSource.pushInvoices(batch)
                 val mappingsByLocalId = (response as? ApiResponse.Success)
-                    ?.data?.data?.associateBy { it.localId }
+                    ?.data?.takeIf { it.isOk }?.info?.associateBy { it.localId }
 
                 if (mappingsByLocalId == null) {
                     failed += batch.size
@@ -198,7 +198,7 @@ class InvoiceRepoImpl @Inject constructor(
 
             while (true) {
                 val response = remoteDataSource.pullInvoices(since, page, pullPageSize)
-                val pullData = (response as? ApiResponse.Success)?.data?.data
+                val pullData = (response as? ApiResponse.Success)?.data?.takeIf { it.isOk }?.info
                 if (pullData == null) {
                     failed++
                     break

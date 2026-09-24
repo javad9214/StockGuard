@@ -18,6 +18,13 @@ interface ProductRepository {
      */
     suspend fun syncAllProducts(): ProductSyncResult
 
+    /**
+     * Pushes one product's locally pending change (PENDING_CREATE or
+     * PENDING_UPDATE) to the server and returns the outcome. A product with
+     * nothing pending returns an empty result (already synced).
+     */
+    suspend fun syncSingleProduct(productId: Long): ProductSyncResult
+
     fun getAllProducts(): Flow<List<Product>>
 
     fun searchProducts(query: String): Flow<List<Product>>

@@ -53,7 +53,7 @@ class ProductRepoImpl @Inject constructor(
                     product = product.toRequestDto(),
                     imageSource = imageSource ?: product.image?.localUri
                 )
-                val serverId = (response as? ApiResponse.Success)?.data?.data ?: return@launch
+                val serverId = (response as? ApiResponse.Success)?.data?.takeIf { it.isOk }?.info ?: return@launch
                 localDataSource.markProductSynced(
                     localId = localId,
                     serverId = serverId
@@ -95,7 +95,7 @@ class ProductRepoImpl @Inject constructor(
         // PENDING_DELETE so a future sync pass can retry the server delete.
         try {
             val response = remoteDataSource.deleteProduct(serverId)
-            if ((response as? ApiResponse.Success)?.data?.success == true) {
+            if ((response as? ApiResponse.Success)?.data?.isOk == true) {
                 localDataSource.deleteProduct(existing)
             } else {
                 localDataSource.markProductPendingDelete(existing.id)
@@ -146,7 +146,7 @@ class ProductRepoImpl @Inject constructor(
                     product = product.toRequestDto(),
                     imageSource = product.image?.localUri?.takeUnless(imageFileManager::isServerImage)
                 )
-                if ((response as? ApiResponse.Success)?.data?.success == true) {
+                if ((response as? ApiResponse.Success)?.data?.isOk == true) {
                     localDataSource.markProductSynced(
                         localId = product.id.value,
                         serverId = serverId
@@ -211,7 +211,7 @@ class ProductRepoImpl @Inject constructor(
                     product = entity.toDomain().toRequestDto(),
                     imageSource = entity.imageLocalPath
                 )
-                val serverId = (response as? ApiResponse.Success)?.data?.data
+                val serverId = (response as? ApiResponse.Success)?.data?.takeIf { it.isOk }?.info
                 if (serverId != null) {
                     localDataSource.markProductSynced(entity.id, serverId)
                     created++
@@ -239,7 +239,7 @@ class ProductRepoImpl @Inject constructor(
                     product = entity.toDomain().toRequestDto(),
                     imageSource = entity.imageLocalPath?.takeUnless(imageFileManager::isServerImage)
                 )
-                if ((response as? ApiResponse.Success)?.data?.success == true) {
+                if ((response as? ApiResponse.Success)?.data?.isOk == true) {
                     localDataSource.markProductSynced(entity.id, serverId)
                     updated++
                 } else {
@@ -263,7 +263,7 @@ class ProductRepoImpl @Inject constructor(
             }
             try {
                 val response = remoteDataSource.deleteProduct(serverId)
-                if ((response as? ApiResponse.Success)?.data?.success == true) {
+                if ((response as? ApiResponse.Success)?.data?.isOk == true) {
                     localDataSource.deleteProduct(entity)
                     deleted++
                 } else {
@@ -282,6 +282,64 @@ class ProductRepoImpl @Inject constructor(
             deleted = deleted,
             failed = failed
         )
+    }
+
+    override suspend fun syncSingleProduct(productId: Long): ProductSyncResult {
+        // getProductById() filters out soft-deleted rows, so a PENDING_DELETE
+        // product resolves to null and reports nothing to push
+        val entity = localDataSource.getProductById(productId)
+            ?: return ProductSyncResult()
+
+        return when (entity.syncStatus) {
+            UserProductEntity.SYNC_STATUS_PENDING_CREATE -> {
+                try {
+                    val response = remoteDataSource.createCustomProduct(
+                        product = entity.toDomain().toRequestDto(),
+                        imageSource = entity.imageLocalPath
+                    )
+                    val serverId = (response as? ApiResponse.Success)?.data?.takeIf { it.isOk }?.info
+                    if (serverId != null) {
+                        localDataSource.markProductSynced(entity.id, serverId)
+                        ProductSyncResult(created = 1)
+                    } else {
+                        ProductSyncResult(failed = 1)
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    ProductSyncResult(failed = 1)
+                }
+            }
+
+            UserProductEntity.SYNC_STATUS_PENDING_UPDATE -> {
+                val serverId = entity.serverId
+                if (serverId == null) {
+                    // Row lost its server link — leave it pending for manual inspection
+                    ProductSyncResult(failed = 1)
+                } else {
+                    try {
+                        val response = remoteDataSource.updateProduct(
+                            id = serverId,
+                            product = entity.toDomain().toRequestDto(),
+                            imageSource = entity.imageLocalPath?.takeUnless(imageFileManager::isServerImage)
+                        )
+                        if ((response as? ApiResponse.Success)?.data?.isOk == true) {
+                            localDataSource.markProductSynced(entity.id, serverId)
+                            ProductSyncResult(updated = 1)
+                        } else {
+                            ProductSyncResult(failed = 1)
+                        }
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        ProductSyncResult(failed = 1)
+                    }
+                }
+            }
+
+            // Already synced — nothing to push
+            else -> ProductSyncResult()
+        }
     }
 
     /**

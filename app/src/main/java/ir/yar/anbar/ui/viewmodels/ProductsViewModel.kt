@@ -13,6 +13,9 @@ import ir.yar.anbar.domain.model.ProductSyncResult
 import ir.yar.anbar.domain.model.SortOrder
 import ir.yar.anbar.domain.model.Subcategory
 import ir.yar.anbar.domain.model.type.Money
+import ir.yar.anbar.domain.model.BarcodeProduct
+import ir.yar.anbar.domain.repository.UserPreferencesRepository
+import ir.yar.anbar.domain.usecase.barcode.LookupBarcodeUseCase
 import ir.yar.anbar.domain.usecase.category.GetSubcategoriesUseCase
 import ir.yar.anbar.domain.usecase.product.AddProductUseCase
 import ir.yar.anbar.domain.usecase.product.DecreaseStockUseCase
@@ -23,10 +26,15 @@ import ir.yar.anbar.domain.usecase.product.GetProductByIdUseCase
 import ir.yar.anbar.domain.usecase.product.GetProductByQueryUseCase
 import ir.yar.anbar.domain.usecase.product.IncreaseStockUseCase
 import ir.yar.anbar.domain.usecase.product.SyncAllProductsUseCase
+import ir.yar.anbar.domain.usecase.userpreferences.GetDefaultUnitUseCase
+import ir.yar.anbar.domain.usecase.userpreferences.GetVisibleUnitsUseCase
+import ir.yar.anbar.domain.usecase.product.SyncSingleProductUseCase
+import ir.yar.anbar.domain.util.Resource
 import ir.yar.anbar.utils.barcode.BarcodeGenerator
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -58,7 +66,11 @@ class ProductsViewModel @Inject constructor(
     private val increaseStockUseCase: IncreaseStockUseCase,
     private val decreaseStockUseCase: DecreaseStockUseCase,
     private val syncAllProductsUseCase: SyncAllProductsUseCase,
-    private val getSubcategoriesUseCase: GetSubcategoriesUseCase
+    private val getDefaultUnitUseCase: GetDefaultUnitUseCase,
+    private val syncSingleProductUseCase: SyncSingleProductUseCase,
+    private val getSubcategoriesUseCase: GetSubcategoriesUseCase,
+    private val getVisibleUnitsUseCase: GetVisibleUnitsUseCase,
+    private val lookupBarcodeUseCase: LookupBarcodeUseCase
 ) : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
@@ -70,6 +82,24 @@ class ProductsViewModel @Inject constructor(
     // decoration, so a failed load just leaves the dropdown empty.
     private val _subcategories = MutableStateFlow<List<Subcategory>>(emptyList())
     val subcategories: StateFlow<List<Subcategory>> get() = _subcategories
+
+    // Unit pre-selected on the add-product form; seeded with the domain
+    // default (PIECE) until the DataStore preference arrives
+    val defaultUnit: StateFlow<String> = getDefaultUnitUseCase()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            UserPreferencesRepository.DEFAULT_UNIT
+        )
+
+    // Units the form's unit picker offers; all of them until the DataStore
+    // preference arrives
+    val visibleUnits: StateFlow<Set<String>> = getVisibleUnitsUseCase()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            UserPreferencesRepository.DEFAULT_VISIBLE_UNITS
+        )
 
     // Inputs of the products pipeline — mutations only update these and the
     // single collector below reacts, so a slow older query can never
@@ -123,6 +153,12 @@ class ProductsViewModel @Inject constructor(
     private val _lastSyncResult = MutableStateFlow<ProductSyncResult?>(null)
     val lastSyncResult: StateFlow<ProductSyncResult?> get() = _lastSyncResult
 
+    // One-shot outcome of syncing one product from its list item menu. A
+    // SharedFlow (not StateFlow) so consecutive identical results each emit
+    // and the snackbar fires every time
+    private val _singleSyncEvent = MutableSharedFlow<ProductSyncResult>()
+    val singleSyncEvent: SharedFlow<ProductSyncResult> = _singleSyncEvent.asSharedFlow()
+
     // One-shot outcome of saveProduct — the screen collects this to navigate on
     // Success and surface an error Snackbar on Error, instead of navigating
     // before the write has actually completed
@@ -131,6 +167,45 @@ class ProductsViewModel @Inject constructor(
 
     private val _isSaving = MutableStateFlow(false)
     val isSaving: StateFlow<Boolean> get() = _isSaving
+
+    // Outcome of a Daryamart barcode lookup. Carries the barcode it was
+    // issued for, so a stale result arriving after the user already changed
+    // the field can be ignored by the screen
+    private val _barcodeLookupResult = MutableStateFlow<BarcodeLookupResult?>(null)
+    val barcodeLookupResult: StateFlow<BarcodeLookupResult?> get() = _barcodeLookupResult
+
+    private val _isBarcodeLookupLoading = MutableStateFlow(false)
+    val isBarcodeLookupLoading: StateFlow<Boolean> get() = _isBarcodeLookupLoading
+
+    // Only the newest lookup may write its result — cancelled so a slow
+    // response for a previously typed barcode can't overwrite a newer one
+    private var barcodeLookupJob: Job? = null
+
+    /**
+     * Resolves a barcode against the server's Daryamart lookup. The result
+     * (product or the server's fa error message) lands in [barcodeLookupResult];
+     * the screen decides what to do with it.
+     */
+    fun lookupBarcode(barcode: String) {
+        if (barcode.isBlank()) return
+        barcodeLookupJob?.cancel()
+        barcodeLookupJob = viewModelScope.launch {
+            _isBarcodeLookupLoading.value = true
+            try {
+                lookupBarcodeUseCase(barcode).collect { resource ->
+                    when (resource) {
+                        is Resource.Loading -> Unit
+                        is Resource.Success -> _barcodeLookupResult.value =
+                            BarcodeLookupResult(barcode, resource.data)
+                        is Resource.Error -> _barcodeLookupResult.value =
+                            BarcodeLookupResult(barcode, null, resource.message)
+                    }
+                }
+            } finally {
+                _isBarcodeLookupLoading.value = false
+            }
+        }
+    }
 
     init {
         loadSubcategories()
@@ -155,7 +230,9 @@ class ProductsViewModel @Inject constructor(
         salePrice: String,
         costPrice: String,
         subcategoryId: String,
-        localImageUri: String?
+        localImageUri: String?,
+        initialStock: String = "",
+        unit: String? = null
     ) {
         if (_isSaving.value) return // a save is already in flight
         // Validate and parse before building the product — invalid input must
@@ -175,6 +252,16 @@ class ProductsViewModel @Inject constructor(
             return
         }
         val product = _selectedProduct.value
+        // Blank keeps the existing stock in edit mode (0 for a new product).
+        // The range must be validated here because StockQuantity throws
+        // inside the factory, which runs outside the try/catch below
+        val stockQuantity = initialStock.trim().toIntOrNull()
+            ?: product?.stock?.value
+            ?: 0
+        if (stockQuantity !in 0..1_000_000) {
+            rejectSave(context.getString(R.string.error_initial_stock_invalid))
+            return
+        }
         val newProduct = ProductFactory.createComplete(
             id = product?.id?.value ?: 0,
             name = name,
@@ -184,10 +271,10 @@ class ProductsViewModel @Inject constructor(
             description = product?.description?.value ?: "",
             subcategoryId = subcategoryId.toIntOrNull() ?: product?.subcategoryId?.value ?: 0,
             supplierId = product?.supplierId?.value ?: 0,
-            unit = product?.unit?.value ?: "",
+            unit = unit,
             localImageUri = localImageUri,
             remoteImageUrl = product?.image?.remoteUrl,
-            initialStock = product?.stock?.value ?: 0,
+            initialStock = stockQuantity,
             minStockLevel = product?.minStockLevel?.value ?: 0,
             maxStockLevel = product?.maxStockLevel?.value ?: 0,
             tags = product?.tags?.value ?: ""
@@ -230,6 +317,18 @@ class ProductsViewModel @Inject constructor(
             _isSyncing.value = true
             try {
                 _lastSyncResult.value = syncAllProductsUseCase()
+            } finally {
+                _isSyncing.value = false
+            }
+        }
+    }
+
+    fun syncSingleProduct(product: Product) {
+        if (_isSyncing.value) return // a sync pass is already running
+        viewModelScope.launch {
+            _isSyncing.value = true
+            try {
+                _singleSyncEvent.emit(syncSingleProductUseCase(product.id.value))
             } finally {
                 _isSyncing.value = false
             }
@@ -332,3 +431,9 @@ sealed interface SaveResult {
     data object Success : SaveResult
     data class Error(val message: String) : SaveResult
 }
+
+data class BarcodeLookupResult(
+    val barcode: String,
+    val product: BarcodeProduct?,
+    val errorMessage: String? = null
+)
