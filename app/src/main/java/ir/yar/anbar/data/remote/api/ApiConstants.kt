@@ -14,5 +14,6 @@ object ApiConstants {
     const val AUTH = "auth/"
     const val CATALOG = "catalog/"
     const val ADMIN_CATALOG = "admin/catalog/"
+    const val BARCODE = "barcode/"
 
 }
