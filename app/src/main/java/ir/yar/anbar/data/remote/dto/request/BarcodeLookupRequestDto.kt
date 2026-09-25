@@ -1,6 +1,8 @@
 package ir.yar.anbar.data.remote.dto.request
 
+import com.google.gson.annotations.SerializedName
+
 /** Body for POST /api/barcode/lookup. */
 data class BarcodeLookupRequestDto(
-    val barcode: String
+    @SerializedName("barcode") val barcode: String
 )

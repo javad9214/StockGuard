@@ -65,7 +65,8 @@
 -keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
 -keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
 
-# Keep all DTOs and entities (adjust package names as needed)
+# Keep all DTOs and entities (Gson uses reflection on field names)
+-keep class ir.yar.anbar.data.remote.dto.** { *; }
 -keep class ir.yar.anbar.data.dto.** { *; }
 -keep class ir.yar.anbar.data.entity.** { *; }
 -keep class ir.yar.anbar.data.model.** { *; }
