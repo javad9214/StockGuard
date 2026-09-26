@@ -4,6 +4,7 @@ import ir.yar.anbar.data.local.dao.CatalogProductDao
 import ir.yar.anbar.data.local.entity.CatalogProductEntity
 import ir.yar.anbar.data.mapper.toBarcodeDomain
 import ir.yar.anbar.data.mapper.toDomain
+import ir.yar.anbar.data.remote.api.ApiConstants
 import ir.yar.anbar.data.remote.api.ApiServiceBarcode
 import ir.yar.anbar.data.remote.dto.request.BarcodeLookupRequestDto
 import ir.yar.anbar.data.remote.util.ApiResponseHandler
@@ -26,8 +27,11 @@ class BarcodeLookupRepoImpl(
 
             val cached = catalogProductDao.getCatalogProductByBarcode(barcode)
 
-            // complete local row -> answer offline, no server round-trip
-            if (cached != null && cached.suggestedPrice != null && !cached.imageUrl.isNullOrBlank()) {
+            // complete local row -> answer offline, no server round-trip.
+            // An image URL we don't serve (e.g. a legacy Daryamart URL cached
+            // before the server moved images to its own CDN) doesn't count:
+            // refresh so the row converges to the CDN image.
+            if (cached != null && cached.suggestedPrice != null && isCdnImageUrl(cached.imageUrl)) {
                 emit(Resource.Success(cached.toBarcodeDomain()))
                 return@flow
             }
@@ -87,5 +91,14 @@ class BarcodeLookupRepoImpl(
                 )
             )
         }
+    }
+
+    /**
+     * True only for images served by our own server (MinIO-backed
+     * /api/images/...). External URLs — e.g. legacy Daryamart links cached
+     * before the CDN migration — don't count as a complete cached image.
+     */
+    private fun isCdnImageUrl(url: String?): Boolean {
+        return url != null && url.startsWith(ApiConstants.BASE_URL_DOMAIN + "/api/images/")
     }
 }
