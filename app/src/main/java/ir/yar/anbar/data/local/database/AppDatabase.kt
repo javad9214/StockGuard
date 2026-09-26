@@ -2,6 +2,7 @@ package ir.yar.anbar.data.local.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import ir.yar.anbar.data.local.dao.CatalogProductDao
 import ir.yar.anbar.data.local.dao.CategoryDao
 import ir.yar.anbar.data.local.dao.CustomerDao
 import ir.yar.anbar.data.local.dao.CustomerInvoiceSummaryDao
@@ -12,6 +13,7 @@ import ir.yar.anbar.data.local.dao.ProductSalesSummaryDao
 import ir.yar.anbar.data.local.dao.StockMovementDao
 import ir.yar.anbar.data.local.dao.SubcategoryDao
 import ir.yar.anbar.data.local.dao.SupplierDao
+import ir.yar.anbar.data.local.entity.CatalogProductEntity
 import ir.yar.anbar.data.local.entity.CategoryEntity
 import ir.yar.anbar.data.local.entity.CustomerEntity
 import ir.yar.anbar.data.local.entity.CustomerInvoiceSummaryEntity
@@ -35,8 +37,9 @@ import ir.yar.anbar.data.local.entity.SupplierEntity
         CustomerEntity::class,
         CustomerInvoiceSummaryEntity::class,
         StockMovementEntity::class,
-        SupplierEntity::class],
-    version = 6,
+        SupplierEntity::class,
+        CatalogProductEntity::class],
+    version = 7,
     // Golden schemas for future migrations live in app/schemas (see the
     // room.schemaLocation KSP arg in app/build.gradle.kts).
     exportSchema = true
@@ -52,4 +55,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun customerInvoiceSummaryDao(): CustomerInvoiceSummaryDao
     abstract fun stockMovementDao(): StockMovementDao
     abstract fun supplierDao(): SupplierDao
+    abstract fun catalogProductDao(): CatalogProductDao
 }
