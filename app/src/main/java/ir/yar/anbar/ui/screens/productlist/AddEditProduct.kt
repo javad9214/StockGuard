@@ -198,6 +198,8 @@ fun AddProduct(
     // restarting this effect on every barcode change cancels the previous
     // wait, so keystroke bursts collapse into one call
     LaunchedEffect(barcode, isEditMode) {
+        // a changed barcode invalidates the previously looked-up image
+        remoteImageUrl = null
         if (isEditMode || barcode.length < MIN_LOOKUP_BARCODE_LENGTH) return@LaunchedEffect
         delay(BARCODE_LOOKUP_DEBOUNCE_MS)
         productsViewModel.lookupBarcode(barcode)
@@ -206,10 +208,10 @@ fun AddProduct(
     val barcodeLookupFailedMessage = stringResource(R.string.barcode_lookup_failed)
 
     // Auto-fill from a finished lookup: name → product name, sellPrice →
-    // sale price. A result for a barcode the user has already changed away
-    // from is stale and ignored; failures surface the server's fa message
-    // (e.g. «محصولی با این بارکد یافت نشد») so the user knows why nothing
-    // was filled
+    // sale price, imageUrl → the image preview. A result for a barcode the
+    // user has already changed away from is stale and ignored; failures
+    // surface the server's fa message (e.g. «محصولی با این بارکد یافت نشد»)
+    // so the user knows why nothing was filled
     LaunchedEffect(barcodeLookupResult) {
         val result = barcodeLookupResult ?: return@LaunchedEffect
         if (isEditMode || result.barcode != barcode) return@LaunchedEffect
@@ -219,6 +221,11 @@ fun AddProduct(
             // sellPrice arrives in display units — the same unit the field
             // itself holds, so no cents conversion is needed
             found.sellPrice?.let { salePrice = it.toString() }
+            // show the looked-up image only when the user hasn't picked one —
+            // their own photo must win in both preview and save
+            if (imageUri == null) {
+                found.imageUrl?.takeIf { it.isNotBlank() }?.let { remoteImageUrl = it }
+            }
             isDirty = true
         } else {
             snackyHostState.show(
@@ -244,6 +251,11 @@ fun AddProduct(
     var imageUri by remember(product) {
         mutableStateOf(product?.image?.displayPath?.toUri())
     }
+
+    // Server image from the barcode lookup (add mode) — shown in the image
+    // preview until the user picks their own photo, and saved as the
+    // product's remote image (no local copy or upload involved)
+    var remoteImageUrl by remember(product) { mutableStateOf<String?>(null) }
 
     // Leaving with unsaved edits — via the top-bar close or the system back
     // gesture — asks for confirmation instead of silently discarding them
@@ -464,13 +476,17 @@ fun AddProduct(
                 }
 
                 ImagePickerBox(
-                    imageUri = imageUri,
+                    // Coil loads the picked local uri and the server's
+                    // https image alike
+                    imageUri = imageUri ?: remoteImageUrl?.toUri(),
                     onImageSelected = {
                         imageUri = it
+                        remoteImageUrl = null
                         isDirty = true
                     },
                     onImageRemoved = {
                         imageUri = null
+                        remoteImageUrl = null
                         isDirty = true
                     }
                 )
@@ -494,7 +510,8 @@ fun AddProduct(
                     subcategoryId = subcategoryId,
                     localImageUri = imageUri?.toString(),
                     initialStock = initialStock,
-                    unit = selectedUnit?.name
+                    unit = selectedUnit?.name,
+                    remoteImageUrl = remoteImageUrl
                 )
             },
             modifier = Modifier.align(Alignment.BottomCenter)

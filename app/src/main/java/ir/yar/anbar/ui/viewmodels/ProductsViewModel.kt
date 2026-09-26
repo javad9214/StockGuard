@@ -232,7 +232,8 @@ class ProductsViewModel @Inject constructor(
         subcategoryId: String,
         localImageUri: String?,
         initialStock: String = "",
-        unit: String? = null
+        unit: String? = null,
+        remoteImageUrl: String? = null
     ) {
         if (_isSaving.value) return // a save is already in flight
         // Validate and parse before building the product — invalid input must
@@ -273,7 +274,7 @@ class ProductsViewModel @Inject constructor(
             supplierId = product?.supplierId?.value ?: 0,
             unit = unit,
             localImageUri = localImageUri,
-            remoteImageUrl = product?.image?.remoteUrl,
+            remoteImageUrl = remoteImageUrl ?: product?.image?.remoteUrl,
             initialStock = stockQuantity,
             minStockLevel = product?.minStockLevel?.value ?: 0,
             maxStockLevel = product?.maxStockLevel?.value ?: 0,
