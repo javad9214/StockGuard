@@ -102,3 +102,37 @@ val MIGRATION_5_6: Migration = object : Migration(5, 6) {
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_invoices_serverId` ON `invoices` (`serverId`)")
     }
 }
+
+/**
+ * v7 registers the `catalog_products` cache table (the entity existed but was
+ * never part of the database). It starts empty: rows are cached on demand by
+ * barcode lookups, keyed by the server catalog id.
+ */
+val MIGRATION_6_7: Migration = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `catalog_products` (
+            `id` INTEGER NOT NULL,
+            `name` TEXT NOT NULL,
+            `barcode` TEXT,
+            `description` TEXT,
+            `brand` TEXT,
+            `manufacturer` TEXT,
+            `category` TEXT,
+            `subcategory` TEXT,
+            `imageUrl` TEXT,
+            `suggestedPrice` INTEGER,
+            `unit` TEXT,
+            `tags` TEXT,
+            `status` TEXT NOT NULL,
+            `qualityScore` INTEGER NOT NULL,
+            `adoptionCount` INTEGER NOT NULL,
+            `isActive` INTEGER NOT NULL,
+            `cachedAt` INTEGER NOT NULL,
+            PRIMARY KEY (`id`)
+            )
+            """.trimIndent()
+        )
+    }
+}

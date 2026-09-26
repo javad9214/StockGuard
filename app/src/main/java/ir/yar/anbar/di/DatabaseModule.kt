@@ -6,6 +6,7 @@ import ir.yar.anbar.data.local.database.AppDatabase
 import ir.yar.anbar.data.local.database.MIGRATION_3_4
 import ir.yar.anbar.data.local.database.MIGRATION_4_5
 import ir.yar.anbar.data.local.database.MIGRATION_5_6
+import ir.yar.anbar.data.local.database.MIGRATION_6_7
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,7 +27,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             "stock_guard_db"
         )
-            .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+            .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
             // v1/v2 predate server sync — their local-only rows can't be mapped.
             // Wiping is safe: the server copy is re-pulled on the next list load.
             .fallbackToDestructiveMigrationFrom(1, 2)
@@ -73,5 +74,9 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideSupplierDao(appDatabase: AppDatabase) = appDatabase.supplierDao()
+
+    @Provides
+    @Singleton
+    fun provideCatalogProductDao(appDatabase: AppDatabase) = appDatabase.catalogProductDao()
 
 }

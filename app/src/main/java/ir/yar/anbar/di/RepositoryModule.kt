@@ -1,5 +1,6 @@
 package ir.yar.anbar.di
 
+import ir.yar.anbar.data.local.dao.CatalogProductDao
 import ir.yar.anbar.data.remote.api.ApiServiceBarcode
 import ir.yar.anbar.data.remote.api.ApiServiceMainProduct
 import ir.yar.anbar.data.repository.BarcodeLookupRepoImpl
@@ -79,9 +80,13 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideBarcodeLookupRepository(
-        apiServiceBarcode: ApiServiceBarcode
+        apiServiceBarcode: ApiServiceBarcode,
+        catalogProductDao: CatalogProductDao
     ): BarcodeLookupRepository {
-        return BarcodeLookupRepoImpl(apiServiceBarcode = apiServiceBarcode)
+        return BarcodeLookupRepoImpl(
+            apiServiceBarcode = apiServiceBarcode,
+            catalogProductDao = catalogProductDao
+        )
     }
 
     @Provides
