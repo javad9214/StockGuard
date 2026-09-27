@@ -1,10 +1,10 @@
 package ir.yar.anbar.data.repository
 
+import android.net.Uri
 import ir.yar.anbar.data.local.dao.CatalogProductDao
 import ir.yar.anbar.data.local.entity.CatalogProductEntity
 import ir.yar.anbar.data.mapper.toBarcodeDomain
 import ir.yar.anbar.data.mapper.toDomain
-import ir.yar.anbar.data.remote.api.ApiConstants
 import ir.yar.anbar.data.remote.api.ApiServiceBarcode
 import ir.yar.anbar.data.remote.dto.request.BarcodeLookupRequestDto
 import ir.yar.anbar.data.remote.util.ApiResponseHandler
@@ -95,10 +95,12 @@ class BarcodeLookupRepoImpl(
 
     /**
      * True only for images served by our own server (MinIO-backed
-     * /api/images/...). External URLs — e.g. legacy Daryamart links cached
-     * before the CDN migration — don't count as a complete cached image.
+     * /api/images/...). Matched on the URL path, so any host/port the server
+     * is published under counts; external URLs — e.g. legacy Daryamart
+     * links — don't.
      */
     private fun isCdnImageUrl(url: String?): Boolean {
-        return url != null && url.startsWith(ApiConstants.BASE_URL_DOMAIN + "/api/images/")
+        val path = url?.let { runCatching { Uri.parse(it).path }.getOrNull() }
+        return path != null && path.startsWith("/api/images/")
     }
 }

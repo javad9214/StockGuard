@@ -15,7 +15,7 @@ android {
         applicationId = "ir.yar.anbar"
         minSdk = 26
         targetSdk = 36
-        versionCode = 47
+        versionCode = 48
         versionName = "0.38.3"
 
 
