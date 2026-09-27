@@ -193,6 +193,15 @@ fun AddProduct(
 
     val isEditMode = product != null
 
+    var imageUri by remember(product) {
+        mutableStateOf(product?.image?.displayPath?.toUri())
+    }
+
+    // Server image from the barcode lookup (add mode) — shown in the image
+    // preview until the user picks their own photo, and saved as the
+    // product's remote image (no local copy or upload involved)
+    var remoteImageUrl by remember(product) { mutableStateOf<String?>(null) }
+
     // Add mode only — typing or scanning a barcode looks it up against the
     // server's Daryamart catalog. The delay doubles as the debounce:
     // restarting this effect on every barcode change cancels the previous
@@ -247,15 +256,6 @@ fun AddProduct(
     val isNameError = nameTouched && name.isBlank()
     val isCostError = costTouched && costAmount == null
     val isSaleError = saleTouched && saleAmount == null
-
-    var imageUri by remember(product) {
-        mutableStateOf(product?.image?.displayPath?.toUri())
-    }
-
-    // Server image from the barcode lookup (add mode) — shown in the image
-    // preview until the user picks their own photo, and saved as the
-    // product's remote image (no local copy or upload involved)
-    var remoteImageUrl by remember(product) { mutableStateOf<String?>(null) }
 
     // Leaving with unsaved edits — via the top-bar close or the system back
     // gesture — asks for confirmation instead of silently discarding them
