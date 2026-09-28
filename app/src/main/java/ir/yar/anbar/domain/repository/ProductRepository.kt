@@ -9,8 +9,11 @@ interface ProductRepository {
     /**
      * @param imageSource image reference exactly as stored on the product
      * (content:// picker URI or file path); uploaded with the product
+     * @param catalogProductId server catalog product resolved by a barcode
+     * lookup — non-null adopts that catalog product instead of creating a
+     * custom one, linking local and server rows to the shared catalog
      */
-    suspend fun addProduct(product: Product, imageSource: String?)
+    suspend fun addProduct(product: Product, imageSource: String?, catalogProductId: Long? = null)
 
     /**
      * Pushes every locally pending product (PENDING_CREATE, PENDING_UPDATE,

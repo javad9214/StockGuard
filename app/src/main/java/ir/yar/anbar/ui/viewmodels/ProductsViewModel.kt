@@ -233,7 +233,10 @@ class ProductsViewModel @Inject constructor(
         localImageUri: String?,
         initialStock: String = "",
         unit: String? = null,
-        remoteImageUrl: String? = null
+        remoteImageUrl: String? = null,
+        // Catalog product resolved by the barcode lookup — adopting links the
+        // new product to the shared catalog on both sides (null = custom)
+        catalogProductId: Long? = null
     ) {
         if (_isSaving.value) return // a save is already in flight
         // Validate and parse before building the product — invalid input must
@@ -284,7 +287,7 @@ class ProductsViewModel @Inject constructor(
             _isSaving.value = true
             try {
                 if (product == null) {
-                    addProductUseCase(newProduct)
+                    addProductUseCase(newProduct, catalogProductId)
                 } else {
                     editProductUseCase(newProduct)
                 }
