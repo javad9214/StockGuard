@@ -202,13 +202,20 @@ fun AddProduct(
     // product's remote image (no local copy or upload involved)
     var remoteImageUrl by remember(product) { mutableStateOf<String?>(null) }
 
+    // Catalog link from the same lookup — when the server knows the barcode,
+    // saving adopts that catalog product server-side instead of creating an
+    // unlinked custom row. Cleared together with the lookup data whenever
+    // the barcode changes, so a stale link can never be adopted
+    var catalogProductId by remember(product) { mutableStateOf<Long?>(null) }
+
     // Add mode only — typing or scanning a barcode looks it up against the
     // server's Daryamart catalog. The delay doubles as the debounce:
     // restarting this effect on every barcode change cancels the previous
     // wait, so keystroke bursts collapse into one call
     LaunchedEffect(barcode, isEditMode) {
-        // a changed barcode invalidates the previously looked-up image
+        // a changed barcode invalidates the previously looked-up image and link
         remoteImageUrl = null
+        catalogProductId = null
         if (isEditMode || barcode.length < MIN_LOOKUP_BARCODE_LENGTH) return@LaunchedEffect
         delay(BARCODE_LOOKUP_DEBOUNCE_MS)
         productsViewModel.lookupBarcode(barcode)
@@ -217,7 +224,8 @@ fun AddProduct(
     val barcodeLookupFailedMessage = stringResource(R.string.barcode_lookup_failed)
 
     // Auto-fill from a finished lookup: name → product name, sellPrice →
-    // sale price, imageUrl → the image preview. A result for a barcode the
+    // sale price, imageUrl → the image preview, catalogId → the save-time
+    // adopt link. A result for a barcode the
     // user has already changed away from is stale and ignored; failures
     // surface the server's fa message (e.g. «محصولی با این بارکد یافت نشد»)
     // so the user knows why nothing was filled
@@ -235,6 +243,7 @@ fun AddProduct(
             if (imageUri == null) {
                 found.imageUrl?.takeIf { it.isNotBlank() }?.let { remoteImageUrl = it }
             }
+            catalogProductId = found.catalogId
             isDirty = true
         } else {
             snackyHostState.show(
@@ -511,7 +520,8 @@ fun AddProduct(
                     localImageUri = imageUri?.toString(),
                     initialStock = initialStock,
                     unit = selectedUnit?.name,
-                    remoteImageUrl = remoteImageUrl
+                    remoteImageUrl = remoteImageUrl,
+                    catalogProductId = catalogProductId
                 )
             },
             modifier = Modifier.align(Alignment.BottomCenter)

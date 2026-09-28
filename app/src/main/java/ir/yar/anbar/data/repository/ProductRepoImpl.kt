@@ -33,12 +33,16 @@ class ProductRepoImpl @Inject constructor(
 
     private val refreshMutex = Mutex()
 
-    override suspend fun addProduct(product: Product, imageSource: String?) {
+    override suspend fun addProduct(product: Product, imageSource: String?, catalogProductId: Long?) {
         // 1. Save locally first (offline-first). The row starts as PENDING_CREATE
-        //    and is only marked SYNCED after the server confirms it.
+        //    and is only marked SYNCED after the server confirms it. The catalog
+        //    link is persisted with the row so a retried push (offline save,
+        //    lost response) keeps the adopt intent instead of degrading to a
+        //    custom product.
         val localId = localDataSource.insertProduct(
             product.toEntity().copy(
                 serverId = null,
+                catalogProductId = catalogProductId,
                 syncStatus = UserProductEntity.SYNC_STATUS_PENDING_CREATE,
                 synced = false
             )
@@ -49,21 +53,50 @@ class ProductRepoImpl @Inject constructor(
         //    so a future sync pass can retry it.
         applicationScope.launch {
             try {
-                val response = remoteDataSource.createCustomProduct(
-                    product = product.toRequestDto(),
-                    imageSource = imageSource ?: product.image?.localUri
+                val serverId = pushCreateToServer(
+                    product = product,
+                    imageSource = imageSource ?: product.image?.localUri,
+                    catalogProductId = catalogProductId
                 )
-                val serverId = (response as? ApiResponse.Success)?.data?.takeIf { it.isOk }?.info ?: return@launch
-                localDataSource.markProductSynced(
-                    localId = localId,
-                    serverId = serverId
-                )
+                if (serverId != null) {
+                    localDataSource.markProductSynced(
+                        localId = localId,
+                        serverId = serverId
+                    )
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 // Network call threw — local row remains PENDING_CREATE
             }
         }
+    }
+
+    /**
+     * Pushes a product the server has never confirmed. A row carrying a
+     * catalog link (a successful barcode lookup preceded the save) adopts the
+     * catalog product instead of creating a custom one, so local and server
+     * rows share the same catalogProductId. Returns the new server id, or
+     * null when the server rejected the write.
+     */
+    private suspend fun pushCreateToServer(
+        product: Product,
+        imageSource: String?,
+        catalogProductId: Long?
+    ): Long? {
+        val response = if (catalogProductId != null) {
+            remoteDataSource.adoptCatalogProduct(
+                catalogProductId = catalogProductId,
+                product = product.toRequestDto(),
+                imageSource = imageSource
+            )
+        } else {
+            remoteDataSource.createCustomProduct(
+                product = product.toRequestDto(),
+                imageSource = imageSource
+            )
+        }
+        return (response as? ApiResponse.Success)?.data?.takeIf { it.isOk }?.info
     }
 
     override fun getAllProducts(): Flow<List<Product>> {
@@ -143,7 +176,12 @@ class ProductRepoImpl @Inject constructor(
             try {
                 val response = remoteDataSource.updateProduct(
                     id = serverId,
-                    product = product.toRequestDto(),
+                    // The link rides along: the server no-ops when it already
+                    // matches and (re)links when the local row is ahead —
+                    // self-healing for rows created before adopt-on-save
+                    product = product.toRequestDto().copy(
+                        catalogProductId = existing?.catalogProductId
+                    ),
                     imageSource = product.image?.localUri?.takeUnless(imageFileManager::isServerImage)
                 )
                 if ((response as? ApiResponse.Success)?.data?.isOk == true) {
@@ -207,11 +245,11 @@ class ProductRepoImpl @Inject constructor(
         // 1. Push products that were never confirmed by the server
         for (entity in localDataSource.getPendingCreateProducts()) {
             try {
-                val response = remoteDataSource.createCustomProduct(
-                    product = entity.toDomain().toRequestDto(),
-                    imageSource = entity.imageLocalPath
+                val serverId = pushCreateToServer(
+                    product = entity.toDomain(),
+                    imageSource = entity.imageLocalPath,
+                    catalogProductId = entity.catalogProductId
                 )
-                val serverId = (response as? ApiResponse.Success)?.data?.takeIf { it.isOk }?.info
                 if (serverId != null) {
                     localDataSource.markProductSynced(entity.id, serverId)
                     created++
@@ -236,7 +274,11 @@ class ProductRepoImpl @Inject constructor(
             try {
                 val response = remoteDataSource.updateProduct(
                     id = serverId,
-                    product = entity.toDomain().toRequestDto(),
+                    // The link rides along so the server row converges to the
+                    // local one (matching links are a no-op server-side)
+                    product = entity.toDomain().toRequestDto().copy(
+                        catalogProductId = entity.catalogProductId
+                    ),
                     imageSource = entity.imageLocalPath?.takeUnless(imageFileManager::isServerImage)
                 )
                 if ((response as? ApiResponse.Success)?.data?.isOk == true) {
@@ -293,11 +335,11 @@ class ProductRepoImpl @Inject constructor(
         return when (entity.syncStatus) {
             UserProductEntity.SYNC_STATUS_PENDING_CREATE -> {
                 try {
-                    val response = remoteDataSource.createCustomProduct(
-                        product = entity.toDomain().toRequestDto(),
-                        imageSource = entity.imageLocalPath
+                    val serverId = pushCreateToServer(
+                        product = entity.toDomain(),
+                        imageSource = entity.imageLocalPath,
+                        catalogProductId = entity.catalogProductId
                     )
-                    val serverId = (response as? ApiResponse.Success)?.data?.takeIf { it.isOk }?.info
                     if (serverId != null) {
                         localDataSource.markProductSynced(entity.id, serverId)
                         ProductSyncResult(created = 1)
@@ -320,7 +362,11 @@ class ProductRepoImpl @Inject constructor(
                     try {
                         val response = remoteDataSource.updateProduct(
                             id = serverId,
-                            product = entity.toDomain().toRequestDto(),
+                            // The link rides along so the server row converges to the
+                            // local one (matching links are a no-op server-side)
+                            product = entity.toDomain().toRequestDto().copy(
+                                catalogProductId = entity.catalogProductId
+                            ),
                             imageSource = entity.imageLocalPath?.takeUnless(imageFileManager::isServerImage)
                         )
                         if ((response as? ApiResponse.Success)?.data?.isOk == true) {
