@@ -15,8 +15,8 @@ android {
         applicationId = "ir.yar.anbar"
         minSdk = 26
         targetSdk = 36
-        versionCode = 49
-        versionName = "0.39.0"
+        versionCode = 50
+        versionName = "0.40.0"
 
 
         buildConfigField("String", "BASE_URL", "\"https://mjavadserver.ir\"")
