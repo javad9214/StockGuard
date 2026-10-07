@@ -11,6 +11,9 @@ data class UserProductResponseDto(
     val description: String? = null,
     val imageType: String? = null,
     val image: String? = null, // Base64-encoded image bytes sent back by the server
+    // Catalog image URL for adopted rows without their own image; null when
+    // the image travels inline above or the row has neither
+    val imageUrl: String? = null,
     val subcategoryId: Int? = null,
     val categoryId: Int? = null,
     val subcategoryName: String? = null,

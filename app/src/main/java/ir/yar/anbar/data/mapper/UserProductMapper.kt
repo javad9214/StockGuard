@@ -141,6 +141,8 @@ fun UserProductResponseDto.mergeInto(
         costPrice = costPrice,
         description = description,
         imageLocalPath = serverImagePath ?: entity.imageLocalPath,
+        // Server-sent catalog image URL wins; when absent keep the cached one
+        imageUrl = imageUrl ?: entity.imageUrl,
         subcategoryId = subcategoryId,
         // Servers that don't send names yet keep the previously cached value
         subcategoryName = subcategoryName ?: entity.subcategoryName,
@@ -181,7 +183,9 @@ fun UserProductResponseDto.toNewEntity(serverImagePath: String? = null): UserPro
         costPrice = costPrice,
         description = description,
         imageLocalPath = serverImagePath,
-        imageUrl = null,
+        // Adopted rows carry the catalog image URL — the only picture a
+        // fresh install gets on the first pull
+        imageUrl = imageUrl,
         subcategoryId = subcategoryId,
         subcategoryName = subcategoryName,
         supplierId = supplierId,
