@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
@@ -87,6 +86,12 @@ fun ProductItem(
     var showZoomedImage by remember { mutableStateOf(false) }
     val imagePath = product.image?.displayPath
 
+    val syncStatusColor = if (product.synced) {
+        MaterialTheme.colorScheme.success
+    } else {
+        MaterialTheme.colorScheme.customError
+    }
+
     val myFontFamily = FontFamily(
         Font(R.font.b_koodak_bd, FontWeight.Normal)
     )
@@ -119,6 +124,18 @@ fun ProductItem(
                             onDismiss = { showMenu = false },
                             fontFamily = myFontFamily,
                             items = listOf(
+                                // Sync status label: informational, never clickable
+                                BottomSheetMenuItem(
+                                    text = if (product.synced) str(R.string.sync_status_synced)
+                                    else str(R.string.sync_status_not_synced),
+                                    icon = painterResource(
+                                        if (product.synced) R.drawable.cloud_done_24px
+                                        else R.drawable.error_24px
+                                    ),
+                                    iconTint = syncStatusColor,
+                                    textColor = syncStatusColor,
+                                    isLabel = true
+                                ),
                                 BottomSheetMenuItem(
                                     text = str(R.string.edit),
                                     icon = painterResource(id = R.drawable.edit_24px),
@@ -172,33 +189,13 @@ fun ProductItem(
                     Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
 
 
-                    Box {
-                        ProductThumbnail(
-                            imageUrl = product.image?.displayPath,
-                            size = 88.dp,
-                            modifier = Modifier.clickable(enabled = imagePath != null) {
-                                showZoomedImage = true
-                            }
-                        )
-
-                        // Sync tick badge pinned to the right corner of the image
-                        if (product.synced) {
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .size(dimen(R.dimen.size_sm))
-                                    .background(MaterialTheme.colorScheme.surface, CircleShape),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.cloud_done_24px),
-                                    contentDescription = "Synced to server",
-                                    tint = MaterialTheme.colorScheme.success,
-                                    modifier = Modifier.size(dimen(R.dimen.size_xs))
-                                )
-                            }
+                    ProductThumbnail(
+                        imageUrl = product.image?.displayPath,
+                        size = 88.dp,
+                        modifier = Modifier.clickable(enabled = imagePath != null) {
+                            showZoomedImage = true
                         }
-                    }
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))

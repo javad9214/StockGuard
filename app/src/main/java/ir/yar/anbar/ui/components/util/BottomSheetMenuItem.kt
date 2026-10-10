@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -34,7 +35,10 @@ data class BottomSheetMenuItem(
     val iconTint: Color? = null,
     val textColor: Color? = null,
     val backgroundColor: Color? = null,
-    val onClick: () -> Unit
+    // Labels are informational status rows (e.g. sync state): rendered as a
+    // tinted chip, never clickable, and onClick is ignored
+    val isLabel: Boolean = false,
+    val onClick: () -> Unit = {}
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,6 +82,54 @@ private fun BottomSheetMenuItemView(
     fontFamily: FontFamily?,
     isLast: Boolean
 ) {
+    if (item.isLabel) {
+        val statusColor = item.textColor ?: MaterialTheme.colorScheme.onSurface
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 24.dp,
+                    end = 24.dp,
+                    top = dimen(R.dimen.space_2),
+                    bottom = dimen(R.dimen.space_3)
+                )
+                .background(
+                    color = statusColor.copy(alpha = 0.12f),
+                    shape = RoundedCornerShape(dimen(R.dimen.radius_md))
+                )
+                .padding(
+                    horizontal = dimen(R.dimen.space_4),
+                    vertical = dimen(R.dimen.space_2)
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = item.text,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.End,
+                fontFamily = fontFamily,
+                color = statusColor,
+                style = MaterialTheme.typography.labelLarge
+            )
+
+            Spacer(modifier = Modifier.width(dimen(R.dimen.space_3)))
+
+            Icon(
+                painter = item.icon,
+                contentDescription = item.text,
+                tint = item.iconTint ?: statusColor
+            )
+        }
+
+        if (!isLast) {
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 24.dp),
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
+        }
+        return
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
