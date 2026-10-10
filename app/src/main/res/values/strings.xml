@@ -337,6 +337,8 @@
     <string name="sync">Sync</string>
     <string name="product_synced">Product synced with server</string>
     <string name="product_sync_failed">Product sync failed</string>
+    <string name="sync_status_synced">Synced with server</string>
+    <string name="sync_status_not_synced">Not synced with server</string>
     <string name="sync_invoices">Sync invoices</string>
     <string name="invoices_synced">Invoices synced with server</string>
 

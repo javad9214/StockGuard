@@ -313,13 +313,6 @@ fun ProductScreenContent(
 
                 Row {
 
-                    IconButton(onClick = { navController.navigate(Screen.MainServerProductLiat.route) }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.receive_square_01),
-                            contentDescription = "Navigate to Main Server Products "
-                        )
-                    }
-
                     // Sync All Products Button
                     IconButton(
                         onClick = onSyncAllProducts,
