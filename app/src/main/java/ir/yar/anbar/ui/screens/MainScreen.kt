@@ -5,7 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,7 +22,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
@@ -124,7 +122,10 @@ fun MainScreen(
     val snackyHostState = rememberSnackyHostState()
 
     Scaffold(
-        containerColor = Color.Transparent,
+        // A real container color is required: contentColorFor(Transparent) is
+        // Unspecified, leaving LocalContentColor at its black default, which made
+        // every Text/Icon without an explicit color unreadable in dark theme.
+        containerColor = MaterialTheme.colorScheme.surface,
         bottomBar = {
             AnimatedVisibility(
                 visible = shouldShowBottomNav,
@@ -149,8 +150,7 @@ fun MainScreen(
         },
     ) { innerPadding ->
         Box(modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)) {
+            .fillMaxSize()) {
             NavHost(
                 navController = navController,
                 startDestination = startDestination,

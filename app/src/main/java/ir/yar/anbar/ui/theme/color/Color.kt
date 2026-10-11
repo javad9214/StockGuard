@@ -62,7 +62,21 @@ val md_theme_light_onSurfaceVariant = Color(0xFF44474F)
 val md_theme_light_outline = Color(0xFF757882)
 val md_theme_light_outlineVariant = Color(0xFFC5C6D0)
 
-// Dark theme colors
+// Light theme surface elevation ramp (dialogs, menus, cards, bottom sheets)
+val md_theme_light_surfaceDim = Color(0xFFD9DAE0)
+val md_theme_light_surfaceBright = Color(0xFFF9F9FC)
+val md_theme_light_surfaceContainerLowest = Color(0xFFFFFFFF)
+val md_theme_light_surfaceContainerLow = Color(0xFFF6F6FA)
+val md_theme_light_surfaceContainer = Color(0xFFF0F0F5)
+val md_theme_light_surfaceContainerHigh = Color(0xFFEAEAEF)
+val md_theme_light_surfaceContainerHighest = Color(0xFFE4E5EB)
+val md_theme_light_inverseSurface = Color(0xFF2F3137)
+val md_theme_light_inverseOnSurface = Color(0xFFF1F0F7)
+val md_theme_light_inversePrimary = Color(0xFF8AB4F8)
+val md_theme_light_scrim = Color(0xFF000000)
+
+// Dark theme colors — cool graphite neutrals with a slight blue undertone,
+// layered like Material 3 dark surfaces (background darkest, containers rising)
 val md_theme_dark_primary = Color(0xFF8AB4F8)            // clean soft blue
 val md_theme_dark_onPrimary = Color(0xFF0B2A5B)
 val md_theme_dark_primaryContainer = Color(0xFF1F4A94)
@@ -83,11 +97,24 @@ val md_theme_dark_errorContainer = Color(0xFF93000A)
 val md_theme_dark_onError = Color(0xFF690005)
 val md_theme_dark_onErrorContainer = Color(0xFFFFDAD6)
 
-val md_theme_dark_background = Color(0xFF262624)     // soft warm dark gray
-val md_theme_dark_onBackground = Color(0xFFE8E6E1)
-val md_theme_dark_surface = Color(0xFF30302E)        // slightly lighter for cards
-val md_theme_dark_onSurface = Color(0xFFE8E6E1)
-val md_theme_dark_surfaceVariant = Color(0xFF3D3D3A)
-val md_theme_dark_onSurfaceVariant = Color(0xFFC9C7C0)
-val md_theme_dark_outline = Color(0xFF8F8E89)
-val md_theme_dark_outlineVariant = Color(0xFF474744)
+val md_theme_dark_background = Color(0xFF0F1114)     // near-black base
+val md_theme_dark_onBackground = Color(0xFFE2E2E9)
+val md_theme_dark_surface = Color(0xFF15181C)        // elevated base for cards
+val md_theme_dark_onSurface = Color(0xFFE2E2E9)
+val md_theme_dark_surfaceVariant = Color(0xFF22262C)
+val md_theme_dark_onSurfaceVariant = Color(0xFFC4C6CF)
+val md_theme_dark_outline = Color(0xFF8E9099)
+val md_theme_dark_outlineVariant = Color(0xFF44474E)
+
+// Dark theme surface elevation ramp (dialogs, menus, cards, bottom sheets)
+val md_theme_dark_surfaceDim = Color(0xFF0C0E11)
+val md_theme_dark_surfaceBright = Color(0xFF31353B)
+val md_theme_dark_surfaceContainerLowest = Color(0xFF0A0C0F)
+val md_theme_dark_surfaceContainerLow = Color(0xFF1D2025)
+val md_theme_dark_surfaceContainer = Color(0xFF22252B)
+val md_theme_dark_surfaceContainerHigh = Color(0xFF2C2F36)
+val md_theme_dark_surfaceContainerHighest = Color(0xFF373A41)
+val md_theme_dark_inverseSurface = Color(0xFFE2E2E9)
+val md_theme_dark_inverseOnSurface = Color(0xFF2F3137)
+val md_theme_dark_inversePrimary = Color(0xFF2240AA)
+val md_theme_dark_scrim = Color(0xFF000000)

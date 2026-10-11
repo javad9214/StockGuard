@@ -34,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -191,7 +190,8 @@ fun ServerProductItem(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (itemClicked) MaterialTheme.colorScheme.tertiary
                             else MaterialTheme.colorScheme.primary,
-                            contentColor = Color.White
+                            contentColor = if (itemClicked) MaterialTheme.colorScheme.onTertiary
+                            else MaterialTheme.colorScheme.onPrimary
                         )
                     ) {
                         if (itemClicked) {

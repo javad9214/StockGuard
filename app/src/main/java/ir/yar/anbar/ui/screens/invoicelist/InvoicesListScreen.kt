@@ -34,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
@@ -253,7 +252,7 @@ private fun SelectionModeTopBar(
             Icon(
                 painter = painterResource(id = R.drawable.delete_24px),
                 contentDescription = str(R.string.delete),
-                tint = if (selectedCount == 0) Color.Gray
+                tint = if (selectedCount == 0) MaterialTheme.colorScheme.outline
                 else MaterialTheme.colorScheme.error
             )
         }

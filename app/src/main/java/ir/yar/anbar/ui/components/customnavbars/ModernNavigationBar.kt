@@ -1,16 +1,11 @@
 package ir.yar.anbar.ui.components.customnavbars
 
 import android.view.HapticFeedbackConstants
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,13 +14,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -44,34 +40,37 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
-import androidx.compose.ui.geometry.Size
 import ir.yar.anbar.R
 import ir.yar.anbar.ui.navigation.BottomNavItem
 import ir.yar.anbar.ui.navigation.Routes
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
+import kotlin.math.PI
+import kotlin.math.sin
 
 // Bar geometry: the dock is a floating rounded bar with a circular cradle notch
 // cut into its top edge; the scan FAB sits centered in that notch.
@@ -81,6 +80,26 @@ private val FabSize = 58.dp
 private val CradleRadius = 33.dp        // FabSize / 2 + 4dp ring gap
 private val CradleTopClearance = 34.dp  // card top offset inside the host box
 private val BarBottomMargin = 12.dp
+
+private val ItemShape = RoundedCornerShape(18.dp)
+private val PillShape = RoundedCornerShape(15.dp)
+
+private val NavItems = listOf(
+    BottomNavItem(R.string.nav_invoices, Routes.INVOICES_LIST),
+    BottomNavItem(R.string.nav_analyze, Routes.ANALYZE),
+    BottomNavItem(R.string.nav_products, Routes.PRODUCTS_LIST),
+    BottomNavItem(R.string.nav_home, Routes.HOME)
+)
+
+private val BouncySpring = spring<Float>(
+    dampingRatio = Spring.DampingRatioMediumBouncy,
+    stiffness = Spring.StiffnessMedium
+)
+
+private val BoldSpring = spring<Float>(
+    dampingRatio = Spring.DampingRatioMediumBouncy,   // more overshoot
+    stiffness = Spring.StiffnessMediumLow          // a bit slower, so the bounce is visible
+)
 
 /**
  * Vertical space the floating bar occludes at the bottom of the screen,
@@ -98,24 +117,17 @@ fun ModernNavigationBar(
     currentRoute: String?,
     onFabClick: () -> Unit
 ) {
-    val items = listOf(
-        BottomNavItem(R.string.nav_invoices, Routes.INVOICES_LIST),
-        BottomNavItem(R.string.nav_analyze, Routes.ANALYZE),
-        BottomNavItem(R.string.nav_products, Routes.PRODUCTS_LIST),
-        BottomNavItem(R.string.nav_home, Routes.HOME)
-    )
-
     val view = LocalView.current
     val barShape = remember { CradleBarShape(BarCorner, CradleRadius) }
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.navigationBars)
-                .padding(start = 16.dp, end = 16.dp, bottom = BarBottomMargin)
-                .height(BarHeight + CradleTopClearance),
-            contentAlignment = Alignment.TopCenter
-        ) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .padding(start = 16.dp, end = 16.dp, bottom = BarBottomMargin)
+            .height(BarHeight + CradleTopClearance),
+        contentAlignment = Alignment.TopCenter
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -142,27 +154,9 @@ fun ModernNavigationBar(
                     .padding(horizontal = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                items.take(2).forEach { item ->
-                    NavItem(
-                        modifier = Modifier.weight(1f),
-                        item = item,
-                        isSelected = currentRoute == item.route
-                    ) {
-                        navigateToRoute(navController, item.route)
-                    }
-                }
-
+                NavItemsGroup(NavItems.take(2), currentRoute, navController)
                 Spacer(Modifier.width(CradleRadius * 2 + 2.dp))
-
-                items.takeLast(2).forEach { item ->
-                    NavItem(
-                        modifier = Modifier.weight(1f),
-                        item = item,
-                        isSelected = currentRoute == item.route
-                    ) {
-                        navigateToRoute(navController, item.route)
-                    }
-                }
+                NavItemsGroup(NavItems.takeLast(2), currentRoute, navController)
             }
         }
 
@@ -177,6 +171,23 @@ fun ModernNavigationBar(
 }
 
 @Composable
+private fun RowScope.NavItemsGroup(
+    items: List<BottomNavItem>,
+    currentRoute: String?,
+    navController: NavController
+) {
+    items.forEach { item ->
+        val selected = currentRoute == item.route
+        NavItem(
+            modifier = Modifier.weight(1f),
+            item = item,
+            isSelected = selected,
+            onClick = { if (!selected) navigateToRoute(navController, item.route) }
+        )
+    }
+}
+
+@Composable
 private fun ScanFab(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
@@ -185,10 +196,7 @@ private fun ScanFab(
     val pressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
         targetValue = if (pressed) 0.9f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
+        animationSpec = BouncySpring,
         label = "fabScale"
     )
 
@@ -196,7 +204,11 @@ private fun ScanFab(
         onClick = onClick,
         modifier = modifier
             .size(FabSize)
-            .scale(scale)
+            // State is read in the draw phase -> no recomposition per frame.
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .border(3.dp, MaterialTheme.colorScheme.surface, CircleShape),
         shape = CircleShape,
         containerColor = MaterialTheme.colorScheme.primary,
@@ -223,45 +235,29 @@ private fun NavItem(
 ) {
     val view = LocalView.current
     val title = stringResource(item.titleRes)
-
     val pillColor = MaterialTheme.colorScheme.primaryContainer
+
     val iconTint by animateColorAsState(
-        if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
+        targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
         else MaterialTheme.colorScheme.onSurfaceVariant,
         animationSpec = tween(200),
         label = "iconTint"
     )
 
-    // Springy indicator pill and icon pop (M3 Expressive motion).
-    val pillScale by animateFloatAsState(
-        targetValue = if (isSelected) 1f else 0.3f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "pillScale"
-    )
-    val pillAlpha by animateFloatAsState(
+    val progress by animateFloatAsState(
         targetValue = if (isSelected) 1f else 0f,
-        animationSpec = tween(180),
-        label = "pillAlpha"
-    )
-    val iconScale by animateFloatAsState(
-        targetValue = if (isSelected) 1f else 0.9f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "iconScale"
+        animationSpec = BoldSpring,
+        label = "selection"
     )
 
     Column(
         modifier = modifier
             .fillMaxHeight()
-            .clip(RoundedCornerShape(18.dp))
             .selectable(
                 selected = isSelected,
                 role = Role.Tab,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
                 onClick = {
                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                     onClick()
@@ -271,41 +267,49 @@ private fun NavItem(
         verticalArrangement = Arrangement.Center
     ) {
         Box(contentAlignment = Alignment.Center) {
+            // Pill: stretches in from the sides and overshoots
             Box(
                 modifier = Modifier
-                    .size(width = 52.dp, height = 30.dp)
-                    .scale(pillScale)
-                    .alpha(pillAlpha)
-                    .background(pillColor, RoundedCornerShape(15.dp))
+                    .size(width = 56.dp, height = 32.dp)
+                    .graphicsLayer {
+                        scaleX = lerp(0.2f, 1f, progress)
+                        scaleY = lerp(0.5f, 1f, progress)
+                        alpha = progress.coerceIn(0f, 1f)
+                    }
+                    .background(pillColor, PillShape)
             )
+            // Icon: big pop + lift + small tilt wiggle
             Icon(
                 painter = painterResource(item.iconRes()),
-                contentDescription = null,
+                contentDescription = title,
                 tint = iconTint,
                 modifier = Modifier
                     .size(24.dp)
-                    .scale(iconScale)
+                    .graphicsLayer {
+                        val s = lerp(0.9f, 1.2f, progress)
+                        scaleX = s
+                        scaleY = s
+                        translationY = -4.dp.toPx() * progress
+                        rotationZ = sin(progress * PI.toFloat()) * 12f
+                    }
             )
         }
-        // Title is hidden by default and reveals under the icon when selected.
-        AnimatedVisibility(
-            visible = isSelected,
-            enter = expandVertically(
-                animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-            ) + fadeIn(tween(180)),
-            exit = shrinkVertically(
-                animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-            ) + fadeOut(tween(120))
-        ) {
-            Text(
-                text = title,
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.labelSmall,
-                maxLines = 1,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 2.dp)
-            )
-        }
+        // Label: slides up while fading in
+        Text(
+            text = title,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.labelSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .padding(top = 2.dp)
+                .clearAndSetSemantics { }
+                .graphicsLayer {
+                    alpha = progress.coerceIn(0f, 1f)
+                    translationY = (1f - progress) * 10.dp.toPx()
+                }
+        )
     }
 }
 
@@ -332,7 +336,6 @@ private class CradleBarShape(
         val path = Path().apply {
             moveTo(corner, 0f)
             lineTo(cx - cradle, 0f)
-            // Cradle notch: bulges above the top edge around the FAB circle.
             arcTo(
                 rect = Rect(cx - cradle, -cradle, cx + cradle, cradle),
                 startAngleDegrees = 180f,

@@ -34,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -93,7 +92,7 @@ fun HeaderSection(
                         .padding(dimen(R.dimen.space_2))
                         .size(dimen(R.dimen.size_lg))
                         .clip(CircleShape)
-                        .background(Color.Gray.copy(alpha = 0.08f))
+                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = LocalIndication.current,

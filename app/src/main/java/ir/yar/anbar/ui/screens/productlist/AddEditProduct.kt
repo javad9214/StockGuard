@@ -609,7 +609,7 @@ fun AddProductTopBar(
                 .padding(dimen(R.dimen.space_2))
                 .size(dimen(R.dimen.size_lg))
                 .clip(CircleShape)
-                .background(Color.Gray.copy(alpha = 0.08f))
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
