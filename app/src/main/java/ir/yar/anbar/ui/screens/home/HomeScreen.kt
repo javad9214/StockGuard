@@ -50,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import ir.yar.anbar.R
+import ir.yar.anbar.ui.components.customnavbars.navigationBarOverlayBottomPadding
 import ir.yar.anbar.ui.navigation.Screen
 import ir.yar.anbar.ui.screens.component.DatePickerBottomDialog
 import ir.yar.anbar.ui.theme.Beirut_Medium
@@ -189,6 +190,8 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
+                // Keep the last content reachable behind the floating bottom bar
+                .padding(bottom = navigationBarOverlayBottomPadding())
         ) {
             ElevatedCard(
                 modifier = Modifier

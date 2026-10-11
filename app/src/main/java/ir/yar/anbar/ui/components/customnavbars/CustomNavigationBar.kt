@@ -1,50 +1,32 @@
 package ir.yar.anbar.ui.components.customnavbars
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.border
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import ir.yar.anbar.R
 import ir.yar.anbar.ui.navigation.BottomNavItem
 import ir.yar.anbar.ui.navigation.Routes
-import ir.yar.anbar.utils.dimen
 
 @Composable
 fun CustomNavigationBar(
@@ -52,188 +34,122 @@ fun CustomNavigationBar(
     currentRoute: String?,
     onFabClick: () -> Unit
 ) {
-    val bottomNavItems = listOf(
-        BottomNavItem("Invoices", Routes.INVOICES_LIST),
-        BottomNavItem("Analyze", Routes.ANALYZE),
-        BottomNavItem("Products", Routes.PRODUCTS_LIST),
-        BottomNavItem("Home", Routes.HOME)
+    val items = listOf(
+        BottomNavItem(R.string.nav_invoices, Routes.INVOICES_LIST),
+        BottomNavItem(R.string.nav_analyze, Routes.ANALYZE),
+        BottomNavItem(R.string.nav_products, Routes.PRODUCTS_LIST),
+        BottomNavItem(R.string.nav_home, Routes.HOME)
     )
 
-    Box(
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        // Bottom Navigation Bar
-        NavigationBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp)
-                .shadow(8.dp)
-                .zIndex(0f),
-            containerColor = MaterialTheme.colorScheme.surface
-        ) {
-            // First half of the nav items
-            bottomNavItems.take(2).forEach { item ->
-                NavigationBarItem(
-                    icon = {
-                        NavBarItemIcon(
-                            item = item,
-                            isSelected = currentRoute == item.route
-                        )
-                    },
-                    selected = currentRoute == item.route,
-                    onClick = {
-                        navigateToRoute(navController, item.route)
-                    },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        indicatorColor = Color.Transparent,
-                        unselectedIconColor = Color.Gray
-                    )
-                )
-            }
-
-            // Center space for FAB
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Second half of the nav items
-            bottomNavItems.takeLast(2).forEach { item ->
-                NavigationBarItem(
-                    icon = {
-                        NavBarItemIcon(
-                            item = item,
-                            isSelected = currentRoute == item.route
-                        )
-                    },
-                    selected = currentRoute == item.route,
-                    onClick = {
-                        navigateToRoute(navController, item.route)
-                    },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        indicatorColor = Color.Transparent,
-                        unselectedIconColor = Color.Gray
-                    )
-                )
-            }
-        }
-
-        // Floating Action Button
+    Box(contentAlignment = Alignment.TopCenter) {
         Card(
             modifier = Modifier
-                .offset(y = (-40).dp)
-                .zIndex(1f)
-                .graphicsLayer {
-                    shadowElevation = 0f
-                    shape = CircleShape
-                }
-                .drawBehind {
-                    val shadowColor = Color.Black.copy(alpha = 0.2f)
-                    val shadowRadius = 2.dp.toPx()
-                    val shadowOffsetY = -2.dp.toPx()
-                    drawIntoCanvas {
-                        val paint = Paint()
-                        val frameworkPaint = paint.asFrameworkPaint()
-                        frameworkPaint.color = shadowColor.toArgb()
-                        frameworkPaint.setShadowLayer(
-                            shadowRadius,
-                            0f,
-                            shadowOffsetY,
-                            shadowColor.toArgb()
-                        )
-                        it.drawCircle(
-                            center = Offset(size.width / 2, size.height / 2),
-                            radius = size.minDimension / 2,
-                            paint = paint
-                        )
-                    }
-                },
-            elevation = CardDefaults.cardElevation(0.dp),
-            shape = CircleShape,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.navigationBars)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .height(68.dp),
+            shape = RoundedCornerShape(32.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
-            FloatingActionButton(
-                onClick = onFabClick,
-                modifier = Modifier.padding(dimen(R.dimen.space_2)),
-                containerColor = MaterialTheme.colorScheme.primary,
-                elevation = FloatingActionButtonDefaults.elevation(0.dp),
-                shape = CircleShape
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.barcode_scanner_24px),
-                    contentDescription = "Scan Barcode",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
+                items.take(2).forEach { item ->
+                    NavItem(item, currentRoute == item.route) {
+                        navigateToRoute(navController, item.route)
+                    }
+                }
+
+                Spacer(Modifier.width(56.dp)) // room for the FAB
+
+                items.takeLast(2).forEach { item ->
+                    NavItem(item, currentRoute == item.route) {
+                        navigateToRoute(navController, item.route)
+                    }
+                }
             }
         }
-    }
-}
 
-@Composable
-private fun NavBarItemIcon(
-    item: BottomNavItem,
-    isSelected: Boolean
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.height(44.dp)
-    ) {
-        Icon(
-            painter = when (item.route) {
-                Routes.INVOICES_LIST ->
-                    painterResource(id = R.drawable.receipt_long_24px)
-
-                Routes.ANALYZE ->
-                    painterResource(id = R.drawable.monitoring_24px)
-
-                Routes.PRODUCTS_LIST ->
-                    painterResource(id = R.drawable.package_2_24px)
-
-                Routes.HOME ->
-                    painterResource(id = R.drawable.home_24px)
-
-                else -> painterResource(id = R.drawable.home_24px)
-            },
-            contentDescription = item.title,
+        FloatingActionButton(
+            onClick = onFabClick,
             modifier = Modifier
-                .offset(
-                    y = animateDpAsState(
-                        targetValue = if (isSelected) (-4).dp else 0.dp,
-                        animationSpec = tween(300)
-                    ).value
-                )
-                .scale(
-                    animateFloatAsState(
-                        targetValue = if (isSelected) 1.2f else 1f,
-                        animationSpec = tween(300)
-                    ).value
-                )
-        )
-
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .height(2.dp)
-                    .width(
-                        animateDpAsState(
-                            targetValue = 24.dp,
-                            animationSpec = tween(300)
-                        ).value
-                    )
-                    .offset(y = 16.dp)
-                    .background(
-                        MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(1.dp)
-                    )
+                .offset(y = (-6).dp)
+                .size(60.dp)
+                .border(4.dp, MaterialTheme.colorScheme.background, CircleShape),
+            shape = CircleShape,
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            elevation = FloatingActionButtonDefaults.elevation(6.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.barcode_scanner_24px),
+                contentDescription = stringResource(R.string.scan_barcode)
             )
         }
     }
 }
 
+@Composable
+private fun NavItem(
+    item: BottomNavItem,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    val background by animateColorAsState(
+        if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
+        label = "bg"
+    )
+    val tint by animateColorAsState(
+        if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+        else MaterialTheme.colorScheme.onSurfaceVariant,
+        label = "tint"
+    )
+
+    val title = stringResource(item.titleRes)
+
+    Row(
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(background)
+            .clickable(role = Role.Tab, onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 10.dp)
+            .animateContentSize(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(item.iconRes()),
+            contentDescription = title,
+            tint = tint
+        )
+        AnimatedVisibility(visible = selected) {
+            Text(
+                text = title,
+                color = tint,
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 1,
+                modifier = Modifier.padding(start = 6.dp)
+            )
+        }
+    }
+}
+
+private fun BottomNavItem.iconRes(): Int = when (route) {
+    Routes.INVOICES_LIST -> R.drawable.receipt_long_24px
+    Routes.ANALYZE -> R.drawable.monitoring_24px
+    Routes.PRODUCTS_LIST -> R.drawable.package_2_24px
+    else -> R.drawable.home_24px
+}
+
 private fun navigateToRoute(navController: NavController, route: String) {
     navController.navigate(route) {
-        popUpTo(navController.graph.findStartDestination().id) {
-            saveState = true
-        }
+        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
         launchSingleTop = true
         restoreState = true
     }
@@ -242,9 +158,8 @@ private fun navigateToRoute(navController: NavController, route: String) {
 @Preview(showBackground = true)
 @Composable
 fun CustomNavigationBarPreview() {
-    val navController = rememberNavController()
     CustomNavigationBar(
-        navController = navController,
+        navController = rememberNavController(),
         currentRoute = Routes.HOME,
         onFabClick = {}
     )

@@ -63,10 +63,10 @@ val md_theme_light_outline = Color(0xFF757882)
 val md_theme_light_outlineVariant = Color(0xFFC5C6D0)
 
 // Dark theme colors
-val md_theme_dark_primary = Color(0xFFA6B8FF)
-val md_theme_dark_onPrimary = Color(0xFF002074)
-val md_theme_dark_primaryContainer = Color(0xFF07309A)
-val md_theme_dark_onPrimaryContainer = Color(0xFFDEE3FF)
+val md_theme_dark_primary = Color(0xFF8AB4F8)            // clean soft blue
+val md_theme_dark_onPrimary = Color(0xFF0B2A5B)
+val md_theme_dark_primaryContainer = Color(0xFF1F4A94)
+val md_theme_dark_onPrimaryContainer = Color(0xFFD6E3FF)
 
 val md_theme_dark_secondary = Color(0xFF6AD5D3)
 val md_theme_dark_onSecondary = Color(0xFF003735)
