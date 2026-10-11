@@ -17,6 +17,12 @@
     <!-- General -->
     <string name="retry">تلاش مجدد</string>
 
+    <!-- Bottom Navigation -->
+    <string name="nav_invoices">فاکتورها</string>
+    <string name="nav_analyze">تحلیل</string>
+    <string name="nav_products">محصولات</string>
+    <string name="nav_home">خانه</string>
+
     <!-- Home -->
     <string name="welcomeToHomeScreen">Welcome To Yar Anbar</string>
     <string name="Hello">سـلام !</string>

@@ -4,6 +4,12 @@
     <!-- General -->
     <string name="retry">Retry</string>
 
+    <!-- Bottom Navigation -->
+    <string name="nav_invoices">Invoices</string>
+    <string name="nav_analyze">Analyze</string>
+    <string name="nav_products">Products</string>
+    <string name="nav_home">Home</string>
+
     <!-- Home -->
     <string name="welcomeToHomeScreen">Welcome to Yaranbar!</string>
     <string name="Hello">HI</string>

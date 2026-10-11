@@ -1,5 +1,10 @@
 package ir.yar.anbar.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
@@ -30,7 +36,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.components.customnavbars.CustomNavigationBar
+import ir.yar.anbar.ui.components.customnavbars.ModernNavigationBar
 import ir.yar.anbar.ui.components.util.SnackyHost
 import ir.yar.anbar.ui.components.util.rememberSnackyHostState
 import ir.yar.anbar.ui.navigation.Routes
@@ -118,11 +124,15 @@ fun MainScreen(
     val snackyHostState = rememberSnackyHostState()
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = Color.Transparent,
         bottomBar = {
-            if (shouldShowBottomNav) {
+            AnimatedVisibility(
+                visible = shouldShowBottomNav,
+                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
+            ) {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                    CustomNavigationBar(
+                    ModernNavigationBar(
                         navController = navController,
                         currentRoute = currentRoute,
                         onFabClick = {
@@ -144,9 +154,11 @@ fun MainScreen(
             NavHost(
                 navController = navController,
                 startDestination = startDestination,
-                modifier = Modifier.fillMaxSize()
-                    .padding(top = innerPadding.calculateTopPadding(),
-                        bottom = innerPadding.calculateBottomPadding())
+                // No bottom padding: content fills the full screen height and the
+                // floating navigation bar overlays it (Scaffold draws bars above content).
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = innerPadding.calculateTopPadding())
             ) {
                 composable(route = Screen.Login.route) {
                     LoginScreen(

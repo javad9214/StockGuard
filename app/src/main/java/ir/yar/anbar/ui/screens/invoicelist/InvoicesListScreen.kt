@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.InvoiceType
 import ir.yar.anbar.domain.model.InvoiceWithProducts
+import ir.yar.anbar.ui.components.customnavbars.navigationBarOverlayBottomPadding
 import ir.yar.anbar.ui.theme.BComps
 import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.viewmodels.InvoiceListEvent
@@ -481,7 +483,11 @@ private fun InvoicesLazyList(
     onLongClick: (Long) -> Unit
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            // Keep the last invoice reachable behind the floating bottom bar
+            contentPadding = PaddingValues(bottom = navigationBarOverlayBottomPadding())
+        ) {
             items(
                 items = invoiceWithProductsList,
                 key = { it.invoiceId.value }

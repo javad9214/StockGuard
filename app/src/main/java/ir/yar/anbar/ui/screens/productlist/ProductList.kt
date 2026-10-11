@@ -51,6 +51,7 @@ import androidx.navigation.NavController
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.ui.components.barcodescanner.BarcodeScannerView
+import ir.yar.anbar.ui.components.customnavbars.navigationBarOverlayBottomPadding
 import ir.yar.anbar.ui.components.util.ConfirmyHost
 import ir.yar.anbar.ui.components.util.ConfirmyType
 import ir.yar.anbar.ui.components.util.SnackyHost
@@ -407,7 +408,13 @@ fun ProductScreenContent(
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                // Keep the last product reachable behind the floating bottom bar
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 8.dp,
+                    bottom = 8.dp + navigationBarOverlayBottomPadding()
+                ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(products) { product ->

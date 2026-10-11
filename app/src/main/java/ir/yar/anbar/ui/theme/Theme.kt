@@ -16,56 +16,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.theme.color.Charcoal
-import ir.yar.anbar.ui.theme.color.JetBlack
-import ir.yar.anbar.ui.theme.color.cultured_white
-import ir.yar.anbar.ui.theme.color.green
-import ir.yar.anbar.ui.theme.color.md_theme_dark_error
-import ir.yar.anbar.ui.theme.color.md_theme_dark_errorContainer
-import ir.yar.anbar.ui.theme.color.md_theme_dark_onBackground
-import ir.yar.anbar.ui.theme.color.md_theme_dark_onError
-import ir.yar.anbar.ui.theme.color.md_theme_dark_onErrorContainer
-import ir.yar.anbar.ui.theme.color.md_theme_dark_onPrimary
-import ir.yar.anbar.ui.theme.color.md_theme_dark_onPrimaryContainer
-import ir.yar.anbar.ui.theme.color.md_theme_dark_onSecondary
-import ir.yar.anbar.ui.theme.color.md_theme_dark_onSecondaryContainer
-import ir.yar.anbar.ui.theme.color.md_theme_dark_onSurface
-import ir.yar.anbar.ui.theme.color.md_theme_dark_onSurfaceVariant
-import ir.yar.anbar.ui.theme.color.md_theme_dark_onTertiary
-import ir.yar.anbar.ui.theme.color.md_theme_dark_onTertiaryContainer
-import ir.yar.anbar.ui.theme.color.md_theme_dark_outline
-import ir.yar.anbar.ui.theme.color.md_theme_dark_outlineVariant
-import ir.yar.anbar.ui.theme.color.md_theme_dark_primary
-import ir.yar.anbar.ui.theme.color.md_theme_dark_primaryContainer
-import ir.yar.anbar.ui.theme.color.md_theme_dark_secondary
-import ir.yar.anbar.ui.theme.color.md_theme_dark_secondaryContainer
-import ir.yar.anbar.ui.theme.color.md_theme_dark_surfaceVariant
-import ir.yar.anbar.ui.theme.color.md_theme_dark_tertiary
-import ir.yar.anbar.ui.theme.color.md_theme_dark_tertiaryContainer
-import ir.yar.anbar.ui.theme.color.md_theme_light_error
-import ir.yar.anbar.ui.theme.color.md_theme_light_errorContainer
-import ir.yar.anbar.ui.theme.color.md_theme_light_onBackground
-import ir.yar.anbar.ui.theme.color.md_theme_light_onError
-import ir.yar.anbar.ui.theme.color.md_theme_light_onErrorContainer
-import ir.yar.anbar.ui.theme.color.md_theme_light_onPrimary
-import ir.yar.anbar.ui.theme.color.md_theme_light_onPrimaryContainer
-import ir.yar.anbar.ui.theme.color.md_theme_light_onSecondary
-import ir.yar.anbar.ui.theme.color.md_theme_light_onSecondaryContainer
-import ir.yar.anbar.ui.theme.color.md_theme_light_onSurface
-import ir.yar.anbar.ui.theme.color.md_theme_light_onSurfaceVariant
-import ir.yar.anbar.ui.theme.color.md_theme_light_onTertiary
-import ir.yar.anbar.ui.theme.color.md_theme_light_onTertiaryContainer
-import ir.yar.anbar.ui.theme.color.md_theme_light_outline
-import ir.yar.anbar.ui.theme.color.md_theme_light_outlineVariant
-import ir.yar.anbar.ui.theme.color.md_theme_light_primary
-import ir.yar.anbar.ui.theme.color.md_theme_light_primaryContainer
-import ir.yar.anbar.ui.theme.color.md_theme_light_secondary
-import ir.yar.anbar.ui.theme.color.md_theme_light_secondaryContainer
-import ir.yar.anbar.ui.theme.color.md_theme_light_surface
-import ir.yar.anbar.ui.theme.color.md_theme_light_surfaceVariant
-import ir.yar.anbar.ui.theme.color.md_theme_light_tertiaryContainer
-
-// Remove all md_theme_* color val definitions here. Only Color.kt defines palette colors.
+import ir.yar.anbar.ui.theme.color.*
 
 private val DarkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
@@ -84,9 +35,9 @@ private val DarkColorScheme = darkColorScheme(
     onError = md_theme_dark_onError,
     errorContainer = md_theme_dark_errorContainer,
     onErrorContainer = md_theme_dark_onErrorContainer,
-    background = JetBlack,
+    background = md_theme_dark_background,
     onBackground = md_theme_dark_onBackground,
-    surface = Charcoal,
+    surface = md_theme_dark_surface,
     onSurface = md_theme_dark_onSurface,
     surfaceVariant = md_theme_dark_surfaceVariant,
     onSurfaceVariant = md_theme_dark_onSurfaceVariant,
@@ -111,15 +62,14 @@ private val LightColorScheme = lightColorScheme(
     onError = md_theme_light_onError,
     errorContainer = md_theme_light_errorContainer,
     onErrorContainer = md_theme_light_onErrorContainer,
-    background = cultured_white,
+    background = md_theme_light_background,   // smoke_white
     onBackground = md_theme_light_onBackground,
-    surface = md_theme_light_surface,
+    surface = md_theme_light_surface,         // white
     onSurface = md_theme_light_onSurface,
     surfaceVariant = md_theme_light_surfaceVariant,
     onSurfaceVariant = md_theme_light_onSurfaceVariant,
     outline = md_theme_light_outline,
     outlineVariant = md_theme_light_outlineVariant
-
 )
 
 @Composable
