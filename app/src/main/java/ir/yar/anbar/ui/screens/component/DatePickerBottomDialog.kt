@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import ir.yar.anbar.R
 import ir.yar.anbar.ui.theme.Beirut_Medium
@@ -146,18 +145,18 @@ private fun DatePickerItem(
                 containerColor = if (isSelected)
                     MaterialTheme.colorScheme.primary
                 else
-                    Color(0xFFE0E0E0),
+                    MaterialTheme.colorScheme.surfaceContainerHigh,
                 contentColor = if (isSelected)
                     MaterialTheme.colorScheme.onPrimary
                 else
-                    MaterialTheme.colorScheme.outline
+                    MaterialTheme.colorScheme.onSurfaceVariant
             ),
             border = BorderStroke(
                 dimen(R.dimen.stroke_dimen_sm),
                 color = if (isSelected)
                     MaterialTheme.colorScheme.primary
                 else
-                    MaterialTheme.colorScheme.onPrimary
+                    MaterialTheme.colorScheme.outlineVariant
             )
         ) {
             Row(

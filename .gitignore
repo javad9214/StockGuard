@@ -17,7 +17,10 @@ local.properties
 /.idea/codeStyles/codeStyleConfig.xml
 /.idea/codeStyles/Project.xml
 /.idea/AndroidProjectSystem.xml
-/.kotlin/errors/errors-1753880882485.log
-/.kotlin/errors/errors-1753881829316.log
+/.kotlin/errors/
 /.idea/
 /app/schemas/
+
+# JVM crash and replay logs
+hs_err_pid*
+replay_pid*

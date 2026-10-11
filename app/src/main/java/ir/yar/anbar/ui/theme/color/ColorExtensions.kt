@@ -79,7 +79,7 @@ val ColorScheme.costPrice: Color
 val ColorScheme.salePrice: Color
     @Composable
     get() = if (this.background.luminance() < 0.5) {
-        CustomColors.salePriceLight
+        CustomColors.salePriceDark
     } else {
         CustomColors.salePriceLight
     }
