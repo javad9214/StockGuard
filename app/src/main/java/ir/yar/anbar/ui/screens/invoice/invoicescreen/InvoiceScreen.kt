@@ -132,14 +132,16 @@ fun InvoiceScreen(
         }
     }
 
-    // Saving indicator driven by state, so it can't get out of sync with the UI
+    // Saving indicator driven by state, so it can't get out of sync with the UI.
+    // On success only clear our own LOADING snackbar — the SaveSuccess event's
+    // SUCCESS snackbar lands before this frame-time effect and would be dismissed.
     LaunchedEffect(uiState.isSaving) {
         if (uiState.isSaving) {
             snackyHostState.show(
                 message = loadingSaveInvoiceMessage,
                 type = SnackyType.LOADING
             )
-        } else {
+        } else if (snackyHostState.currentSnacky.value.type == SnackyType.LOADING) {
             snackyHostState.dismiss()
         }
     }

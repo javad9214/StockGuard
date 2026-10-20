@@ -1,14 +1,15 @@
 package ir.yar.anbar.ui.screens.home
 
-import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,9 +18,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,15 +39,19 @@ import ir.yar.anbar.domain.model.ProductSalesSummary
 import ir.yar.anbar.domain.model.ProductSalesSummaryId
 import ir.yar.anbar.domain.model.SalesQuantity
 import ir.yar.anbar.domain.model.StockQuantity
+import ir.yar.anbar.domain.model.StockStatus
 import ir.yar.anbar.domain.model.type.Money
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
 import ir.yar.anbar.ui.theme.BMitra
 import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.ui.theme.color.bronze
+import ir.yar.anbar.ui.theme.color.bronzeBg
 import ir.yar.anbar.ui.theme.color.customError
 import ir.yar.anbar.ui.theme.color.gold
+import ir.yar.anbar.ui.theme.color.goldBg
 import ir.yar.anbar.ui.theme.color.silver
+import ir.yar.anbar.ui.theme.color.silverBg
 import ir.yar.anbar.ui.theme.color.success
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
@@ -53,8 +60,6 @@ import ir.yar.anbar.utils.str
 import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.LocalDateTime
-
-private const val TAG = "MostSoldProductItem"
 
 @Composable
 fun MostSoldProductItem(
@@ -66,11 +71,7 @@ fun MostSoldProductItem(
     val profitMargin =
         productSalesSummary.getProfitMargin().setScale(0, RoundingMode.HALF_UP).toString()
 
-    Log.i(TAG, "MostSoldProductItem: profitMargin ${productSalesSummary.getProfitMargin()}")
-    Log.i(TAG, "MostSoldProductItem: profitMargin: $profitMargin")
-
     val stockStatus = product.getStockStatus()
-    val performanceLevel = productSalesSummary.getSalesPerformance()
 
     ElevatedCard(
         modifier = modifier
@@ -84,12 +85,15 @@ fun MostSoldProductItem(
     ) {
         Column(modifier = Modifier.padding(dimen(R.dimen.space_4))) {
 
-            // Header with rank badge and product name
+            // Rank comes first: in a "most sold" carousel the medal is the
+            // primary scan target, the name is secondary
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+                horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_2)),
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                rank?.let { RankBadge(rank = it) }
+
                 Text(
                     text = product.name.value,
                     style = MaterialTheme.typography.bodyLarge,
@@ -98,35 +102,31 @@ fun MostSoldProductItem(
                     fontWeight = FontWeight.Bold,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(1f)
-                        .heightIn(min = dimen(R.dimen.space_10))
+                    modifier = Modifier.weight(1f)
                 )
-
-                rank?.let { RankBadge(rank = it) }
             }
 
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_1)))
+            Spacer(modifier = Modifier.height(dimen(R.dimen.space_3)))
 
-            // Sales metrics in a highlighted row
             SalesMetricRow(
                 quantity = productSalesSummary.totalSold.value,
                 revenue = productSalesSummary.totalRevenue.amount
             )
 
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
-
-            // Profit information using domain model method
-            ProfitInfoRow(
-                label = str(R.string.total_profit),
+            ProfitRow(
                 amount = productSalesSummary.getTotalProfit().amount,
-                percentage = profitMargin,
-                icon = R.drawable.status_up_bulk,
+                marginPercent = profitMargin,
                 isProfitable = productSalesSummary.isProfitable()
             )
 
-            // Stock availability indicator using domain model
-            StockIndicator(
+            // Separates the financial story above from the stock state below
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = dimen(R.dimen.space_2)),
+                thickness = dimen(R.dimen.stroke_dimen_xs),
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
+
+            StockStatusRow(
                 stockLevel = product.stock.value,
                 stockStatus = stockStatus,
                 minLevel = product.minStockLevel?.value
@@ -137,18 +137,42 @@ fun MostSoldProductItem(
 
 @Composable
 private fun RankBadge(rank: Int) {
-    val (backgroundColor, icon) = when (rank) {
-        1 -> MaterialTheme.colorScheme.gold to R.drawable.crown
-        2 -> MaterialTheme.colorScheme.silver to R.drawable.medal_star
-        3 -> MaterialTheme.colorScheme.bronze to R.drawable.award
-        else -> MaterialTheme.colorScheme.outline to R.drawable.award
+    val (medalColor, medalContainer, icon) = when (rank) {
+        1 -> Triple(
+            MaterialTheme.colorScheme.gold,
+            MaterialTheme.colorScheme.goldBg,
+            R.drawable.crown
+        )
+
+        2 -> Triple(
+            MaterialTheme.colorScheme.silver,
+            MaterialTheme.colorScheme.silverBg,
+            R.drawable.medal_star
+        )
+
+        3 -> Triple(
+            MaterialTheme.colorScheme.bronze,
+            MaterialTheme.colorScheme.bronzeBg,
+            R.drawable.award
+        )
+
+        else -> Triple(
+            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.primaryContainer,
+            R.drawable.award
+        )
     }
 
     Row(
         modifier = Modifier
+            .border(
+                width = dimen(R.dimen.stroke_dimen_xs),
+                color = medalColor.copy(alpha = 0.35f),
+                shape = RoundedCornerShape(dimen(R.dimen.radius_circle))
+            )
             .background(
-                color = backgroundColor.copy(alpha = 0.2f),
-                shape = RoundedCornerShape(dimen(R.dimen.radius_md))
+                color = medalContainer,
+                shape = RoundedCornerShape(dimen(R.dimen.radius_circle))
             )
             .padding(
                 horizontal = dimen(R.dimen.space_2),
@@ -159,16 +183,18 @@ private fun RankBadge(rank: Int) {
     ) {
         Icon(
             painter = painterResource(id = icon),
-            contentDescription = "Rank $rank",
+            contentDescription = null, // the visible rank number carries the meaning
             modifier = Modifier.size(dimen(R.dimen.size_xs)),
-            tint = backgroundColor
+            tint = medalColor
         )
         Text(
-            text = "#$rank",
+            text = rank.toString(),
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold,
             fontFamily = BMitra,
-            color = backgroundColor
+            // medal hues fail text contrast on their pastel containers in light
+            // mode; the icon + container carry the medal identity instead
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -181,83 +207,81 @@ private fun SalesMetricRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                shape = RoundedCornerShape(dimen(R.dimen.radius_md))
-            )
-            .padding(dimen(R.dimen.space_3)),
-        horizontalArrangement = Arrangement.SpaceEvenly
+            .padding(bottom = dimen(R.dimen.space_2)),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // Quantity sold
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+        MetricColumn(
+            value = quantity.toString(),
+            label = str(R.string.units_sold),
             modifier = Modifier.weight(1f)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_1))
-            ) {
-
-                Text(
-                    text = quantity.toString(),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = BMitra,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                Icon(
-                    painter = painterResource(id = R.drawable.box),
-                    contentDescription = str(R.string.products_sold_count),
-                    modifier = Modifier.size(dimen(R.dimen.size_sm)),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-
-            }
-            Text(
-                text = str(R.string.units_sold),
-                style = MaterialTheme.typography.bodySmall,
-                fontFamily = BMitra,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            Icon(
+                painter = painterResource(id = R.drawable.box),
+                contentDescription = null, // the label below the value already names it
+                modifier = Modifier.size(dimen(R.dimen.size_sm)),
+                tint = MaterialTheme.colorScheme.primary
             )
         }
 
-        // Revenue
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+        VerticalDivider(
+            modifier = Modifier
+                .padding(horizontal = dimen(R.dimen.space_2))
+                .height(dimen(R.dimen.size_md)),
+            thickness = dimen(R.dimen.stroke_dimen_xs),
+            color = MaterialTheme.colorScheme.outlineVariant
+        )
+
+        MetricColumn(
+            value = formatPrice(revenue),
+            label = str(R.string.total_revenue),
             modifier = Modifier.weight(1f)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_1))
-            ) {
-                Text(
-                    text = formatPrice(revenue),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                CurrencyIcon(
-                    contentDescription = "Rial",
-                    modifier = Modifier.size(dimen(R.dimen.size_sm))
-                )
-            }
-            Text(
-                text = str(R.string.total_revenue),
-                style = MaterialTheme.typography.bodySmall,
-                fontFamily = BMitra,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            CurrencyIcon(
+                contentDescription = "Rial",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(dimen(R.dimen.size_sm))
             )
         }
     }
 }
 
 @Composable
-private fun ProfitInfoRow(
+private fun MetricColumn(
+    value: String,
     label: String,
+    modifier: Modifier = Modifier,
+    trailingIcon: @Composable RowScope.() -> Unit
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_1))
+        ) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                fontFamily = BMitra,
+                color = MaterialTheme.colorScheme.primary
+            )
+            trailingIcon()
+        }
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            fontFamily = BMitra,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun ProfitRow(
     amount: Long,
-    percentage: String,
-    icon: Int,
+    marginPercent: String,
     isProfitable: Boolean
 ) {
     val profitColor = if (isProfitable)
@@ -266,9 +290,7 @@ private fun ProfitInfoRow(
         MaterialTheme.colorScheme.customError
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = dimen(R.dimen.space_1)),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -277,13 +299,13 @@ private fun ProfitInfoRow(
             horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_1))
         ) {
             Icon(
-                painter = painterResource(id = icon),
-                contentDescription = label,
+                painter = painterResource(id = R.drawable.status_up_bulk),
+                contentDescription = null, // the visible label carries the meaning
                 modifier = Modifier.size(dimen(R.dimen.size_sm)),
                 tint = profitColor
             )
             Text(
-                label,
+                text = str(R.string.total_profit),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium,
                 fontFamily = BMitra,
@@ -295,17 +317,16 @@ private fun ProfitInfoRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_1))
         ) {
-            // Profit margin badge
             Text(
-                text = "${if (isProfitable) "+" else ""}$percentage%",
+                text = "${if (isProfitable) "+" else ""}$marginPercent%",
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
                 fontFamily = BMitra,
                 color = profitColor,
                 modifier = Modifier
                     .background(
-                        color = profitColor.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(dimen(R.dimen.radius_sm))
+                        color = profitColor.copy(alpha = 0.12f),
+                        shape = RoundedCornerShape(dimen(R.dimen.radius_circle))
                     )
                     .padding(
                         horizontal = dimen(R.dimen.space_2),
@@ -314,13 +335,15 @@ private fun ProfitInfoRow(
             )
 
             Text(
-                formatPrice(amount),
+                text = formatPrice(amount),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
+                fontFamily = BMitra,
                 color = profitColor
             )
             CurrencyIcon(
                 contentDescription = "Rial",
+                tint = profitColor,
                 modifier = Modifier.size(dimen(R.dimen.size_sm))
             )
         }
@@ -328,60 +351,78 @@ private fun ProfitInfoRow(
 }
 
 @Composable
-private fun StockIndicator(
+private fun StockStatusRow(
     stockLevel: Int,
-    stockStatus: ir.yar.anbar.domain.model.StockStatus,
+    stockStatus: StockStatus,
     minLevel: Int?
 ) {
     val (statusText, statusColor) = when (stockStatus) {
-        ir.yar.anbar.domain.model.StockStatus.OUT_OF_STOCK ->
+        StockStatus.OUT_OF_STOCK ->
             str(R.string.out_of_stock) to MaterialTheme.colorScheme.error
 
-        ir.yar.anbar.domain.model.StockStatus.LOW_STOCK ->
-            str(R.string.stock_low) to MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+        StockStatus.LOW_STOCK ->
+            str(R.string.stock_low) to MaterialTheme.colorScheme.error
 
-        ir.yar.anbar.domain.model.StockStatus.OVERSTOCKED ->
+        StockStatus.OVERSTOCKED ->
             str(R.string.overstocked) to MaterialTheme.colorScheme.secondary
 
-        ir.yar.anbar.domain.model.StockStatus.NORMAL ->
+        StockStatus.NORMAL ->
             str(R.string.stock_healthy) to MaterialTheme.colorScheme.tertiary
     }
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = dimen(R.dimen.space_2)),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
+            modifier = Modifier
+                .background(
+                    color = statusColor.copy(alpha = 0.12f),
+                    shape = RoundedCornerShape(dimen(R.dimen.radius_circle))
+                )
+                .padding(
+                    horizontal = dimen(R.dimen.space_2),
+                    vertical = dimen(R.dimen.space_1)
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_1))
         ) {
-            // Status indicator dot
-            androidx.compose.foundation.Canvas(
+            Box(
                 modifier = Modifier
                     .size(dimen(R.dimen.space_2))
                     .clip(CircleShape)
-            ) {
-                drawCircle(color = statusColor)
-            }
-
+                    .background(statusColor)
+            )
             Text(
                 text = statusText,
                 style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Medium,
                 fontFamily = BMitra,
                 color = statusColor
             )
         }
 
-        Text(
-            text = "$stockLevel ${str(R.string.units_available)}",
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Medium,
-            fontFamily = BMitra,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        // "current/min" gives the raw count its reorder context
+        val stockText = if (minLevel != null) "$stockLevel/$minLevel" else "$stockLevel"
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_1))
+        ) {
+            Text(
+                text = stockText,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                fontFamily = BMitra,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = str(R.string.units_available),
+                style = MaterialTheme.typography.bodySmall,
+                fontFamily = BMitra,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
@@ -390,9 +431,10 @@ private fun StockIndicator(
 private fun MostSoldProductItemPreview() {
     ComposeTrainerTheme {
         Column(verticalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_2))) {
+            // Rank 1 — profitable, healthy stock
             val sampleProduct1 = Product(
                 id = ProductId(1L),
-                name = ProductName("Samsung Galaxy A54"),
+                name = ProductName("گوشی سامسونگ گلکسی A54"),
                 barcode = null,
                 price = Money(2500000L),
                 costPrice = Money(2000000L),
@@ -431,10 +473,10 @@ private fun MostSoldProductItemPreview() {
                 rank = 1
             )
 
-            // Low stock example
+            // Rank 2 — loss-making, low stock
             val sampleProduct2 = Product(
                 id = ProductId(2L),
-                name = ProductName("iPhone 15 Pro Max"),
+                name = ProductName("گوشی آیفون 15 پرو مکس"),
                 barcode = null,
                 price = Money(4500000L),
                 costPrice = Money(4000000L),
@@ -461,7 +503,7 @@ private fun MostSoldProductItemPreview() {
                 date = LocalDate.now(),
                 totalSold = SalesQuantity(98),
                 totalRevenue = Money(441000000L),
-                totalCost = Money(392000000L),
+                totalCost = Money(460000000L),
                 createdAt = LocalDateTime.now(),
                 updatedAt = LocalDateTime.now(),
                 synced = true
@@ -471,6 +513,48 @@ private fun MostSoldProductItemPreview() {
                 product = sampleProduct2,
                 productSalesSummary = sampleSalesSummary2,
                 rank = 2
+            )
+
+            // Rank 3 — profitable, out of stock
+            val sampleProduct3 = Product(
+                id = ProductId(3L),
+                name = ProductName("شیائومی ردمی نوت 13"),
+                barcode = null,
+                price = Money(1400000L),
+                costPrice = Money(1200000L),
+                description = null,
+                image = null,
+                subcategoryId = null,
+                supplierId = null,
+                unit = null,
+                stock = StockQuantity(0),
+                minStockLevel = StockQuantity(10),
+                maxStockLevel = null,
+                isActive = true,
+                tags = null,
+                lastSoldDate = LocalDateTime.now().minusDays(3),
+                date = LocalDateTime.now().minusMonths(2),
+                synced = true,
+                createdAt = LocalDateTime.now().minusMonths(2),
+                updatedAt = LocalDateTime.now().minusDays(3)
+            )
+
+            val sampleSalesSummary3 = ProductSalesSummary(
+                id = ProductSalesSummaryId(3L),
+                productId = ProductId(3L),
+                date = LocalDate.now(),
+                totalSold = SalesQuantity(64),
+                totalRevenue = Money(89600000L),
+                totalCost = Money(76800000L),
+                createdAt = LocalDateTime.now(),
+                updatedAt = LocalDateTime.now(),
+                synced = true
+            )
+
+            MostSoldProductItem(
+                product = sampleProduct3,
+                productSalesSummary = sampleSalesSummary3,
+                rank = 3
             )
         }
     }
