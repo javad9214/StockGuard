@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -57,11 +56,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
-import ir.yar.anbar.domain.model.Subcategory
 import ir.yar.anbar.domain.model.UnitOfMeasure
 import ir.yar.anbar.domain.model.type.Money
 import ir.yar.anbar.ui.components.image.ImagePickerBox
@@ -94,6 +93,13 @@ import kotlinx.coroutines.delay
 private const val MIN_LOOKUP_BARCODE_LENGTH = 8
 private const val BARCODE_LOOKUP_DEBOUNCE_MS = 700L
 
+// Cost and sale price sit side by side above this width, stacked below it
+private val WideLayoutBreakpoint = 480.dp
+
+// Room under the scroll content for the fixed bottom SaveButton (button
+// height + its vertical padding) so the last field is never hidden
+private val SaveButtonReserve = 88.dp
+
 @Composable
 fun AddProduct(
     initialBarcode: String? = null,
@@ -121,7 +127,6 @@ fun AddProduct(
     val isSaving by productsViewModel.isSaving.collectAsState()
     val isBarcodeLookupLoading by productsViewModel.isBarcodeLookupLoading.collectAsState()
     val barcodeLookupResult by productsViewModel.barcodeLookupResult.collectAsState()
-    val subcategories by productsViewModel.subcategories.collectAsState()
     val defaultUnit by productsViewModel.defaultUnit.collectAsState()
     val visibleUnits by productsViewModel.visibleUnits.collectAsState()
     val snackyHostState = rememberSnackyHostState()
@@ -323,11 +328,15 @@ fun AddProduct(
                 onNavigateBack = requestClose
             )
 
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_1)))
+            Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
             Column(
                 modifier = Modifier.padding(horizontal = dimen(R.dimen.space_4))
             ) {
+                // ── Identity: what the product is ──────────────────────
+                // Name, barcode (scanner + field read as one control), and
+                // the photo belong together — tight 12dp gaps inside the
+                // group, a generous 24dp before the next one
                 ProductNameField(
                     value = name,
                     onValueChange = {
@@ -337,7 +346,7 @@ fun AddProduct(
                     },
                     isError = isNameError
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_3)))
 
                 BarcodeField(
                     value = barcode,
@@ -349,8 +358,26 @@ fun AddProduct(
                     },
                     isLookingUp = isBarcodeLookupLoading
                 )
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_3)))
 
-                Spacer(modifier = Modifier.height(16.dp))
+                ImagePickerBox(
+                    // Coil loads the picked local uri and the server's
+                    // https image alike
+                    imageUri = imageUri ?: remoteImageUrl?.toUri(),
+                    onImageSelected = {
+                        imageUri = it
+                        remoteImageUrl = null
+                        isDirty = true
+                    },
+                    onImageRemoved = {
+                        imageUri = null
+                        remoteImageUrl = null
+                        isDirty = true
+                    }
+                )
+
+                // ── Inventory: how it's counted ────────────────────────
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_6)))
 
                 // Initial stock and its unit of measure sit side by side —
                 // the number stays short so both fit even on narrow phones
@@ -379,12 +406,13 @@ fun AddProduct(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                // ── Pricing: what it costs and earns ───────────────────
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_6)))
 
                 // Cost and sale price read as a comparison on wide screens,
                 // stacked full-width on phones
                 BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                    if (maxWidth >= 480.dp) {
+                    if (maxWidth >= WideLayoutBreakpoint) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_4))
                         ) {
@@ -418,7 +446,7 @@ fun AddProduct(
                     } else {
                         // BoxWithConstraints has no implicit vertical layout —
                         // the stacked fields must go in a Column
-                        Column {
+                        Column(verticalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_3))) {
                             PriceField(
                                 value = costPrice,
                                 onValueChange = {
@@ -431,7 +459,6 @@ fun AddProduct(
                                 colorScheme = MaterialTheme.colorScheme.costPrice,
                                 isError = isCostError
                             )
-                            Spacer(modifier = Modifier.height(16.dp))
                             PriceField(
                                 value = salePrice,
                                 onValueChange = {
@@ -447,61 +474,23 @@ fun AddProduct(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
 
-                // Live margin feedback once both prices parse — green when
-                // profitable, error-colored when selling below cost
+                // Live margin feedback once both prices parse — attached to
+                // the price pair with the same tight group gap
                 if (costAmount != null && saleAmount != null) {
-                    val profit = saleAmount.amount - costAmount.amount
                     // Money.amount is Long — divide as Double or the margin truncates
+                    val profit = saleAmount.amount - costAmount.amount
                     val marginPercent = profit * 100.0 / costAmount.amount
-                    Text(
-                        text = stringResource(
-                            R.string.profit_margin_hint,
-                            PriceValidator.formatPrice(profit),
-                            String.format("%.1f", marginPercent)
-                        ),
-                        fontFamily = BKoodak,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = dimenTextSize(R.dimen.text_size_sm),
-                        color = if (profit >= 0) {
-                            MaterialTheme.colorScheme.success
-                        } else {
-                            MaterialTheme.colorScheme.customError
-                        },
-                        modifier = Modifier.fillMaxWidth()
+                    Spacer(modifier = Modifier.height(dimen(R.dimen.space_3)))
+                    ProfitMarginSummary(
+                        profit = profit,
+                        marginPercent = marginPercent,
+                        sellingBelowCost = saleAmount.amount <= costAmount.amount
                     )
-                    if (saleAmount.amount <= costAmount.amount) {
-                        Spacer(modifier = Modifier.height(dimen(R.dimen.space_1)))
-                        Text(
-                            text = stringResource(R.string.warning_selling_below_cost),
-                            fontFamily = BKoodak,
-                            fontSize = dimenTextSize(R.dimen.text_size_sm),
-                            color = MaterialTheme.colorScheme.customError,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                ImagePickerBox(
-                    // Coil loads the picked local uri and the server's
-                    // https image alike
-                    imageUri = imageUri ?: remoteImageUrl?.toUri(),
-                    onImageSelected = {
-                        imageUri = it
-                        remoteImageUrl = null
-                        isDirty = true
-                    },
-                    onImageRemoved = {
-                        imageUri = null
-                        remoteImageUrl = null
-                        isDirty = true
-                    }
-                )
-
                 // Reserve space so the last item isn't hidden behind the fixed SaveButton
-                Spacer(modifier = Modifier.height(88.dp))
+                Spacer(modifier = Modifier.height(SaveButtonReserve))
             }
         }
 
@@ -535,20 +524,68 @@ fun AddProduct(
     }
 }
 
+// Shared form-field chrome — every input on this screen (and the price
+// bottom sheet's PriceField) draws from one place, so shape, label
+// typography, value typography, and border colors can never drift apart
+@Composable
+private fun FieldLabel(labelRes: Int) {
+    Text(
+        text = stringResource(labelRes),
+        fontFamily = BKoodak,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+@Composable
+private fun fieldShape() = RoundedCornerShape(dimen(R.dimen.radius_md))
+
+@Composable
+private fun fieldTextStyle() = TextStyle(
+    fontFamily = BKoodak,
+    fontWeight = FontWeight.Bold,
+    fontSize = dimenTextSize(R.dimen.text_size_md)
+)
+
+@Composable
+private fun fieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedBorderColor = MaterialTheme.colorScheme.primary,
+    unfocusedBorderColor = MaterialTheme.colorScheme.outline
+)
+
 @Composable
 private fun ProductLoadingState(
     onNavigateBack: () -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    // A skeleton that mirrors the form's own shape — reads as "the form is
+    // coming" instead of an unrelated floating spinner
+    Column(modifier = Modifier.fillMaxSize()) {
         AddProductTopBar(
             isEditMode = true,
             onNavigateBack = onNavigateBack
         )
 
-        CircularProgressIndicator(
-            modifier = Modifier.align(Alignment.Center)
-        )
+        Column(
+            modifier = Modifier.padding(horizontal = dimen(R.dimen.space_4)),
+            verticalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_3))
+        ) {
+            Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
+            SkeletonBlock(height = 56.dp)   // name
+            SkeletonBlock(height = 150.dp)  // scanner
+            SkeletonBlock(height = 56.dp)   // stock + unit
+            SkeletonBlock(height = 120.dp)  // image
+        }
     }
+}
+
+@Composable
+private fun SkeletonBlock(height: Dp, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(height)
+            .clip(RoundedCornerShape(dimen(R.dimen.radius_md)))
+            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+    )
 }
 
 @Composable
@@ -630,13 +667,7 @@ private fun ProductNameField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = {
-            Text(
-                stringResource(R.string.product_name),
-                fontFamily = BKoodak,
-                fontWeight = FontWeight.Bold
-            )
-        },
+        label = { FieldLabel(R.string.product_name) },
         isError = isError,
         supportingText = {
             if (isError) {
@@ -644,17 +675,10 @@ private fun ProductNameField(
             }
         },
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-        ),
+        shape = fieldShape(),
+        colors = fieldColors(),
         singleLine = true,
-        textStyle = TextStyle(
-            fontFamily = BKoodak,
-            fontWeight = FontWeight.Bold,
-            fontSize = dimenTextSize(R.dimen.text_size_md)
-        )
+        textStyle = fieldTextStyle()
     )
 }
 
@@ -669,13 +693,9 @@ private fun BarcodeField(
     // Context for MediaPlayer
     val context = LocalContext.current
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(
-                min = 182.dp
-            )
-    ) {
+    // The scanner card and the field form one control: scan, and the result
+    // lands in the field directly beneath it
+    Column(verticalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_2))) {
         CompactBarcodeScanner(
             onBarcodeDetected = { detectedBarcode ->
 
@@ -686,59 +706,40 @@ private fun BarcodeField(
 
             },
             startPaused = true,
-            modifier = Modifier
-                .padding(
-                    horizontal = dimen(R.dimen.space_2),
-                    vertical = dimen(R.dimen.space_2)
-                )
-                .align(Alignment.TopCenter),
+            modifier = Modifier.fillMaxWidth(),
             cardRadius = dimen(R.dimen.radius_md)
         )
 
-    }
-
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = {
-            Text(
-                stringResource(R.string.barcode_optional),
-                fontFamily = BKoodak,
-                fontWeight = FontWeight.Bold
-            )
-        },
-        trailingIcon = {
-            // Swapped for a spinner while the Daryamart lookup is running,
-            // so the auto-fill that follows doesn't feel like it came from nowhere
-            if (isLookingUp) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(dimen(R.dimen.size_sm)),
-                    strokeWidth = 2.dp
-                )
-            } else {
-                Icon(
-                    painter = painterResource(id = R.drawable.barcode_24px),
-                    contentDescription = stringResource(R.string.barcode_optional),
-                    tint = MaterialTheme.colorScheme.outline
-                )
-            }
-        },
-        modifier = Modifier.fillMaxWidth(),
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Number
-        ),
-        shape = RoundedCornerShape(12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-        ),
-        singleLine = true,
-        textStyle = TextStyle(
-            fontFamily = BKoodak,
-            fontWeight = FontWeight.Bold,
-            fontSize = dimenTextSize(R.dimen.text_size_md)
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { FieldLabel(R.string.barcode_optional) },
+            trailingIcon = {
+                // Swapped for a spinner while the Daryamart lookup is running,
+                // so the auto-fill that follows doesn't feel like it came from nowhere
+                if (isLookingUp) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(dimen(R.dimen.size_sm)),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        painter = painterResource(id = R.drawable.barcode_24px),
+                        contentDescription = stringResource(R.string.barcode_optional),
+                        tint = MaterialTheme.colorScheme.outline
+                    )
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            ),
+            shape = fieldShape(),
+            colors = fieldColors(),
+            singleLine = true,
+            textStyle = fieldTextStyle()
         )
-    )
+    }
 }
 
 @Composable
@@ -750,28 +751,15 @@ private fun InitialStockField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = {
-            Text(
-                stringResource(R.string.initial_stock),
-                fontFamily = BKoodak,
-                fontWeight = FontWeight.Bold
-            )
-        },
+        label = { FieldLabel(R.string.initial_stock) },
         modifier = modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Number
         ),
-        shape = RoundedCornerShape(12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-        ),
+        shape = fieldShape(),
+        colors = fieldColors(),
         singleLine = true,
-        textStyle = TextStyle(
-            fontFamily = BKoodak,
-            fontWeight = FontWeight.Bold,
-            fontSize = dimenTextSize(R.dimen.text_size_md)
-        )
+        textStyle = fieldTextStyle()
     )
 }
 
@@ -795,30 +783,17 @@ private fun UnitDropdownField(
             value = selected?.faName ?: "",
             onValueChange = {},
             readOnly = true,
-            label = {
-                Text(
-                    stringResource(R.string.unit_optional),
-                    fontFamily = BKoodak,
-                    fontWeight = FontWeight.Bold
-                )
-            },
+            label = { FieldLabel(R.string.unit_optional) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .menuAnchor(MenuAnchorType.PrimaryNotEditable),
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline
-            ),
+            shape = fieldShape(),
+            colors = fieldColors(),
             singleLine = true,
-            textStyle = TextStyle(
-                fontFamily = BKoodak,
-                fontWeight = FontWeight.Bold,
-                fontSize = dimenTextSize(R.dimen.text_size_md)
-            )
+            textStyle = fieldTextStyle()
         )
 
         ExposedDropdownMenu(
@@ -915,92 +890,56 @@ private fun UnitDropdownField(
             keyboardType = KeyboardType.Number
         ),
         visualTransformation = ThousandSeparatorTransformation(),
-        shape = RoundedCornerShape(12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-        ),
+        shape = fieldShape(),
+        colors = fieldColors(),
         singleLine = true,
-        textStyle = TextStyle(
-            fontFamily = BKoodak,
-            fontWeight = FontWeight.Bold,
-            fontSize = dimenTextSize(R.dimen.text_size_md)
-        )
+        textStyle = fieldTextStyle()
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SubcategoryDropdownField(
-    subcategories: List<Subcategory>,
-    selectedId: String,
-    fallbackName: String?,
-    onSelect: (String) -> Unit
+private fun ProfitMarginSummary(
+    profit: Long,
+    marginPercent: Double,
+    sellingBelowCost: Boolean
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    // One tinted summary block instead of loose floating texts — the
+    // container color is derived from the semantic status token
+    val statusTint = if (profit >= 0) {
+        MaterialTheme.colorScheme.success
+    } else {
+        MaterialTheme.colorScheme.customError
+    }
 
-    // Show the selected option's name; in edit mode an unloaded/missing
-    // subcategory falls back to the name stored on the product
-    val selectedName = subcategories.find { it.id.toString() == selectedId }?.name
-        ?: fallbackName.orEmpty()
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = it }
-    ) {
-        OutlinedTextField(
-            value = selectedName,
-            onValueChange = {},
-            readOnly = true,
-            label = {
-                Text(
-                    stringResource(R.string.subcategory_optional),
-                    fontFamily = BKoodak,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(MenuAnchorType.PrimaryNotEditable),
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(dimen(R.dimen.radius_md)))
+            .background(statusTint.copy(alpha = 0.10f))
+            .padding(
+                horizontal = dimen(R.dimen.space_3),
+                vertical = dimen(R.dimen.space_2)
             ),
-            singleLine = true,
-            textStyle = TextStyle(
-                fontFamily = BKoodak,
-                fontWeight = FontWeight.Bold,
-                fontSize = dimenTextSize(R.dimen.text_size_md)
-            )
+        verticalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_1))
+    ) {
+        Text(
+            text = stringResource(
+                R.string.profit_margin_hint,
+                PriceValidator.formatPrice(profit),
+                String.format("%.1f", marginPercent)
+            ),
+            fontFamily = BKoodak,
+            fontWeight = FontWeight.Bold,
+            fontSize = dimenTextSize(R.dimen.text_size_sm),
+            color = statusTint
         )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            // Only offer clearing once something is actually selected
-            if (selectedId.isNotEmpty()) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.none)) },
-                    onClick = {
-                        onSelect("")
-                        expanded = false
-                    }
-                )
-            }
-            subcategories.forEach { subcategory ->
-                DropdownMenuItem(
-                    text = { Text(subcategory.name) },
-                    onClick = {
-                        onSelect(subcategory.id.toString())
-                        expanded = false
-                    }
-                )
-            }
+        if (sellingBelowCost) {
+            Text(
+                text = stringResource(R.string.warning_selling_below_cost),
+                fontFamily = BKoodak,
+                fontSize = dimenTextSize(R.dimen.text_size_sm),
+                color = MaterialTheme.colorScheme.customError
+            )
         }
     }
 }
@@ -1018,7 +957,7 @@ fun SaveButton(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = dimen(R.dimen.space_6), vertical = dimen(R.dimen.space_4)),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(dimen(R.dimen.radius_md)),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
