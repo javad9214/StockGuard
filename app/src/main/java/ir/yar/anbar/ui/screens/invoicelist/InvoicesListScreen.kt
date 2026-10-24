@@ -167,12 +167,15 @@ fun InvoicesListScreen(
                 }
             }
 
-            // Snackbar for errors
+            // Snackbar for errors — raised above the floating bottom bar
+            // (whose height already includes the navigation-bar inset)
             SnackbarHost(
                 hostState = snackbarHostState,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(dimen(R.dimen.space_4))
+                    .padding(
+                        bottom = dimen(R.dimen.space_4) + navigationBarOverlayBottomPadding()
+                    )
             )
         }
     }

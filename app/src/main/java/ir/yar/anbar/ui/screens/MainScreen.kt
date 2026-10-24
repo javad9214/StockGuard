@@ -125,7 +125,7 @@ fun MainScreen(
         // A real container color is required: contentColorFor(Transparent) is
         // Unspecified, leaving LocalContentColor at its black default, which made
         // every Text/Icon without an explicit color unreadable in dark theme.
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             AnimatedVisibility(
                 visible = shouldShowBottomNav,

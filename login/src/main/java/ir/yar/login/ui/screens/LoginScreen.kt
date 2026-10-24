@@ -66,6 +66,10 @@ fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            // Keep the centered card clear of the navigation bar and visible
+            // above the keyboard while typing
+            .navigationBarsPadding()
+            .imePadding()
             .padding(horizontal = 24.dp),
         contentAlignment = Alignment.Center
     ) {
