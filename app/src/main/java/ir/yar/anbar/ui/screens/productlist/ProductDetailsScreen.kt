@@ -52,6 +52,7 @@ import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.domain.model.StockQuantity
 import ir.yar.anbar.domain.model.getBusinessInsight
 import ir.yar.anbar.domain.model.type.Money
+import ir.yar.anbar.ui.components.safeBottomImePadding
 import ir.yar.anbar.ui.components.util.SnackyDuration
 import ir.yar.anbar.ui.components.util.SnackyHost
 import ir.yar.anbar.ui.components.util.SnackyType
@@ -187,6 +188,9 @@ fun ProductDetailsContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            // Keep the action buttons clear of the navigation bar and,
+            // while a price/stock field is focused, of the keyboard
+            .safeBottomImePadding()
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

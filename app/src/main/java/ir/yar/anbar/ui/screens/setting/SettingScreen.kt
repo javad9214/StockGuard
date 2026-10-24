@@ -28,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.BuildConfig
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.UnitOfMeasure
+import ir.yar.anbar.ui.components.safeBottomPadding
 import ir.yar.anbar.ui.components.util.SnackyDuration
 import ir.yar.anbar.ui.components.util.SnackyHost
 import ir.yar.anbar.ui.components.util.SnackyType
@@ -70,6 +71,8 @@ fun SettingScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                // Last section scrolls clear of the system navigation bar
+                .safeBottomPadding()
                 .verticalScroll(rememberScrollState())
         ) {
             Row(
@@ -134,6 +137,7 @@ fun SettingScreen(
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
+                .safeBottomPadding()
                 .padding(bottom = dimen(R.dimen.space_4))
         )
 

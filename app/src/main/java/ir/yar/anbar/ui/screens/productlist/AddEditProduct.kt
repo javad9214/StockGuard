@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -51,10 +52,12 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -65,6 +68,7 @@ import ir.yar.anbar.domain.model.UnitOfMeasure
 import ir.yar.anbar.domain.model.type.Money
 import ir.yar.anbar.ui.components.image.ImagePickerBox
 import ir.yar.anbar.ui.components.barcodescanner.CompactBarcodeScanner
+import ir.yar.anbar.ui.components.safeBottomImePadding
 import ir.yar.anbar.ui.components.util.ConfirmyHost
 import ir.yar.anbar.ui.components.util.ConfirmyType
 import ir.yar.anbar.ui.components.util.SnackyDuration
@@ -131,6 +135,14 @@ fun AddProduct(
     val visibleUnits by productsViewModel.visibleUnits.collectAsState()
     val snackyHostState = rememberSnackyHostState()
     val confirmyHostState = rememberConfirmyHostState()
+
+    // Keyboard "Next" chain: barcode → initial stock → cost price → sale
+    // price (the read-only unit dropdown is skipped; sale price ends the
+    // chain with Done and clears focus)
+    val focusManager = LocalFocusManager.current
+    val stockFocus = remember { FocusRequester() }
+    val costFocus = remember { FocusRequester() }
+    val saleFocus = remember { FocusRequester() }
 
     // Track which fields the user has interacted with, so inline errors only
     // appear after interaction instead of flagging an untouched empty form
@@ -319,6 +331,9 @@ fun AddProduct(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                // Viewport ends above the navigation bar / keyboard so the
+                // last field scrolls clear of both
+                .safeBottomImePadding()
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -356,7 +371,8 @@ fun AddProduct(
                             isDirty = true
                         }
                     },
-                    isLookingUp = isBarcodeLookupLoading
+                    isLookingUp = isBarcodeLookupLoading,
+                    onNext = { stockFocus.requestFocus() }
                 )
                 Spacer(modifier = Modifier.height(dimen(R.dimen.space_3)))
 
@@ -393,6 +409,8 @@ fun AddProduct(
                                 isDirty = true
                             }
                         },
+                        focusRequester = stockFocus,
+                        onNext = { costFocus.requestFocus() },
                         modifier = Modifier.weight(1f)
                     )
                     UnitDropdownField(
@@ -427,6 +445,9 @@ fun AddProduct(
                                 iconRes = R.drawable.input_circle_24px,
                                 colorScheme = MaterialTheme.colorScheme.costPrice,
                                 modifier = Modifier.weight(1f),
+                                focusRequester = costFocus,
+                                imeAction = ImeAction.Next,
+                                onImeAction = { saleFocus.requestFocus() },
                                 isError = isCostError
                             )
                             PriceField(
@@ -440,6 +461,9 @@ fun AddProduct(
                                 iconRes = R.drawable.output_circle_24px,
                                 colorScheme = MaterialTheme.colorScheme.salePrice,
                                 modifier = Modifier.weight(1f),
+                                focusRequester = saleFocus,
+                                imeAction = ImeAction.Done,
+                                onImeAction = { focusManager.clearFocus() },
                                 isError = isSaleError
                             )
                         }
@@ -457,6 +481,9 @@ fun AddProduct(
                                 label = R.string.cost_price,
                                 iconRes = R.drawable.input_circle_24px,
                                 colorScheme = MaterialTheme.colorScheme.costPrice,
+                                focusRequester = costFocus,
+                                imeAction = ImeAction.Next,
+                                onImeAction = { saleFocus.requestFocus() },
                                 isError = isCostError
                             )
                             PriceField(
@@ -469,6 +496,9 @@ fun AddProduct(
                                 label = R.string.sale_price,
                                 iconRes = R.drawable.output_circle_24px,
                                 colorScheme = MaterialTheme.colorScheme.salePrice,
+                                focusRequester = saleFocus,
+                                imeAction = ImeAction.Done,
+                                onImeAction = { focusManager.clearFocus() },
                                 isError = isSaleError
                             )
                         }
@@ -513,7 +543,11 @@ fun AddProduct(
                     catalogProductId = catalogProductId
                 )
             },
-            modifier = Modifier.align(Alignment.BottomCenter)
+            // Stays above the navigation bar and the keyboard while typing
+            // in the form fields above
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .safeBottomImePadding()
         )
 
         // Snackbar for save errors
@@ -687,7 +721,8 @@ private fun ProductNameField(
 private fun BarcodeField(
     value: String,
     onValueChange: (String) -> Unit,
-    isLookingUp: Boolean = false
+    isLookingUp: Boolean = false,
+    onNext: () -> Unit = {}
 ) {
 
     // Context for MediaPlayer
@@ -732,8 +767,10 @@ private fun BarcodeField(
             },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
             ),
+            keyboardActions = KeyboardActions(onNext = { onNext() }),
             shape = fieldShape(),
             colors = fieldColors(),
             singleLine = true,
@@ -746,16 +783,22 @@ private fun BarcodeField(
 private fun InitialStockField(
     value: String,
     onValueChange: (String) -> Unit,
+    focusRequester: FocusRequester,
+    onNext: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { FieldLabel(R.string.initial_stock) },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequester),
         keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Number
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Next
         ),
+        keyboardActions = KeyboardActions(onNext = { onNext() }),
         shape = fieldShape(),
         colors = fieldColors(),
         singleLine = true,
@@ -839,6 +882,8 @@ private fun UnitDropdownField(
     // Opt-in: only callers that actually drive focus (e.g. the price
     // bottom sheet's auto-focus) need to supply one
     focusRequester: FocusRequester? = null,
+    imeAction: ImeAction = ImeAction.Done,
+    onImeAction: () -> Unit = {},
     isError: Boolean = false
 ) {
 
@@ -887,7 +932,12 @@ private fun UnitDropdownField(
                 }
             ),
         keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Number
+            keyboardType = KeyboardType.Number,
+            imeAction = imeAction
+        ),
+        keyboardActions = KeyboardActions(
+            onNext = { onImeAction() },
+            onDone = { onImeAction() }
         ),
         visualTransformation = ThousandSeparatorTransformation(),
         shape = fieldShape(),

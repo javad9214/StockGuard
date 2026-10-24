@@ -43,6 +43,7 @@ import ir.yar.anbar.domain.model.ProductFactory
 import ir.yar.anbar.domain.model.ProductId
 import ir.yar.anbar.domain.model.ProductName
 import ir.yar.anbar.ui.components.customnavbars.BottomSheetDragHandle
+import ir.yar.anbar.ui.components.safeBottomImePadding
 import ir.yar.anbar.ui.theme.BHoma
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.ui.viewmodels.InvoiceViewModel
@@ -105,7 +106,12 @@ fun AddProductToInvoiceContent(
         ) {
 
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    // The card keeps its edge-to-edge background while its
+                    // content clears the navigation bar and the keyboard
+                    // (the search field opens one)
+                    .safeBottomImePadding()
             ) {
 
                 BottomSheetDragHandle(

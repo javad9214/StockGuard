@@ -51,6 +51,7 @@ import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.InvoiceWithProducts
 import ir.yar.anbar.domain.model.calculateTotalAmount
 import ir.yar.anbar.domain.model.calculateTotalCost
+import ir.yar.anbar.ui.components.safeBottomPadding
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
 import ir.yar.anbar.ui.theme.BHoma
 import ir.yar.anbar.ui.theme.BMitra
@@ -141,6 +142,7 @@ fun InvoiceDetailScreen(
                 hostState = snackbarHostState,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
+                    .safeBottomPadding()
                     .padding(dimen(R.dimen.space_4))
             )
         }
@@ -255,7 +257,10 @@ private fun InvoiceDetailContent(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier.padding(16.dp),
+        modifier = modifier
+            .padding(16.dp)
+            // Keep the total section clear of the system navigation bar
+            .safeBottomPadding(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // Invoice header information

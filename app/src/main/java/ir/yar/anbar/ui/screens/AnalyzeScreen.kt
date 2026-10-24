@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
+import ir.yar.anbar.ui.components.customnavbars.navigationBarOverlayBottomPadding
 import ir.yar.anbar.ui.screens.component.DatePickerBottomDialog
 import ir.yar.anbar.ui.screens.component.vicochart.TopProductsColumnChart
 import ir.yar.anbar.ui.theme.Beirut_Medium
@@ -71,7 +72,13 @@ fun AnalyzeScreen(
     var showDatePickerBottomSheet by remember { mutableStateOf(false) }
     val datePickerSheetState = rememberModalBottomSheetState()
 
-    Column(modifier = modifier.fillMaxWidth()) {
+    // This route shows the floating bottom navigation bar, so the chart area
+    // reserves the bar's full overlay height (navigation-bar inset included)
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = navigationBarOverlayBottomPadding())
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
