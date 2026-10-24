@@ -5,9 +5,15 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -151,6 +157,17 @@ fun MainScreen(
     ) { innerPadding ->
         Box(modifier = Modifier
             .fillMaxSize()) {
+            // The status bar is transparent (edge-to-edge; window.statusBarColor
+            // is ignored on API 35+), so its color is whatever the app paints
+            // behind it. Paint a surface strip so the bar reads as continuous
+            // with the surface-colored headers at the top of every screen.
+            Spacer(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .windowInsetsTopHeight(WindowInsets.statusBars)
+                    .background(MaterialTheme.colorScheme.surface)
+            )
             NavHost(
                 navController = navController,
                 startDestination = startDestination,
