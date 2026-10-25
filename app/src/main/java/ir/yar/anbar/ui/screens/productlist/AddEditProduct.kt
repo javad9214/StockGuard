@@ -1,6 +1,13 @@
 package ir.yar.anbar.ui.screens.productlist
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.speech.SpeechRecognizer
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,6 +68,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
@@ -76,6 +84,8 @@ import ir.yar.anbar.ui.components.util.SnackyHost
 import ir.yar.anbar.ui.components.util.SnackyType
 import ir.yar.anbar.ui.components.util.rememberConfirmyHostState
 import ir.yar.anbar.ui.components.util.rememberSnackyHostState
+import ir.yar.anbar.ui.components.voice.VoiceState
+import ir.yar.anbar.ui.components.voice.rememberVoiceInputController
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
 import ir.yar.anbar.ui.theme.BKoodak
 import ir.yar.anbar.ui.theme.Beirut_Medium
@@ -135,6 +145,53 @@ fun AddProduct(
     val visibleUnits by productsViewModel.visibleUnits.collectAsState()
     val snackyHostState = rememberSnackyHostState()
     val confirmyHostState = rememberConfirmyHostState()
+
+    // ── Voice input (fa-IR), step 1: the top-bar mic recognizes speech and
+    // the transcript lands in a Toast — routing it into the form fields is
+    // the next step. The controller is shared with the top bar through
+    // composition scope, and its recognizer is disposed on leaving
+    val context = LocalContext.current
+    val voiceInput = rememberVoiceInputController()
+    val voiceState by voiceInput.state.collectAsState()
+
+    // Mic tap starts listening when permission is already granted;
+    // otherwise the request launches first and the grant callback starts
+    val voicePermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            voiceInput.start()
+        } else {
+            Toast.makeText(
+                context,
+                context.getString(R.string.error_voice_permission_denied),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+    val startVoiceInput = {
+        val micGranted = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.RECORD_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
+        if (micGranted) {
+            voiceInput.start()
+        } else {
+            voicePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
+
+    // Step 1 feedback loop: best candidate and errors surface as Toasts.
+    // Each terminal state is a fresh emission, so identical back-to-back
+    // recognitions still re-announce
+    LaunchedEffect(voiceState) {
+        when (val vs = voiceState) {
+            is VoiceState.Result ->
+                Toast.makeText(context, vs.candidates.first(), Toast.LENGTH_LONG).show()
+            is VoiceState.Error ->
+                Toast.makeText(context, voiceErrorText(context, vs.code), Toast.LENGTH_LONG).show()
+            VoiceState.Idle, VoiceState.Listening -> Unit
+        }
+    }
 
     // Keyboard "Next" chain: barcode → initial stock → cost price → sale
     // price (the read-only unit dropdown is skipped; sale price ends the
@@ -340,7 +397,10 @@ fun AddProduct(
             // Header with title and close button
             AddProductTopBar(
                 isEditMode = isEditMode,
-                onNavigateBack = requestClose
+                onNavigateBack = requestClose,
+                // Null hides the mic on devices without any speech service
+                onMicClick = if (voiceInput.isAvailable()) startVoiceInput else null,
+                isListening = voiceState is VoiceState.Listening
             )
 
             Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
@@ -652,10 +712,24 @@ private fun ProductLoadErrorState(
     }
 }
 
+// Timeouts and no-matches both mean "nothing heard"; permission errors
+// explain themselves; everything else collapses into one generic retryable
+// failure the shopkeeper can act on
+private fun voiceErrorText(context: Context, code: Int): String = context.getString(
+    when (code) {
+        SpeechRecognizer.ERROR_SPEECH_TIMEOUT,
+        SpeechRecognizer.ERROR_NO_MATCH -> R.string.error_voice_no_match
+        SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> R.string.error_voice_permission_denied
+        else -> R.string.error_voice_failed
+    }
+)
+
 @Composable
 fun AddProductTopBar(
     isEditMode: Boolean = false,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onMicClick: (() -> Unit)? = null,
+    isListening: Boolean = false
 ) {
     Row(
         modifier = Modifier
@@ -673,20 +747,50 @@ fun AddProductTopBar(
             fontSize = dimenTextSize(R.dimen.text_size_xl)
         )
 
-        // Close icon
-        IconButton(
-            onClick = onNavigateBack,
-            modifier = Modifier
-                .padding(dimen(R.dimen.space_2))
-                .size(dimen(R.dimen.size_lg))
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+        // The actions group as one child so SpaceBetween keeps the title
+        // left and both icons right together
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_2))
         ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = stringResource(R.string.close),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
+            // Persian voice input — only drawn when a speech service exists
+            // (onMicClick != null); highlighted while a session is running
+            if (onMicClick != null) {
+                IconButton(
+                    onClick = onMicClick,
+                    modifier = Modifier
+                        .padding(dimen(R.dimen.space_2))
+                        .size(dimen(R.dimen.size_lg))
+                        .clip(CircleShape)
+                        .background(
+                            if (isListening) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+                        )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.mic_24px),
+                        contentDescription = stringResource(R.string.voice_input),
+                        tint = if (isListening) MaterialTheme.colorScheme.onPrimary
+                        else MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+
+            // Close icon
+            IconButton(
+                onClick = onNavigateBack,
+                modifier = Modifier
+                    .padding(dimen(R.dimen.space_2))
+                    .size(dimen(R.dimen.size_lg))
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(R.string.close),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }
