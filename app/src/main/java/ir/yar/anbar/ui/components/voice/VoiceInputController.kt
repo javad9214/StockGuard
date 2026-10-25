@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import ir.yar.anbar.domain.voice.VoiceFormCommandParser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -77,6 +78,13 @@ class VoiceInputController(
         putExtra(RecognizerIntent.EXTRA_LANGUAGE, "fa-IR")
         putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "fa-IR")
         putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
+        // Biases recognition toward the form's field labels — they are the
+        // keywords VoiceFormCommandParser segments the transcript on. The
+        // extra takes effect on API 33+; older services ignore it
+        putExtra(
+            RecognizerIntent.EXTRA_BIASING_STRINGS,
+            ArrayList(VoiceFormCommandParser.biasingPhrases)
+        )
         // No EXTRA_PREFER_OFFLINE: fa-IR has no downloadable offline model,
         // and preferring an undownloaded language fails the whole session
         // (ERROR_LANGUAGE_NOT_SUPPORTED / UNAVAILABLE) instead of falling
