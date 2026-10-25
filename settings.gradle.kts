@@ -1,9 +1,6 @@
 // settings.gradle.kts
 pluginManagement {
     repositories {
-        if (System.getenv("CI") == null) {
-            maven { url = uri("https://maven.myket.ir") }
-        }
         google {
             content {
                 includeGroupByRegex("com\\.android.*")
@@ -12,6 +9,9 @@ pluginManagement {
             }
         }
         gradlePluginPortal()
+        if (System.getenv("CI") == null) {
+            maven { url = uri("https://maven.myket.ir") }
+        }
     }
 }
 
@@ -19,13 +19,16 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         if (System.getenv("CI") == null) {
+            // Local (Iran): mirror only, as in your working setup
             maven { url = uri("https://maven.myket.ir") }
-        }
-        google()
-        mavenCentral()
-        maven {
-            url = uri("https://jitpack.io")
-            content { includeGroupByRegex("com\\.github.*") }
+        } else {
+            // GitHub Actions: official repos
+            google()
+            mavenCentral()
+            maven {
+                url = uri("https://jitpack.io")
+                content { includeGroupByRegex("com\\.github.*") }
+            }
         }
     }
 }
