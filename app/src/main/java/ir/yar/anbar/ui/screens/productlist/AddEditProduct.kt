@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.speech.SpeechRecognizer
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -75,6 +74,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.UnitOfMeasure
 import ir.yar.anbar.domain.model.type.Money
+import ir.yar.anbar.domain.voice.VoiceField
+import ir.yar.anbar.domain.voice.VoiceFormCommandParser
 import ir.yar.anbar.ui.components.image.ImagePickerBox
 import ir.yar.anbar.ui.components.barcodescanner.CompactBarcodeScanner
 import ir.yar.anbar.ui.components.safeBottomImePadding
@@ -151,10 +152,10 @@ fun AddProduct(
     // results, clicks) launch snackbars through this scope
     val scope = rememberCoroutineScope()
 
-    // ── Voice input (fa-IR), step 1: the top-bar mic recognizes speech and
-    // the transcript lands in a Toast — routing it into the form fields is
-    // the next step. The controller is shared with the top bar through
-    // composition scope, and its recognizer is disposed on leaving
+    // ── Voice input (fa-IR): the top-bar mic recognizes one utterance and
+    // VoiceFormCommandParser routes its keyword-anchored segments into the
+    // form fields. The controller is shared with the top bar through
+    // composition scope, and its recognizer is disposed on leaving it
     val context = LocalContext.current
     val voiceInput = rememberVoiceInputController()
     val voiceState by voiceInput.state.collectAsState()
@@ -184,22 +185,6 @@ fun AddProduct(
             voiceInput.start()
         } else {
             voicePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-        }
-    }
-
-    // Step 1 feedback loop: the transcript lands in a Toast; recognition
-    // errors surface as snackbars. Each terminal state is a fresh emission,
-    // so identical back-to-back recognitions still re-announce
-    LaunchedEffect(voiceState) {
-        when (val vs = voiceState) {
-            is VoiceState.Result ->
-                Toast.makeText(context, vs.candidates.first(), Toast.LENGTH_LONG).show()
-            is VoiceState.Error -> snackyHostState.show(
-                message = voiceErrorText(context, vs.code),
-                type = SnackyType.ERROR,
-                duration = SnackyDuration.LONG
-            )
-            VoiceState.Idle, VoiceState.Listening -> Unit
         }
     }
 
@@ -262,6 +247,66 @@ fun AddProduct(
     // edit mode; blank keeps the existing stock (0 for a new product)
     var initialStock by remember(product) {
         mutableStateOf(product?.stock?.value?.toString() ?: "")
+    }
+
+    // Voice results fill the form: field labels anchor the segments (see
+    // VoiceFormCommandParser), and recognition alternates get a second
+    // chance when the best candidate mis-hears a label. Each terminal state
+    // is a fresh emission, so back-to-back recognitions still re-announce
+    LaunchedEffect(voiceState) {
+        when (val vs = voiceState) {
+            is VoiceState.Result -> {
+                val fills = VoiceFormCommandParser.parseFirstMatch(vs.candidates)
+                val applied = mutableListOf<VoiceField>()
+                fills[VoiceField.NAME]?.let {
+                    name = it
+                    nameTouched = true
+                    isDirty = true
+                    applied += VoiceField.NAME
+                }
+                // Mirrors the typing rule for the field: at most 7 digits
+                // (StockQuantity caps at 1,000,000)
+                fills[VoiceField.INITIAL_STOCK]?.takeIf { it.length <= 7 }?.let {
+                    initialStock = it
+                    isDirty = true
+                    applied += VoiceField.INITIAL_STOCK
+                }
+                fills[VoiceField.COST_PRICE]?.let {
+                    costPrice = it
+                    costTouched = true
+                    isDirty = true
+                    applied += VoiceField.COST_PRICE
+                }
+                fills[VoiceField.SALE_PRICE]?.let {
+                    salePrice = it
+                    saleTouched = true
+                    isDirty = true
+                    applied += VoiceField.SALE_PRICE
+                }
+                if (applied.isEmpty()) {
+                    snackyHostState.show(
+                        message = context.getString(R.string.error_voice_not_understood),
+                        type = SnackyType.ERROR,
+                        duration = SnackyDuration.LONG
+                    )
+                } else {
+                    snackyHostState.show(
+                        message = context.getString(
+                            R.string.voice_fields_filled,
+                            applied.joinToString("، ") { context.getString(it.labelRes()) }
+                        ),
+                        type = SnackyType.SUCCESS,
+                        duration = SnackyDuration.LONG
+                    )
+                }
+            }
+            is VoiceState.Error -> snackyHostState.show(
+                message = voiceErrorText(context, vs.code),
+                type = SnackyType.ERROR,
+                duration = SnackyDuration.LONG
+            )
+            VoiceState.Idle, VoiceState.Listening -> Unit
+        }
     }
 
     // The wire value is the exact server enum name. Edits start from the
@@ -736,6 +781,15 @@ private fun voiceErrorText(context: Context, code: Int): String = context.getStr
         else -> R.string.error_voice_failed
     }
 )
+
+// Voice feedback reuses the form's own labels so the summary reads
+// exactly like the form does
+private fun VoiceField.labelRes(): Int = when (this) {
+    VoiceField.NAME -> R.string.product_name
+    VoiceField.INITIAL_STOCK -> R.string.initial_stock
+    VoiceField.COST_PRICE -> R.string.cost_price
+    VoiceField.SALE_PRICE -> R.string.sale_price
+}
 
 @Composable
 fun AddProductTopBar(
