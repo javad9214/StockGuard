@@ -8,6 +8,15 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <!-- Android 11+ package visibility: without this the app may not see or
+         bind to the device's speech recognition service (e.g. the Google
+         app), and SpeechRecognizer sessions fail instantly -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
 
     <application
         android:name=".App"

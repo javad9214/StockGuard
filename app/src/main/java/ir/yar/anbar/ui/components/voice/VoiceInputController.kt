@@ -6,12 +6,15 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+
+private const val TAG = "VoiceInputController"
 
 /**
  * Recognition session state. [Result.candidates] is ordered best-first —
@@ -74,8 +77,10 @@ class VoiceInputController(
         putExtra(RecognizerIntent.EXTRA_LANGUAGE, "fa-IR")
         putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "fa-IR")
         putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
-        // Best-effort offline recognition — falls back to the network service
-        putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
+        // No EXTRA_PREFER_OFFLINE: fa-IR has no downloadable offline model,
+        // and preferring an undownloaded language fails the whole session
+        // (ERROR_LANGUAGE_NOT_SUPPORTED / UNAVAILABLE) instead of falling
+        // back to network recognition
     }
 
     private val listener = object : RecognitionListener {
@@ -86,6 +91,9 @@ class VoiceInputController(
         override fun onEndOfSpeech() = Unit
 
         override fun onError(error: Int) {
+            // The UI collapses codes into user-facing messages; the exact
+            // code (see SpeechRecognizer ERROR_* constants) only matters here
+            Log.w(TAG, "Recognition failed, error code $error")
             stateFlow.value = VoiceState.Error(error)
         }
 
@@ -99,6 +107,8 @@ class VoiceInputController(
                 if (candidates.isEmpty()) VoiceState.Error(SpeechRecognizer.ERROR_NO_MATCH)
                 else VoiceState.Result(candidates)
         }
+
+        override fun onPartialResults(partialResults: Bundle?) = Unit
 
         override fun onEvent(eventType: Int, params: Bundle?) = Unit
     }
