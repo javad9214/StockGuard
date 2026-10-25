@@ -86,6 +86,7 @@ import ir.yar.anbar.ui.components.util.SnackyHost
 import ir.yar.anbar.ui.components.util.SnackyType
 import ir.yar.anbar.ui.components.util.rememberConfirmyHostState
 import ir.yar.anbar.ui.components.util.rememberSnackyHostState
+import ir.yar.anbar.ui.components.voice.VoiceListeningDialog
 import ir.yar.anbar.ui.components.voice.VoiceState
 import ir.yar.anbar.ui.components.voice.rememberVoiceInputController
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
@@ -159,6 +160,7 @@ fun AddProduct(
     val context = LocalContext.current
     val voiceInput = rememberVoiceInputController()
     val voiceState by voiceInput.state.collectAsState()
+    val voicePartial by voiceInput.partialTranscript.collectAsState()
 
     // Mic tap starts listening when permission is already granted;
     // otherwise the request launches first and the grant callback starts
@@ -417,6 +419,11 @@ fun AddProduct(
     }
     BackHandler(enabled = isDirty && !isSaving) { requestClose() }
 
+    // While the listening dialog is up, back cancels the session instead
+    // of triggering the discard-changes guard; composed after it so this
+    // handler wins while enabled
+    BackHandler(enabled = voiceState is VoiceState.Listening) { voiceInput.cancel() }
+
     // A failed edit-mode load must not degrade into the create form —
     // saving that would silently duplicate the product
     if (productId != null) {
@@ -670,6 +677,16 @@ fun AddProduct(
 
         // Discard-changes confirmation
         ConfirmyHost(hostState = confirmyHostState)
+
+        // Live transcript while a session runs — closes itself when the
+        // state leaves Listening; cancel (button, back, or outside tap)
+        // aborts the session
+        if (voiceState is VoiceState.Listening) {
+            VoiceListeningDialog(
+                partialText = voicePartial,
+                onCancel = voiceInput::cancel
+            )
+        }
     }
 }
 

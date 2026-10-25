@@ -43,6 +43,10 @@ class VoiceInputController(
     val state: StateFlow<VoiceState> = MutableStateFlow<VoiceState>(VoiceState.Idle)
     private val stateFlow = state as MutableStateFlow<VoiceState>
 
+    /** Live interim transcript of the running session ("" before speech). */
+    val partialTranscript: StateFlow<String> = MutableStateFlow("")
+    private val partialFlow = partialTranscript as MutableStateFlow<String>
+
     private val appContext = context.applicationContext
     private var recognizer: SpeechRecognizer? = null
 
@@ -52,11 +56,22 @@ class VoiceInputController(
     /** Starts a new recognition session, replacing any previous one. */
     fun start() {
         destroy()
+        partialFlow.value = ""
         stateFlow.value = VoiceState.Listening
         recognizer = SpeechRecognizer.createSpeechRecognizer(appContext).apply {
             setRecognitionListener(listener)
             startListening(recognitionIntent)
         }
+    }
+
+    /**
+     * Aborts the running session without a result — the exit path for
+     * manually dismissing the listening dialog.
+     */
+    fun cancel() {
+        destroy()
+        partialFlow.value = ""
+        stateFlow.value = VoiceState.Idle
     }
 
     /**
@@ -85,6 +100,9 @@ class VoiceInputController(
             RecognizerIntent.EXTRA_BIASING_STRINGS,
             ArrayList(VoiceFormCommandParser.biasingPhrases)
         )
+        // Live interim transcripts while the user is still speaking —
+        // consumed by the listening dialog
+        putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
         // No EXTRA_PREFER_OFFLINE: fa-IR has no downloadable offline model,
         // and preferring an undownloaded language fails the whole session
         // (ERROR_LANGUAGE_NOT_SUPPORTED / UNAVAILABLE) instead of falling
@@ -116,7 +134,14 @@ class VoiceInputController(
                 else VoiceState.Result(candidates)
         }
 
-        override fun onPartialResults(partialResults: Bundle?) = Unit
+        override fun onPartialResults(partialResults: Bundle?) {
+            // Interim text; the authoritative result still arrives in
+            // onResults once the user stops
+            partialFlow.value = partialResults
+                ?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                ?.firstOrNull()
+                .orEmpty()
+        }
 
         override fun onEvent(eventType: Int, params: Bundle?) = Unit
     }
