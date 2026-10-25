@@ -244,6 +244,7 @@
     <string name="voice_input">Voice input</string>
     <string name="error_voice_permission_denied">Microphone access is required for voice input</string>
     <string name="error_voice_no_match">Nothing was heard, please try again</string>
+    <string name="error_voice_network">Internet connection is required for voice input</string>
     <string name="error_voice_failed">Voice input failed, please try again</string>
 
     <!-- Product Save/Load Errors -->

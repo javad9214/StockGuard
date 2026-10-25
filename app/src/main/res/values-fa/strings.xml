@@ -260,6 +260,7 @@
     <string name="voice_input">ورودی صوتی</string>
     <string name="error_voice_permission_denied">برای ورودی صوتی، دسترسی به میکروفون لازم است</string>
     <string name="error_voice_no_match">چیزی شنیده نشد، دوباره تلاش کنید</string>
+    <string name="error_voice_network">برای ورودی صوتی، اتصال به اینترنت لازم است</string>
     <string name="error_voice_failed">ورودی صوتی ناموفق بود، دوباره تلاش کنید</string>
 
     <!-- Product Save/Load Errors -->

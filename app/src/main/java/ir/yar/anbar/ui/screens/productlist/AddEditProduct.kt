@@ -50,6 +50,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -101,6 +102,7 @@ import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.price.PriceValidator
 import ir.yar.anbar.utils.price.ThousandSeparatorTransformation
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 // Barcode auto-lookup (add mode): real-world barcodes are at least EAN-8,
 // and typing bursts collapse into one call after a short pause
@@ -145,6 +147,9 @@ fun AddProduct(
     val visibleUnits by productsViewModel.visibleUnits.collectAsState()
     val snackyHostState = rememberSnackyHostState()
     val confirmyHostState = rememberConfirmyHostState()
+    // SnackyHostState.show is suspend — non-suspend callbacks (permission
+    // results, clicks) launch snackbars through this scope
+    val scope = rememberCoroutineScope()
 
     // ── Voice input (fa-IR), step 1: the top-bar mic recognizes speech and
     // the transcript lands in a Toast — routing it into the form fields is
@@ -162,11 +167,13 @@ fun AddProduct(
         if (granted) {
             voiceInput.start()
         } else {
-            Toast.makeText(
-                context,
-                context.getString(R.string.error_voice_permission_denied),
-                Toast.LENGTH_LONG
-            ).show()
+            scope.launch {
+                snackyHostState.show(
+                    message = context.getString(R.string.error_voice_permission_denied),
+                    type = SnackyType.ERROR,
+                    duration = SnackyDuration.LONG
+                )
+            }
         }
     }
     val startVoiceInput = {
@@ -180,15 +187,18 @@ fun AddProduct(
         }
     }
 
-    // Step 1 feedback loop: best candidate and errors surface as Toasts.
-    // Each terminal state is a fresh emission, so identical back-to-back
-    // recognitions still re-announce
+    // Step 1 feedback loop: the transcript lands in a Toast; recognition
+    // errors surface as snackbars. Each terminal state is a fresh emission,
+    // so identical back-to-back recognitions still re-announce
     LaunchedEffect(voiceState) {
         when (val vs = voiceState) {
             is VoiceState.Result ->
                 Toast.makeText(context, vs.candidates.first(), Toast.LENGTH_LONG).show()
-            is VoiceState.Error ->
-                Toast.makeText(context, voiceErrorText(context, vs.code), Toast.LENGTH_LONG).show()
+            is VoiceState.Error -> snackyHostState.show(
+                message = voiceErrorText(context, vs.code),
+                type = SnackyType.ERROR,
+                duration = SnackyDuration.LONG
+            )
             VoiceState.Idle, VoiceState.Listening -> Unit
         }
     }
@@ -712,11 +722,14 @@ private fun ProductLoadErrorState(
     }
 }
 
-// Timeouts and no-matches both mean "nothing heard"; permission errors
-// explain themselves; everything else collapses into one generic retryable
-// failure the shopkeeper can act on
+// Network errors mean the recognizer never reached the speech service —
+// fa-IR recognition is online-only; speech timeouts and no-matches both
+// mean "nothing heard"; permission errors explain themselves; everything
+// else collapses into one generic retryable failure
 private fun voiceErrorText(context: Context, code: Int): String = context.getString(
     when (code) {
+        SpeechRecognizer.ERROR_NETWORK,
+        SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> R.string.error_voice_network
         SpeechRecognizer.ERROR_SPEECH_TIMEOUT,
         SpeechRecognizer.ERROR_NO_MATCH -> R.string.error_voice_no_match
         SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> R.string.error_voice_permission_denied
