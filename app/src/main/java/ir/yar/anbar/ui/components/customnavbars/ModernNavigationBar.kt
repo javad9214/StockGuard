@@ -10,15 +10,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
@@ -40,7 +38,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -68,6 +65,7 @@ import androidx.navigation.compose.rememberNavController
 import ir.yar.anbar.R
 import ir.yar.anbar.ui.navigation.BottomNavItem
 import ir.yar.anbar.ui.navigation.Routes
+import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import kotlin.math.PI
 import kotlin.math.sin
@@ -81,7 +79,10 @@ private val CradleRadius = 33.dp        // FabSize / 2 + 4dp ring gap
 private val CradleTopClearance = 34.dp  // card top offset inside the host box
 private val BarBottomMargin = 12.dp
 
-private val ItemShape = RoundedCornerShape(18.dp)
+// Nav item geometry
+private val NavIconSize = 28.dp         // larger icon, also used when unselected
+private val SelectedLift = 9.dp         // how far icon + pill rise to make room for the label
+
 private val PillShape = RoundedCornerShape(15.dp)
 
 private val NavItems = listOf(
@@ -250,9 +251,11 @@ private fun NavItem(
         label = "selection"
     )
 
-    Column(
+    // The whole item is one box: unselected -> icon centered vertically,
+    // selected -> icon + pill lift up and the label appears at the bottom.
+    Box(
         modifier = modifier
-            .fillMaxHeight()
+            .fillMaxSize()
             .selectable(
                 selected = isSelected,
                 role = Role.Tab,
@@ -263,10 +266,15 @@ private fun NavItem(
                     onClick()
                 }
             ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        contentAlignment = Alignment.Center
     ) {
-        Box(contentAlignment = Alignment.Center) {
+        // Pill + icon move together
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.graphicsLayer {
+                translationY = -SelectedLift.toPx() * progress
+            }
+        ) {
             // Pill: stretches in from the sides and overshoots
             Box(
                 modifier = Modifier
@@ -278,32 +286,34 @@ private fun NavItem(
                     }
                     .background(pillColor, PillShape)
             )
-            // Icon: big pop + lift + small tilt wiggle
+            // Icon: big when idle, pops + tilts when selected
             Icon(
                 painter = painterResource(item.iconRes()),
                 contentDescription = title,
                 tint = iconTint,
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(NavIconSize)
                     .graphicsLayer {
-                        val s = lerp(0.9f, 1.2f, progress)
+                        val s = lerp(1f, 1.05f, progress)
                         scaleX = s
                         scaleY = s
-                        translationY = -4.dp.toPx() * progress
                         rotationZ = sin(progress * PI.toFloat()) * 12f
                     }
             )
         }
+
         // Label: slides up while fading in
         Text(
             text = title,
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.labelSmall,
+            fontFamily = Beirut_Medium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .padding(top = 2.dp)
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 6.dp)
                 .clearAndSetSemantics { }
                 .graphicsLayer {
                     alpha = progress.coerceIn(0f, 1f)

@@ -82,6 +82,7 @@
     <string name="total_amount">مبلغ کل</string>
     <string name="units_sold">واحد فروخته شده</string>
     <string name="total_revenue">مجموع درآمد</string>
+    <string name="revenue">درآمد</string>
     <string name="in_stock">موجود</string>
     <string name="stock_healthy">موجودی خوب</string>
     <string name="stock_running_out">موجودی رو به اتمام</string>

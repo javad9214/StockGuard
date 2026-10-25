@@ -67,6 +67,7 @@
     <string name="total_amount">total amount</string>
     <string name="units_sold">Units Sold</string>
     <string name="total_revenue">Total Revenue</string>
+    <string name="revenue">Revenue</string>
     <string name="in_stock">In Stock</string>
     <string name="stock_healthy">Healthy Stock</string>
     <string name="stock_running_out">Stock Running Out</string>

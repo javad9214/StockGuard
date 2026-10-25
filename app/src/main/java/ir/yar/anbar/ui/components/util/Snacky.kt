@@ -43,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import ir.yar.anbar.ui.components.customnavbars.navigationBarOverlayBottomPadding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -277,7 +278,11 @@ fun SnackyHost(
     ) {
         Snacky(
             snackyState = hostState.currentSnacky.value,
-            modifier = Modifier.padding(16.dp)
+            // Raised above the floating bottom navigation bar, whose overlay
+            // height already includes the system navigation-bar inset
+            modifier = Modifier
+                .padding(bottom = navigationBarOverlayBottomPadding())
+                .padding(16.dp)
         )
     }
 }

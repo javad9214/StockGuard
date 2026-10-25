@@ -115,7 +115,14 @@ fun UnitSelector(
                         .filter { it.name in visibleUnits || it == selected }
                         .forEach { unit ->
                             DropdownMenuItem(
-                                text = { Text(unit.faName) },
+                                text = {
+                                    Text(
+                                        unit.faName,
+                                        fontFamily = BKoodak,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = dimenTextSize(R.dimen.text_size_md)
+                                    )
+                                },
                                 onClick = {
                                     onSelect(unit)
                                     expanded = false

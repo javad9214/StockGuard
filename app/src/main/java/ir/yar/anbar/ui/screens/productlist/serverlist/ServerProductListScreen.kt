@@ -42,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.ui.components.barcodescanner.BarcodeScannerView
+import ir.yar.anbar.ui.components.safeBottomPadding
 import ir.yar.anbar.ui.screens.component.EmptyState
 import ir.yar.anbar.ui.theme.BMitra
 import ir.yar.anbar.ui.theme.Beirut_Medium
@@ -222,7 +223,10 @@ fun ServerProductListScreen(
                         // Products list
                         LazyColumn(
                             state = listState,
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                // Keep the last row clear of the system navigation bar
+                                .safeBottomPadding(),
                             contentPadding = PaddingValues(dimen(R.dimen.space_2)),
                             verticalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_2))
                         ) {

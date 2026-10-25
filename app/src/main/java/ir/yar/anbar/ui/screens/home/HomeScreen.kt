@@ -290,6 +290,12 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
                 // Most Sold Products - NO MORE .find()!
+                // Progress bars are relative to the top seller of this period
+                val maxTopSellingSold = remember(uiState.products.topSellingProducts) {
+                    uiState.products.topSellingProducts.maxOfOrNull {
+                        it.summary.totalSold.value
+                    } ?: 0
+                }
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = dimen(R.dimen.space_1))
@@ -300,8 +306,12 @@ fun HomeScreen(
                     ) { productWithSummary ->
                         MostSoldProductItem(
                             product = productWithSummary.product,
-                            productSalesSummary = productWithSummary.summary,
-                            rank = productWithSummary.rank
+                            summary = productWithSummary.summary,
+                            rank = productWithSummary.rank,
+                            maxSold = maxTopSellingSold,
+                            modifier = Modifier
+                                .padding(dimen(R.dimen.space_1))
+                                .width(dimen(R.dimen.size_8xl))
                         )
                     }
                 }
@@ -319,6 +329,12 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
 
                 // Most Profitable Products - NO MORE .find() or .indexOf()!
+                // Progress bars are relative to the best seller of this period
+                val maxTopProfitableSold = remember(uiState.products.topProfitableProducts) {
+                    uiState.products.topProfitableProducts.maxOfOrNull {
+                        it.summary.totalSold.value
+                    } ?: 0
+                }
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = dimen(R.dimen.space_1))
@@ -329,8 +345,12 @@ fun HomeScreen(
                     ) { productWithSummary ->
                         MostSoldProductItem(
                             product = productWithSummary.product,
-                            productSalesSummary = productWithSummary.summary,
-                            rank = productWithSummary.rank
+                            summary = productWithSummary.summary,
+                            rank = productWithSummary.rank,
+                            maxSold = maxTopProfitableSold,
+                            modifier = Modifier
+                                .padding(dimen(R.dimen.space_1))
+                                .width(dimen(R.dimen.size_8xl))
                         )
                     }
                 }

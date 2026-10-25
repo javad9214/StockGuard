@@ -44,6 +44,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -55,6 +56,7 @@ import ir.yar.anbar.ui.components.util.SnackyType
 import ir.yar.anbar.ui.components.util.rememberSnackyHostState
 import ir.yar.anbar.ui.theme.BKoodak
 import ir.yar.anbar.utils.dimen
+import ir.yar.anbar.utils.dimenTextSize
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -191,6 +193,8 @@ fun ImagePickerBox(
                     Text(
                         text = "برای افزودن تصویر کلیک کنید",
                         fontFamily = BKoodak,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = dimenTextSize(R.dimen.text_size_md),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }

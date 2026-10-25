@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import ir.yar.anbar.R
+import ir.yar.anbar.ui.components.safeBottomPadding
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
 import ir.yar.anbar.ui.theme.BHoma
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
@@ -37,7 +38,10 @@ fun BottomTotalSection(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            // Surface painted edge-to-edge behind the navigation bar; only the
+            // content is inset above it
             .background(MaterialTheme.colorScheme.surface)
+            .safeBottomPadding()
     ) {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
