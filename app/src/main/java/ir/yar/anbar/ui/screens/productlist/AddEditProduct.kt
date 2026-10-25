@@ -172,7 +172,7 @@ fun AddProduct(
                 snackyHostState.show(
                     message = context.getString(R.string.error_voice_permission_denied),
                     type = SnackyType.ERROR,
-                    duration = SnackyDuration.LONG
+                    duration = SnackyDuration.SHORT
                 )
             }
         }
@@ -287,7 +287,7 @@ fun AddProduct(
                     snackyHostState.show(
                         message = context.getString(R.string.error_voice_not_understood),
                         type = SnackyType.ERROR,
-                        duration = SnackyDuration.LONG
+                        duration = SnackyDuration.SHORT
                     )
                 } else {
                     snackyHostState.show(
@@ -303,7 +303,7 @@ fun AddProduct(
             is VoiceState.Error -> snackyHostState.show(
                 message = voiceErrorText(context, vs.code),
                 type = SnackyType.ERROR,
-                duration = SnackyDuration.LONG
+                duration = SnackyDuration.SHORT
             )
             VoiceState.Idle, VoiceState.Listening -> Unit
         }
