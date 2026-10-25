@@ -7,6 +7,10 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+val major = 0
+val minor = 50
+val patch = 0
+
 android {
     namespace = "ir.yar.anbar"
     compileSdk = 36
@@ -15,8 +19,8 @@ android {
         applicationId = "ir.yar.anbar"
         minSdk = 26
         targetSdk = 36
-        versionCode = 60
-        versionName = "0.50.0"
+        versionCode = major * 10000 + minor * 100 + patch
+        versionName = "$major.$minor.$patch"
 
 
         buildConfigField("String", "BASE_URL", "\"https://mjavadserver.ir\"")

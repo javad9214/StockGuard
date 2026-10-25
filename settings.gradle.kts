@@ -1,5 +1,9 @@
- pluginManagement {
+// settings.gradle.kts
+pluginManagement {
     repositories {
+        if (System.getenv("CI") == null) {
+            maven { url = uri("https://maven.myket.ir") }
+        }
         google {
             content {
                 includeGroupByRegex("com\\.android.*")
@@ -7,16 +11,22 @@
                 includeGroupByRegex("androidx.*")
             }
         }
-
         gradlePluginPortal()
-        maven{url = uri("https://maven.myket.ir")}
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-      
-        maven{url = uri("https://maven.myket.ir")}
+        if (System.getenv("CI") == null) {
+            maven { url = uri("https://maven.myket.ir") }
+        }
+        google()
+        mavenCentral()
+        maven {
+            url = uri("https://jitpack.io")
+            content { includeGroupByRegex("com\\.github.*") }
+        }
     }
 }
 
