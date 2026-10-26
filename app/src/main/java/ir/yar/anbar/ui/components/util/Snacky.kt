@@ -1,6 +1,7 @@
 package ir.yar.anbar.ui.components.util
 
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -50,7 +51,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.theme.BRoya
 import ir.yar.anbar.ui.theme.color.customError
 import ir.yar.anbar.ui.theme.color.info
 import ir.yar.anbar.ui.theme.color.success
@@ -256,7 +256,7 @@ fun Snacky(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f),
-                        fontFamily = BRoya,
+                        fontFamily = Vazir,
                         fontSize = dimenTextSize(R.dimen.text_size_lg)
                     )
                 }

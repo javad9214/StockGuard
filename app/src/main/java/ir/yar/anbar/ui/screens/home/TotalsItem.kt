@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.home
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,8 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.type.Money
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
-import ir.yar.anbar.ui.theme.BMitra
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.utils.price.PriceValidator
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
@@ -55,7 +54,7 @@ fun TotalsItem(
                 Text(
                     text = str(R.string.total_sales),
                     style = MaterialTheme.typography.bodyLarge,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_lg)
                 )
 
@@ -93,7 +92,7 @@ fun TotalsItem(
                 Text(
                     text = str(R.string.total_profit),
                     style = MaterialTheme.typography.bodyLarge,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_lg)
                 )
 
@@ -129,7 +128,7 @@ fun TotalsItem(
                 Text(
                     text = str(R.string.total_invoice_registered),
                     style = MaterialTheme.typography.bodyLarge,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_lg)
                 )
 
@@ -137,7 +136,7 @@ fun TotalsItem(
                 Text(
                     text = totalInvoiceCount.toString(),
                     style = MaterialTheme.typography.bodyLarge,
-                    fontFamily = BMitra,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_lg),
                     modifier = Modifier.padding(end = dimen(R.dimen.space_7))
                 )

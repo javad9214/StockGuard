@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.home
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -47,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.User
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.color.customError
 import ir.yar.anbar.ui.theme.color.success
 import ir.yar.anbar.ui.viewmodels.ProfileUiState
@@ -132,7 +132,7 @@ private fun LogoutItem(onClick: () -> Unit) {
         Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
         Text(
             text = str(R.string.logout),
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontSize = dimenTextSize(R.dimen.text_size_sm),
             color = MaterialTheme.colorScheme.customError
         )
@@ -211,7 +211,7 @@ private fun ProfileContent(user: User) {
                 Text(
                     text = user.fullName,
                     style = MaterialTheme.typography.titleMedium,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_md),
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -219,7 +219,7 @@ private fun ProfileContent(user: User) {
                 Text(
                     text = user.phoneNumber,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_sm),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -328,7 +328,7 @@ private fun UserInitials(user: User) {
 
     Text(
         text = initials,
-        fontFamily = Beirut_Medium,
+        fontFamily = Vazir,
         fontSize = dimenTextSize(R.dimen.text_size_md),
         color = MaterialTheme.colorScheme.onPrimaryContainer
     )
@@ -363,7 +363,7 @@ private fun InfoPill(
             Spacer(modifier = Modifier.width(dimen(R.dimen.space_1)))
             Text(
                 text = text,
-                fontFamily = Beirut_Medium,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_xs),
                 color = contentColor
             )
@@ -388,14 +388,14 @@ private fun ProfileInfoRow(iconRes: Int, label: String, value: String) {
         Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
         Text(
             text = label,
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontSize = dimenTextSize(R.dimen.text_size_sm),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(
             text = value,
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontSize = dimenTextSize(R.dimen.text_size_sm),
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -418,7 +418,7 @@ private fun ProfileLoadingContent() {
             Spacer(modifier = Modifier.height(dimen(R.dimen.space_3)))
             Text(
                 text = str(R.string.profile_loading),
-                fontFamily = Beirut_Medium,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_sm),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -443,7 +443,7 @@ private fun ProfileErrorContent(message: String, onRetry: () -> Unit) {
         Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
         Text(
             text = message,
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontSize = dimenTextSize(R.dimen.text_size_sm),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -457,7 +457,7 @@ private fun ProfileErrorContent(message: String, onRetry: () -> Unit) {
             Spacer(modifier = Modifier.width(dimen(R.dimen.space_1)))
             Text(
                 text = str(R.string.retry),
-                fontFamily = Beirut_Medium
+                fontFamily = Vazir
             )
         }
     }

@@ -240,6 +240,17 @@
     <string name="subcategory_optional">Subcategory (Optional)</string>
     <string name="currency_icon">Currency Icon</string>
 
+    <!-- Voice Input -->
+    <string name="voice_input">Voice input</string>
+    <string name="voice_listening_title">Listening…</string>
+    <string name="voice_listening_hint">Say the fields, for example: product name, milk</string>
+    <string name="error_voice_permission_denied">Microphone access is required for voice input</string>
+    <string name="error_voice_no_match">Nothing was heard, please try again</string>
+    <string name="error_voice_network">Internet connection is required for voice input</string>
+    <string name="error_voice_failed">Voice input failed, please try again</string>
+    <string name="error_voice_not_understood">Say a field name first, for example: product name, milk</string>
+    <string name="voice_fields_filled">Filled: %1$s</string>
+
     <!-- Product Save/Load Errors -->
     <string name="error_failed_to_load_products">Failed to load products: %1$s</string>
     <string name="error_failed_to_load_product">Failed to load product: %1$s</string>

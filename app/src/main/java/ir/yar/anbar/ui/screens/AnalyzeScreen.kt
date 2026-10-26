@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -51,7 +52,6 @@ import ir.yar.anbar.R
 import ir.yar.anbar.ui.components.customnavbars.navigationBarOverlayBottomPadding
 import ir.yar.anbar.ui.screens.component.DatePickerBottomDialog
 import ir.yar.anbar.ui.screens.component.vicochart.TopProductsColumnChart
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.viewmodels.AnalyzeMetric
 import ir.yar.anbar.ui.viewmodels.AnalyzeUiState
 import ir.yar.anbar.ui.viewmodels.AnalyzeViewModel
@@ -89,7 +89,7 @@ fun AnalyzeScreen(
         ) {
             Text(
                 str(R.string.sales_analyse),
-                fontFamily = Beirut_Medium,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_xl)
             )
 
@@ -133,7 +133,7 @@ fun AnalyzeScreen(
                     Text(
                         text = str(selectedTimeRange.getResourceId()),
                         style = MaterialTheme.typography.bodyLarge,
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         fontSize = dimenTextSize(R.dimen.text_size_lg)
                     )
                 }
@@ -184,7 +184,7 @@ fun AnalyzeScreen(
                 label = {
                     Text(
                         text = str(R.string.most_sold_products),
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         fontSize = dimenTextSize(R.dimen.text_size_md)
                     )
                 }
@@ -196,7 +196,7 @@ fun AnalyzeScreen(
                 label = {
                     Text(
                         text = str(R.string.most_profitable_products),
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         fontSize = dimenTextSize(R.dimen.text_size_md)
                     )
                 }
@@ -277,7 +277,7 @@ private fun ChartPlaceholder(
             Text(
                 text = text,
                 style = MaterialTheme.typography.bodyMedium,
-                fontFamily = Beirut_Medium,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_md),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

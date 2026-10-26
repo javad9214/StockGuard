@@ -256,6 +256,17 @@
     <string name="subcategory_optional">زیردسته‌بندی (اختیاری)</string>
     <string name="currency_icon">نماد واحد پول</string>
 
+    <!-- Voice Input -->
+    <string name="voice_input">ورودی صوتی</string>
+    <string name="voice_listening_title">در حال شنیدن…</string>
+    <string name="voice_listening_hint">فیلدها را بگویید؛ مثلاً: نام محصول شیر</string>
+    <string name="error_voice_permission_denied">برای ورودی صوتی، دسترسی به میکروفون لازم است</string>
+    <string name="error_voice_no_match">چیزی شنیده نشد، دوباره تلاش کنید</string>
+    <string name="error_voice_network">برای ورودی صوتی، اتصال به اینترنت لازم است</string>
+    <string name="error_voice_failed">ورودی صوتی ناموفق بود، دوباره تلاش کنید</string>
+    <string name="error_voice_not_understood">ابتدا نام فیلد را بگویید؛ مثلاً: نام محصول شیر</string>
+    <string name="voice_fields_filled">پر شد: %1$s</string>
+
     <!-- Product Save/Load Errors -->
     <string name="error_failed_to_load_products">بارگذاری محصولات ناموفق بود: %1$s</string>
     <string name="error_failed_to_load_product">بارگذاری محصول ناموفق بود: %1$s</string>

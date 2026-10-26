@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.invoicelist
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,9 +30,6 @@ import ir.yar.anbar.domain.model.InvoiceNumber
 import ir.yar.anbar.domain.model.InvoiceType
 import ir.yar.anbar.domain.model.InvoiceWithProducts
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
-import ir.yar.anbar.ui.theme.BHoma
-import ir.yar.anbar.ui.theme.BKoodak
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.ui.theme.color.costPrice
 import ir.yar.anbar.ui.theme.color.costPriceBg
@@ -84,7 +82,7 @@ fun InvoiceItemNew(
                     text = " # $invoiceNumber ${str(R.string.invoice_number)}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = BKoodak,
+                    fontFamily = Vazir,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(dimen(R.dimen.space_2))
                 )
@@ -96,7 +94,7 @@ fun InvoiceItemNew(
                         else str(R.string.purchase_invoice),
                         fontSize = dimenTextSize(R.dimen.text_size_lg),
                         textAlign = TextAlign.Center,
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         color = if (invoiceType == InvoiceType.SALE)
                             MaterialTheme.colorScheme.salePrice
                         else MaterialTheme.colorScheme.costPrice
@@ -148,7 +146,7 @@ fun InvoiceItemNew(
                         text = TimeStampUtil.formatTime(invoice.invoiceDate),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontFamily = BKoodak,
+                        fontFamily = Vazir,
                         fontWeight = FontWeight.Bold,
                         fontSize = dimenTextSize(R.dimen.text_size_md)
                     )
@@ -177,7 +175,7 @@ fun InvoiceItemNew(
                         text = formattedDate,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontFamily = BKoodak,
+                        fontFamily = Vazir,
                         fontWeight = FontWeight.Bold,
                         fontSize = dimenTextSize(R.dimen.text_size_md)
                     )
@@ -216,7 +214,7 @@ fun InvoiceItemNew(
                     text = "${invoiceWithProducts.totalProductsCount}  ${str(R.string.goods)}",
                     fontSize = dimenTextSize(R.dimen.text_size_sm),
                     textAlign = TextAlign.Center,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
@@ -225,7 +223,7 @@ fun InvoiceItemNew(
                     text = str(R.string.number_of_good),
                     fontSize = dimenTextSize(R.dimen.text_size_sm),
                     textAlign = TextAlign.Center,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
@@ -259,7 +257,7 @@ fun InvoiceItemNew(
                     text = str(R.string.total_amount),
                     fontSize = dimenTextSize(R.dimen.text_size_sm),
                     textAlign = TextAlign.Center,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -283,7 +281,7 @@ fun InvoiceItemNew(
 
                     Text(
                         text = str(R.string.show_details),
-                        fontFamily = BHoma,
+                        fontFamily = Vazir,
                         fontSize = dimenTextSize(R.dimen.text_size_sm),
                         modifier = Modifier.padding(
                             vertical = dimen(R.dimen.space_1), horizontal = dimen(R.dimen.space_2)

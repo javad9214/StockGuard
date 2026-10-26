@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.components.barcodescanner
 
+import ir.yar.anbar.ui.theme.Vazir
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -61,7 +62,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.utils.dimen
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
@@ -110,7 +110,7 @@ fun CompactBarcodeScanner(
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                     )
                 }
             }

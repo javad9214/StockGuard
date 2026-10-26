@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.components.barcodescanner
 
+import ir.yar.anbar.ui.theme.Vazir
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -53,7 +54,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.theme.BNazanin
 import ir.yar.anbar.utils.str
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
@@ -312,7 +312,7 @@ private fun BarcodeScannerOverlay() {
             text = str(R.string.barcode_position),
             color = Color.White,
             fontSize = 16.sp,
-            fontFamily = BNazanin,
+            fontFamily = Vazir,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,
             modifier = Modifier

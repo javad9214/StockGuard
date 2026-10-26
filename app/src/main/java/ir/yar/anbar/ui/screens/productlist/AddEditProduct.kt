@@ -1,6 +1,13 @@
 package ir.yar.anbar.ui.screens.productlist
 
+import ir.yar.anbar.ui.theme.Vazir
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.speech.SpeechRecognizer
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +43,7 @@ import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +51,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,11 +70,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.UnitOfMeasure
 import ir.yar.anbar.domain.model.type.Money
+import ir.yar.anbar.domain.voice.VoiceField
+import ir.yar.anbar.domain.voice.VoiceFormCommandParser
 import ir.yar.anbar.ui.components.image.ImagePickerBox
 import ir.yar.anbar.ui.components.barcodescanner.CompactBarcodeScanner
 import ir.yar.anbar.ui.components.safeBottomImePadding
@@ -76,9 +88,10 @@ import ir.yar.anbar.ui.components.util.SnackyHost
 import ir.yar.anbar.ui.components.util.SnackyType
 import ir.yar.anbar.ui.components.util.rememberConfirmyHostState
 import ir.yar.anbar.ui.components.util.rememberSnackyHostState
+import ir.yar.anbar.ui.components.voice.VoiceListeningDialog
+import ir.yar.anbar.ui.components.voice.VoiceState
+import ir.yar.anbar.ui.components.voice.rememberVoiceInputController
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
-import ir.yar.anbar.ui.theme.BKoodak
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.color.costPrice
 import ir.yar.anbar.ui.theme.color.customError
 import ir.yar.anbar.ui.theme.color.salePrice
@@ -91,6 +104,7 @@ import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.price.PriceValidator
 import ir.yar.anbar.utils.price.ThousandSeparatorTransformation
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 // Barcode auto-lookup (add mode): real-world barcodes are at least EAN-8,
 // and typing bursts collapse into one call after a short pause
@@ -100,10 +114,6 @@ private const val BARCODE_LOOKUP_DEBOUNCE_MS = 700L
 // Cost and sale price sit side by side above this width, stacked below it
 private val WideLayoutBreakpoint = 480.dp
 
-// Room under the scroll content for the fixed bottom SaveButton (button
-// height + its vertical padding) so the last field is never hidden
-private val SaveButtonReserve = 88.dp
-
 @Composable
 fun AddProduct(
     initialBarcode: String? = null,
@@ -112,7 +122,6 @@ fun AddProduct(
     onNavigateBack: () -> Unit,
     productsViewModel: ProductsViewModel = hiltViewModel(),
 ) {
-
 
     // Fetch product if editing; explicitly clear any stale selection when
     // entering the add-new flow, in case this VM instance previously loaded
@@ -135,6 +144,46 @@ fun AddProduct(
     val visibleUnits by productsViewModel.visibleUnits.collectAsState()
     val snackyHostState = rememberSnackyHostState()
     val confirmyHostState = rememberConfirmyHostState()
+    // SnackyHostState.show is suspend — non-suspend callbacks (permission
+    // results, clicks) launch snackbars through this scope
+    val scope = rememberCoroutineScope()
+
+    // ── Voice input (fa-IR): the top-bar mic recognizes one utterance and
+    // VoiceFormCommandParser routes its keyword-anchored segments into the
+    // form fields. The controller is shared with the top bar through
+    // composition scope, and its recognizer is disposed on leaving it
+    val context = LocalContext.current
+    val voiceInput = rememberVoiceInputController()
+    val voiceState by voiceInput.state.collectAsState()
+    val voicePartial by voiceInput.partialTranscript.collectAsState()
+
+    // Mic tap starts listening when permission is already granted;
+    // otherwise the request launches first and the grant callback starts
+    val voicePermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            voiceInput.start()
+        } else {
+            scope.launch {
+                snackyHostState.show(
+                    message = context.getString(R.string.error_voice_permission_denied),
+                    type = SnackyType.ERROR,
+                    duration = SnackyDuration.SHORT
+                )
+            }
+        }
+    }
+    val startVoiceInput = {
+        val micGranted = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.RECORD_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
+        if (micGranted) {
+            voiceInput.start()
+        } else {
+            voicePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
 
     // Keyboard "Next" chain: barcode → initial stock → cost price → sale
     // price (the read-only unit dropdown is skipped; sale price ends the
@@ -195,6 +244,66 @@ fun AddProduct(
     // edit mode; blank keeps the existing stock (0 for a new product)
     var initialStock by remember(product) {
         mutableStateOf(product?.stock?.value?.toString() ?: "")
+    }
+
+    // Voice results fill the form: field labels anchor the segments (see
+    // VoiceFormCommandParser), and recognition alternates get a second
+    // chance when the best candidate mis-hears a label. Each terminal state
+    // is a fresh emission, so back-to-back recognitions still re-announce
+    LaunchedEffect(voiceState) {
+        when (val vs = voiceState) {
+            is VoiceState.Result -> {
+                val fills = VoiceFormCommandParser.parseFirstMatch(vs.candidates)
+                val applied = mutableListOf<VoiceField>()
+                fills[VoiceField.NAME]?.let {
+                    name = it
+                    nameTouched = true
+                    isDirty = true
+                    applied += VoiceField.NAME
+                }
+                // Mirrors the typing rule for the field: at most 7 digits
+                // (StockQuantity caps at 1,000,000)
+                fills[VoiceField.INITIAL_STOCK]?.takeIf { it.length <= 7 }?.let {
+                    initialStock = it
+                    isDirty = true
+                    applied += VoiceField.INITIAL_STOCK
+                }
+                fills[VoiceField.COST_PRICE]?.let {
+                    costPrice = it
+                    costTouched = true
+                    isDirty = true
+                    applied += VoiceField.COST_PRICE
+                }
+                fills[VoiceField.SALE_PRICE]?.let {
+                    salePrice = it
+                    saleTouched = true
+                    isDirty = true
+                    applied += VoiceField.SALE_PRICE
+                }
+                if (applied.isEmpty()) {
+                    snackyHostState.show(
+                        message = context.getString(R.string.error_voice_not_understood),
+                        type = SnackyType.ERROR,
+                        duration = SnackyDuration.SHORT
+                    )
+                } else {
+                    snackyHostState.show(
+                        message = context.getString(
+                            R.string.voice_fields_filled,
+                            applied.joinToString("، ") { context.getString(it.labelRes()) }
+                        ),
+                        type = SnackyType.SUCCESS,
+                        duration = SnackyDuration.SHORT
+                    )
+                }
+            }
+            is VoiceState.Error -> snackyHostState.show(
+                message = voiceErrorText(context, vs.code),
+                type = SnackyType.ERROR,
+                duration = SnackyDuration.SHORT
+            )
+            VoiceState.Idle, VoiceState.Listening -> Unit
+        }
     }
 
     // The wire value is the exact server enum name. Edits start from the
@@ -305,6 +414,11 @@ fun AddProduct(
     }
     BackHandler(enabled = isDirty && !isSaving) { requestClose() }
 
+    // While the listening dialog is up, back cancels the session instead
+    // of triggering the discard-changes guard; composed after it so this
+    // handler wins while enabled
+    BackHandler(enabled = voiceState is VoiceState.Listening) { voiceInput.cancel() }
+
     // A failed edit-mode load must not degrade into the create form —
     // saving that would silently duplicate the product
     if (productId != null) {
@@ -325,29 +439,34 @@ fun AddProduct(
         return
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        // Fixed top bar + scrolling body + fixed bottom bar. The viewport
+        // ends above the navigation bar / keyboard, applied once here
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                // Viewport ends above the navigation bar / keyboard so the
-                // last field scrolls clear of both
                 .safeBottomImePadding()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Header with title and close button
+            // ── Fixed: header with title, mic and close button ─────────
             AddProductTopBar(
                 isEditMode = isEditMode,
-                onNavigateBack = requestClose
+                onNavigateBack = requestClose,
+                // Null hides the mic on devices without any speech service
+                onMicClick = if (voiceInput.isAvailable()) startVoiceInput else null,
+                isListening = voiceState is VoiceState.Listening
             )
 
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
-
+            // ── Scrolling: the form ────────────────────────────────────
             Column(
-                modifier = Modifier.padding(horizontal = dimen(R.dimen.space_4))
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = dimen(R.dimen.space_4))
             ) {
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
+
                 // ── Identity: what the product is ──────────────────────
                 // Name, barcode (scanner + field read as one control), and
                 // the photo belong together — tight 12dp gaps inside the
@@ -519,42 +638,54 @@ fun AddProduct(
                     )
                 }
 
-                // Reserve space so the last item isn't hidden behind the fixed SaveButton
-                Spacer(modifier = Modifier.height(SaveButtonReserve))
+                // Small breathing room at the end of the scroll content
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_4)))
+            }
+
+            // ── Fixed: bottom bar with the save button ─────────────────
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 3.dp,
+                shadowElevation = 8.dp
+            ) {
+                SaveButton(
+                    isEditMode = isEditMode,
+                    isSaving = isSaving,
+                    enabled = isFormValid,
+                    onSave = {
+                        productsViewModel.saveProduct(
+                            name = name,
+                            barcode = barcode,
+                            salePrice = salePrice,
+                            costPrice = costPrice,
+                            subcategoryId = subcategoryId,
+                            localImageUri = imageUri?.toString(),
+                            initialStock = initialStock,
+                            unit = selectedUnit?.name,
+                            remoteImageUrl = remoteImageUrl,
+                            catalogProductId = catalogProductId
+                        )
+                    }
+                )
             }
         }
-
-        // Save Button
-        SaveButton(
-            isEditMode = isEditMode,
-            isSaving = isSaving,
-            enabled = isFormValid,
-            onSave = {
-                productsViewModel.saveProduct(
-                    name = name,
-                    barcode = barcode,
-                    salePrice = salePrice,
-                    costPrice = costPrice,
-                    subcategoryId = subcategoryId,
-                    localImageUri = imageUri?.toString(),
-                    initialStock = initialStock,
-                    unit = selectedUnit?.name,
-                    remoteImageUrl = remoteImageUrl,
-                    catalogProductId = catalogProductId
-                )
-            },
-            // Stays above the navigation bar and the keyboard while typing
-            // in the form fields above
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .safeBottomImePadding()
-        )
 
         // Snackbar for save errors
         SnackyHost(hostState = snackyHostState)
 
         // Discard-changes confirmation
         ConfirmyHost(hostState = confirmyHostState)
+
+        // Live transcript while a session runs — closes itself when the
+        // state leaves Listening; cancel (button, back, or outside tap)
+        // aborts the session
+        if (voiceState is VoiceState.Listening) {
+            VoiceListeningDialog(
+                partialText = voicePartial,
+                onCancel = voiceInput::cancel
+            )
+        }
     }
 }
 
@@ -565,7 +696,7 @@ fun AddProduct(
 private fun FieldLabel(labelRes: Int) {
     Text(
         text = stringResource(labelRes),
-        fontFamily = BKoodak,
+        fontFamily = Vazir,
         fontWeight = FontWeight.Bold
     )
 }
@@ -575,7 +706,7 @@ private fun fieldShape() = RoundedCornerShape(dimen(R.dimen.radius_md))
 
 @Composable
 private fun fieldTextStyle() = TextStyle(
-    fontFamily = BKoodak,
+    fontFamily = Vazir,
     fontWeight = FontWeight.Bold,
     fontSize = dimenTextSize(R.dimen.text_size_md)
 )
@@ -640,7 +771,7 @@ private fun ProductLoadErrorState(
         ) {
             Text(
                 text = message,
-                fontFamily = Beirut_Medium,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_lg),
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -652,10 +783,36 @@ private fun ProductLoadErrorState(
     }
 }
 
+// Network errors mean the recognizer never reached the speech service —
+// fa-IR recognition is online-only; speech timeouts and no-matches both
+// mean "nothing heard"; permission errors explain themselves; everything
+// else collapses into one generic retryable failure
+private fun voiceErrorText(context: Context, code: Int): String = context.getString(
+    when (code) {
+        SpeechRecognizer.ERROR_NETWORK,
+        SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> R.string.error_voice_network
+        SpeechRecognizer.ERROR_SPEECH_TIMEOUT,
+        SpeechRecognizer.ERROR_NO_MATCH -> R.string.error_voice_no_match
+        SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> R.string.error_voice_permission_denied
+        else -> R.string.error_voice_failed
+    }
+)
+
+// Voice feedback reuses the form's own labels so the summary reads
+// exactly like the form does
+private fun VoiceField.labelRes(): Int = when (this) {
+    VoiceField.NAME -> R.string.product_name
+    VoiceField.INITIAL_STOCK -> R.string.initial_stock
+    VoiceField.COST_PRICE -> R.string.cost_price
+    VoiceField.SALE_PRICE -> R.string.sale_price
+}
+
 @Composable
 fun AddProductTopBar(
     isEditMode: Boolean = false,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onMicClick: (() -> Unit)? = null,
+    isListening: Boolean = false
 ) {
     Row(
         modifier = Modifier
@@ -669,24 +826,54 @@ fun AddProductTopBar(
             text = stringResource(
                 id = if (isEditMode) R.string.edit_product_title else R.string.add_product_title
             ),
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontSize = dimenTextSize(R.dimen.text_size_xl)
         )
 
-        // Close icon
-        IconButton(
-            onClick = onNavigateBack,
-            modifier = Modifier
-                .padding(dimen(R.dimen.space_2))
-                .size(dimen(R.dimen.size_lg))
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+        // The actions group as one child so SpaceBetween keeps the title
+        // left and both icons right together
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(dimen(R.dimen.space_2))
         ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = stringResource(R.string.close),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
+            // Persian voice input — only drawn when a speech service exists
+            // (onMicClick != null); highlighted while a session is running
+            if (onMicClick != null) {
+                IconButton(
+                    onClick = onMicClick,
+                    modifier = Modifier
+                        .padding(dimen(R.dimen.space_2))
+                        .size(dimen(R.dimen.size_lg))
+                        .clip(CircleShape)
+                        .background(
+                            if (isListening) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+                        )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.mic_24px),
+                        contentDescription = stringResource(R.string.voice_input),
+                        tint = if (isListening) MaterialTheme.colorScheme.onPrimary
+                        else MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+
+            // Close icon
+            IconButton(
+                onClick = onNavigateBack,
+                modifier = Modifier
+                    .padding(dimen(R.dimen.space_2))
+                    .size(dimen(R.dimen.size_lg))
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(R.string.close),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }
@@ -872,7 +1059,7 @@ private fun UnitDropdownField(
 }
 
 @Composable
- fun PriceField(
+fun PriceField(
     value: String,
     onValueChange: (String) -> Unit,
     label: Int,
@@ -910,7 +1097,7 @@ private fun UnitDropdownField(
                 Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
                 Text(
                     stringResource(label),
-                    fontFamily = BKoodak,
+                    fontFamily = Vazir,
                     fontWeight = FontWeight.Bold,
                     color = colorScheme
                 )
@@ -978,7 +1165,7 @@ private fun ProfitMarginSummary(
                 PriceValidator.formatPrice(profit),
                 String.format("%.1f", marginPercent)
             ),
-            fontFamily = BKoodak,
+            fontFamily = Vazir,
             fontWeight = FontWeight.Bold,
             fontSize = dimenTextSize(R.dimen.text_size_sm),
             color = statusTint
@@ -986,7 +1173,7 @@ private fun ProfitMarginSummary(
         if (sellingBelowCost) {
             Text(
                 text = stringResource(R.string.warning_selling_below_cost),
-                fontFamily = BKoodak,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_sm),
                 color = MaterialTheme.colorScheme.customError
             )
@@ -1010,7 +1197,10 @@ fun SaveButton(
         shape = RoundedCornerShape(dimen(R.dimen.radius_md)),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            // Visible-but-inactive instead of the default transparent look
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
         ),
         enabled = enabled && !isSaving
     ) {
@@ -1027,7 +1217,7 @@ fun SaveButton(
             text = stringResource(
                 id = if (isEditMode) R.string.save_changes_button else R.string.add_product_button
             ),
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontWeight = FontWeight.Bold,
             fontSize = dimenTextSize(R.dimen.text_size_lg)
         )

@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.productlist
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,9 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
@@ -58,8 +56,6 @@ import ir.yar.anbar.ui.components.image.ZoomableImageDialog
 import ir.yar.anbar.ui.components.util.BottomSheetMenu
 import ir.yar.anbar.ui.components.util.BottomSheetMenuItem
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
-import ir.yar.anbar.ui.theme.BHoma
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.ui.theme.color.costPrice
 import ir.yar.anbar.ui.theme.color.customError
@@ -92,9 +88,7 @@ fun ProductItem(
         MaterialTheme.colorScheme.customError
     }
 
-    val myFontFamily = FontFamily(
-        Font(R.font.b_koodak_bd, FontWeight.Normal)
-    )
+    val myFontFamily = Vazir
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Card(
             modifier = Modifier
@@ -233,7 +227,7 @@ fun ProductItem(
                             Text(
                                 text = subcategory,
                                 style = MaterialTheme.typography.labelSmall,
-                                fontFamily = BHoma,
+                                fontFamily = Vazir,
                                 color = MaterialTheme.colorScheme.secondary
                             )
                         }
@@ -245,12 +239,12 @@ fun ProductItem(
                             Text(
                                 text = it,
                                 fontSize = dimenTextSize(R.dimen.text_size_md),
-                                fontFamily = BHoma
+                                fontFamily = Vazir
                             )
                         } ?: Text(
                             text = "N/A",
                             fontSize = dimenTextSize(R.dimen.text_size_md),
-                            fontFamily = BHoma
+                            fontFamily = Vazir
                         )
                         Spacer(modifier = Modifier.width(dimen(R.dimen.space_4)))
 
@@ -273,13 +267,13 @@ fun ProductItem(
                         modifier = Modifier.padding(end = dimen(R.dimen.space_4)),
                         text = product.stock.value.toString(),
                         fontSize = dimenTextSize(R.dimen.text_size_md),
-                        fontFamily = BHoma
+                        fontFamily = Vazir
                     )
 
                     Text(
                         text = str(R.string.stock),
                         fontSize = dimenTextSize(R.dimen.text_size_md),
-                        fontFamily = BHoma
+                        fontFamily = Vazir
                     )
 
                 }
@@ -307,7 +301,7 @@ fun ProductItem(
                                 text = str(R.string.sale_price),
                                 fontSize = dimenTextSize(R.dimen.text_size_sm),
                                 textAlign = TextAlign.Center,
-                                fontFamily = Beirut_Medium,
+                                fontFamily = Vazir,
                                 color = MaterialTheme.colorScheme.salePrice
                             )
 
@@ -333,7 +327,7 @@ fun ProductItem(
                             Text(
                                 text = PriceValidator.formatPrice(product.price),
                                 fontSize = dimenTextSize(R.dimen.text_size_md),
-                                fontFamily = BHoma
+                                fontFamily = Vazir
                             )
                         }
                     }
@@ -352,7 +346,7 @@ fun ProductItem(
                                 text = str(R.string.cost_price),
                                 fontSize = dimenTextSize(R.dimen.text_size_sm),
                                 textAlign = TextAlign.Center,
-                                fontFamily = Beirut_Medium,
+                                fontFamily = Vazir,
                                 color = MaterialTheme.colorScheme.costPrice
                             )
                             Spacer(modifier = Modifier.width(dimen(R.dimen.space_1)))
@@ -383,7 +377,7 @@ fun ProductItem(
                             Text(
                                 text = PriceValidator.formatPrice(product.costPrice),
                                 fontSize = dimenTextSize(R.dimen.text_size_sm), // Smaller
-                                fontFamily = BHoma
+                                fontFamily = Vazir
                             )
                         }
                     }

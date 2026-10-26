@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.invoice.invoicescreen
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
@@ -54,7 +55,6 @@ import ir.yar.anbar.ui.components.util.SnackyType
 import ir.yar.anbar.ui.components.util.rememberSnackyHostState
 import ir.yar.anbar.ui.screens.component.NoBarcodeFoundDialog
 import ir.yar.anbar.ui.screens.invoice.productselection.AddProductToInvoice
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.viewmodels.InvoiceViewModel
 import ir.yar.anbar.ui.viewmodels.InvoiceViewModel.InvoiceEvent
 import ir.yar.anbar.ui.viewmodels.home.HomeViewModel
@@ -242,7 +242,7 @@ fun InvoiceScreen(
                     Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
                         text = str(R.string.choose_from_list),
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         fontSize = dimenTextSize(R.dimen.text_size_sm)
                     )
                 }
@@ -287,7 +287,7 @@ fun InvoiceScreen(
                     Text(
                         text = str(R.string.no_products_added),
                         style = MaterialTheme.typography.bodyLarge,
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }

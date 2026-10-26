@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.invoice.productselection
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -44,7 +45,6 @@ import ir.yar.anbar.domain.model.ProductId
 import ir.yar.anbar.domain.model.ProductName
 import ir.yar.anbar.ui.components.customnavbars.BottomSheetDragHandle
 import ir.yar.anbar.ui.components.safeBottomImePadding
-import ir.yar.anbar.ui.theme.BHoma
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.ui.viewmodels.InvoiceViewModel
 import ir.yar.anbar.ui.viewmodels.ProductsViewModel
@@ -153,10 +153,10 @@ fun AddProductToInvoiceContent(
                     placeholder = {
                         Text(
                             text = str(R.string.search_products),
-                            fontFamily = BHoma
+                            fontFamily = Vazir
                         )
                     },
-                    textStyle = TextStyle(fontFamily = BHoma),
+                    textStyle = TextStyle(fontFamily = Vazir),
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Search,

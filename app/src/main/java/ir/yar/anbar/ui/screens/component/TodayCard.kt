@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.component
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.str
@@ -120,7 +120,7 @@ private fun TodayRow(
             Text(
                 text = text,
                 style = MaterialTheme.typography.bodyLarge,
-                fontFamily = Beirut_Medium,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_lg)
             )
         }

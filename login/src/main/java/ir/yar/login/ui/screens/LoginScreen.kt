@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
+import ir.yar.login.ui.theme.Vazir
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -31,8 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.login.R
-import ir.yar.login.ui.theme.BNazanin
-import ir.yar.login.ui.theme.Beirut_Medium
 import ir.yar.login.ui.viewmodels.AuthViewModel
 import ir.yar.login.util.PhoneValidator
 import ir.yar.login.util.toLocalizedMessage
@@ -102,14 +100,14 @@ fun LoginScreen(
                             fontSize = 28.sp
                         ),
                         textAlign = TextAlign.Center,
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = stringResource(R.string.login_subtitle),
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
-                        fontFamily = BNazanin,
+                        fontFamily = Vazir,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -134,7 +132,7 @@ fun LoginScreen(
                             }
                         },
                         textStyle = MaterialTheme.typography.bodyMedium.copy(
-                            fontFamily = FontFamily.SansSerif,
+                            fontFamily = Vazir,
                             fontWeight = FontWeight.SemiBold
                         ),
                         label = { Text(stringResource(R.string.phone_number)) },
@@ -181,7 +179,7 @@ fun LoginScreen(
                                         style = MaterialTheme.typography.bodyMedium.copy(
                                             fontWeight = FontWeight.SemiBold
                                         ),
-                                        fontFamily = FontFamily.SansSerif,
+                                        fontFamily = Vazir,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
 
@@ -226,7 +224,7 @@ fun LoginScreen(
                     onValueChange = { password = it },
                     label = { Text(stringResource(R.string.password)) },
                     textStyle = MaterialTheme.typography.bodyMedium.copy(
-                        fontFamily = FontFamily.SansSerif,
+                        fontFamily = Vazir,
                         fontWeight = FontWeight.SemiBold
                     ),
                     modifier = Modifier

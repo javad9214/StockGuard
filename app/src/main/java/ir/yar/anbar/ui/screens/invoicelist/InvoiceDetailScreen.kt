@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.invoicelist
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,10 +54,6 @@ import ir.yar.anbar.domain.model.calculateTotalAmount
 import ir.yar.anbar.domain.model.calculateTotalCost
 import ir.yar.anbar.ui.components.safeBottomPadding
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
-import ir.yar.anbar.ui.theme.BHoma
-import ir.yar.anbar.ui.theme.BMitra
-import ir.yar.anbar.ui.theme.BNazanin
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.viewmodels.InvoiceListEvent
 import ir.yar.anbar.ui.viewmodels.InvoiceListViewModel
 import ir.yar.anbar.utils.dateandtime.FarsiDateUtil.getFormattedPersianDate
@@ -177,7 +174,7 @@ private fun InvoiceDetailTopBar(
     ) {
         Text(
             str(R.string.invoice_details),
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontSize = dimenTextSize(R.dimen.text_size_xl)
         )
 
@@ -357,14 +354,14 @@ private fun ProductsSectionHeader(
                 str(R.string.products),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                fontFamily = BHoma,
+                fontFamily = Vazir,
                 color = MaterialTheme.colorScheme.primary
             )
 
             Text(
                 text = stringResource(R.string.product_count, productsCount),
                 style = MaterialTheme.typography.bodyMedium,
-                fontFamily = BMitra
+                fontFamily = Vazir
             )
         }
 
@@ -447,7 +444,7 @@ private fun ProductItemCard(
                 Text(
                     product.name.value,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontFamily = BNazanin,
+                    fontFamily = Vazir,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -465,7 +462,7 @@ private fun ProductItemCard(
             Text(
                 text = invoiceProduct.quantity.value.toString(),
                 style = MaterialTheme.typography.bodyMedium,
-                fontFamily = BMitra,
+                fontFamily = Vazir,
                 modifier = Modifier
                     .weight(0.6f)
                     .padding(horizontal = 4.dp)
@@ -517,7 +514,7 @@ private fun InvoiceTotalSection(
                     str(R.string.invoice_total_amount),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = BNazanin,
+                    fontFamily = Vazir,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
 
@@ -558,7 +555,7 @@ private fun InfoRow(
             label,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
-            fontFamily = BMitra,
+            fontFamily = Vazir,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
@@ -584,7 +581,7 @@ private fun InfoRow(
                 value,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                fontFamily = BMitra,
+                fontFamily = Vazir,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }

@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.component
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,8 +29,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.theme.Beirut_Medium
-import ir.yar.anbar.ui.theme.MRTPoster
 import ir.yar.anbar.ui.theme.color.customError
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
@@ -86,7 +85,7 @@ fun NoBarcodeFoundDialog(
                         .padding(start = dimen(R.dimen.space_1), end = dimen(R.dimen.space_1)),
                     text = str(R.string.no_product_found_with_barcode),
                     style = MaterialTheme.typography.bodyLarge,
-                    fontFamily = MRTPoster,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_lg)
                 )
             }
@@ -98,7 +97,7 @@ fun NoBarcodeFoundDialog(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = dimenTextSize(R.dimen.text_size_3xl),
                 fontWeight = FontWeight.Medium,
-                fontFamily = MRTPoster,
+                fontFamily = Vazir,
                 modifier = Modifier
                     .wrapContentWidth()
                     .align(Alignment.CenterHorizontally)
@@ -129,7 +128,7 @@ fun NoBarcodeFoundDialog(
                     Text(
                         text = str(R.string.add_as_new_product),
                         style = MaterialTheme.typography.bodyLarge,
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         fontSize = dimenTextSize(R.dimen.text_size_lg)
                     )
                 }
@@ -144,7 +143,7 @@ fun NoBarcodeFoundDialog(
                 ) {
                     Text(
                         text = str(R.string.cancel),
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         style = MaterialTheme.typography.bodyLarge,
                         fontSize = dimenTextSize(R.dimen.text_size_md),
                         color = MaterialTheme.colorScheme.onSurface

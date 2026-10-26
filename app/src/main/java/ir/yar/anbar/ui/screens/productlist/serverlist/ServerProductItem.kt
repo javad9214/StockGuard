@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.productlist.serverlist
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,9 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -47,9 +45,6 @@ import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.ui.components.image.ProductThumbnail
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
-import ir.yar.anbar.ui.theme.BHoma
-import ir.yar.anbar.ui.theme.BMitra
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.price.PriceValidator
@@ -66,9 +61,7 @@ fun ServerProductItem(
     var showMenu by remember { mutableStateOf(false) }
     var itemClicked by remember { mutableStateOf(false) }
 
-    val myFontFamily = FontFamily(
-        Font(R.font.b_koodak_bd, FontWeight.Normal)
-    )
+    val myFontFamily = Vazir
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Card(
@@ -134,7 +127,7 @@ fun ServerProductItem(
                         Text(
                             text = product.subcategoryId?.value.toString(),
                             fontSize = dimenTextSize(R.dimen.text_size_md),
-                            fontFamily = BHoma
+                            fontFamily = Vazir
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Icon(
@@ -153,12 +146,12 @@ fun ServerProductItem(
                             Text(
                                 text = it,
                                 fontSize = dimenTextSize(R.dimen.text_size_md),
-                                fontFamily = BHoma
+                                fontFamily = Vazir
                             )
                         } ?: Text(
                             text = "N/A",
                             fontSize = dimenTextSize(R.dimen.text_size_md),
-                            fontFamily = BHoma
+                            fontFamily = Vazir
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Icon(
@@ -198,7 +191,7 @@ fun ServerProductItem(
                             Text(
                                 text = str(R.string.product_added),
                                 fontSize = dimenTextSize(R.dimen.text_size_md),
-                                fontFamily = Beirut_Medium
+                                fontFamily = Vazir
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Icon(
@@ -209,7 +202,7 @@ fun ServerProductItem(
                             Text(
                                 text = str(R.string.add_to_my_products),
                                 fontSize = dimenTextSize(R.dimen.text_size_md),
-                                fontFamily = Beirut_Medium
+                                fontFamily = Vazir
                             )
                         }
                     }
@@ -219,7 +212,7 @@ fun ServerProductItem(
                             textAlign = TextAlign.Right,
                             text = stringResource(id = R.string.suggestion_price),
                             fontSize = dimenTextSize(R.dimen.text_size_xs),
-                            fontFamily = BMitra
+                            fontFamily = Vazir
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             CurrencyIcon(
@@ -231,7 +224,7 @@ fun ServerProductItem(
                                 textAlign = TextAlign.Start,
                                 text = PriceValidator.formatPrice(product.price),
                                 fontSize = dimenTextSize(R.dimen.text_size_md),
-                                fontFamily = BHoma
+                                fontFamily = Vazir
                             )
                         }
                     }

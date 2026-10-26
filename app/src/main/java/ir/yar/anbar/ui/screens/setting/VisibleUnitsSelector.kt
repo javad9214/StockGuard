@@ -1,6 +1,7 @@
 package ir.yar.anbar.ui.screens.setting
 
 // imports
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,8 +35,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.UnitOfMeasure
-import ir.yar.anbar.ui.theme.AppFont.BKoodak
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.str
@@ -71,7 +70,7 @@ fun VisibleUnitsSelector(
         ) {
             Text(
                 text = str(R.string.visible_units),
-                fontFamily = Beirut_Medium,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_lg),
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -83,7 +82,7 @@ fun VisibleUnitsSelector(
                     UnitOfMeasure.values().size
                 ),
                 fontSize = dimenTextSize(R.dimen.text_size_md),
-                fontFamily = BKoodak,
+                fontFamily = Vazir,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
@@ -101,7 +100,7 @@ fun VisibleUnitsSelector(
             ) {
                 Text(
                     text = str(R.string.choose_units),
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_md)
                 )
             }
@@ -150,7 +149,7 @@ private fun VisibleUnitsBottomDialog(
         ) {
             Text(
                 text = str(R.string.visible_units),
-                fontFamily = Beirut_Medium,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_lg),
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -178,7 +177,7 @@ private fun VisibleUnitsBottomDialog(
                         )
                         Text(
                             text = unit.faName,
-                            fontFamily = BKoodak,
+                            fontFamily = Vazir,
                             fontSize = dimenTextSize(R.dimen.text_size_md),
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -206,7 +205,7 @@ private fun VisibleUnitsBottomDialog(
                 ) {
                     Text(
                         text = str(R.string.confirm),
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         fontSize = dimenTextSize(R.dimen.text_size_md)
                     )
                 }
@@ -221,7 +220,7 @@ private fun VisibleUnitsBottomDialog(
                 ) {
                     Text(
                         text = str(R.string.cancel),
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         fontSize = dimenTextSize(R.dimen.text_size_md)
                     )
                 }

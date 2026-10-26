@@ -8,109 +8,119 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import ir.yar.anbar.login.R
 
-// Define font families
-val BKoodak = FontFamily(
-    Font(R.font.b_koodak_bd, FontWeight.Bold),
-    Font(R.font.b_koodak_o, FontWeight.Normal)
+// Single app-wide font family (matches the app module); normal text renders
+// Vazir Medium, bold requests (headers, titles) render the real Vazir Bold
+val Vazir = FontFamily(
+    Font(R.font.vazir_medium, FontWeight.Normal),
+    Font(R.font.vazir_bold, FontWeight.Bold)
 )
 
-val BNazanin = FontFamily(
-    Font(R.font.bnazanin, FontWeight.Normal)
-)
-
-val Zar = FontFamily(
-    Font(R.font.zar, FontWeight.Normal),
-    Font(R.font.zar_bold, FontWeight.Bold)
-)
-
-val BComps = FontFamily(
-    Font(R.font.b_comps_bd, FontWeight.Bold)
-)
-
-val BLotus = FontFamily(
-    Font(R.font.b_lotus_bd, FontWeight.Bold)
-)
-
-val BMitra = FontFamily(
-    Font(R.font.b_mitra_bd, FontWeight.Bold)
-)
-
-val BHoma = FontFamily(
-    Font(R.font.b_homa, FontWeight.Bold)
-)
-
-val BRoya = FontFamily(
-    Font(R.font.b_roya_bd, FontWeight.Bold)
-)
-
-val Kamran = FontFamily(
-    Font(R.font.kamran_b, FontWeight.Bold)
-)
-
-val Beirut_Medium = FontFamily(
-    Font(R.font.beirut_md_mrt, FontWeight.Medium)
-)
-
-val MRTPoster = FontFamily(
-    Font(R.font.mrt_poster, FontWeight.Normal)
-)
-
-// Set of Material typography styles to start with
+// All Material typography styles are set explicitly so nothing falls back to
+// the platform default font
 val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = Zar,
+    displayLarge = TextStyle(
+        fontFamily = Vazir,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        fontSize = 57.sp,
+        lineHeight = 64.sp,
+        letterSpacing = (-0.25).sp
     ),
-    titleLarge = TextStyle(
-        fontFamily = BKoodak,
-        fontWeight = FontWeight.Bold,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
+    displayMedium = TextStyle(
+        fontFamily = Vazir,
+        fontWeight = FontWeight.Normal,
+        fontSize = 45.sp,
+        lineHeight = 52.sp,
         letterSpacing = 0.sp
     ),
-    labelSmall = TextStyle(
-        fontFamily = BNazanin,
+    displaySmall = TextStyle(
+        fontFamily = Vazir,
         fontWeight = FontWeight.Normal,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        fontSize = 36.sp,
+        lineHeight = 44.sp,
+        letterSpacing = 0.sp
+    ),
+    headlineLarge = TextStyle(
+        fontFamily = Vazir,
+        fontWeight = FontWeight.Normal,
+        fontSize = 32.sp,
+        lineHeight = 40.sp,
+        letterSpacing = 0.sp
     ),
     headlineMedium = TextStyle(
-        fontFamily = BComps,
+        fontFamily = Vazir,
         fontWeight = FontWeight.Bold,
         fontSize = 28.sp,
         lineHeight = 36.sp,
         letterSpacing = 0.sp
     ),
-    bodyMedium = TextStyle(
-        fontFamily = Zar,
+    headlineSmall = TextStyle(
+        fontFamily = Vazir,
         fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.25.sp
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
+        letterSpacing = 0.sp
     ),
-    bodySmall = TextStyle(
-        fontFamily = Zar,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.4.sp
+    titleLarge = TextStyle(
+        fontFamily = Vazir,
+        fontWeight = FontWeight.Bold,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
     ),
     titleMedium = TextStyle(
-        fontFamily = BKoodak,
+        fontFamily = Vazir,
         fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.15.sp
     ),
     titleSmall = TextStyle(
-        fontFamily = BKoodak,
+        fontFamily = Vazir,
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
+    ),
+    bodyLarge = TextStyle(
+        fontFamily = Vazir,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = Vazir,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.25.sp
+    ),
+    bodySmall = TextStyle(
+        fontFamily = Vazir,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.4.sp
+    ),
+    labelLarge = TextStyle(
+        fontFamily = Vazir,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.1.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = Vazir,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = Vazir,
+        fontWeight = FontWeight.Normal,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
     )
 )

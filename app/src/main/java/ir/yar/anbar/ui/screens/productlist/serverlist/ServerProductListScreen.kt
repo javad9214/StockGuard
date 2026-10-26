@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.productlist.serverlist
 
+import ir.yar.anbar.ui.theme.Vazir
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,8 +45,6 @@ import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.ui.components.barcodescanner.BarcodeScannerView
 import ir.yar.anbar.ui.components.safeBottomPadding
 import ir.yar.anbar.ui.screens.component.EmptyState
-import ir.yar.anbar.ui.theme.BMitra
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.viewmodels.MainProductsViewModel
 import ir.yar.anbar.utils.barcode.BarcodeSoundPlayer
 import ir.yar.anbar.utils.dimen
@@ -130,7 +129,7 @@ fun ServerProductListScreen(
 
                 Text(
                     str(R.string.total_products_list),
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_xl)
                 )
 
@@ -174,7 +173,7 @@ fun ServerProductListScreen(
                 placeholder = {
                     Text(
                         str(R.string.search_products),
-                        fontFamily = BMitra
+                        fontFamily = Vazir
                     )
                 },
                 leadingIcon = {

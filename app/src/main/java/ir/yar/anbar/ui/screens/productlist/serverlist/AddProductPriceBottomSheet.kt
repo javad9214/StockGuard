@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.productlist.serverlist
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -20,8 +21,6 @@ import ir.yar.anbar.ui.components.image.ProductThumbnail
 import ir.yar.anbar.ui.screens.productlist.AddProductTopBar
 import ir.yar.anbar.ui.screens.productlist.PriceField
 import ir.yar.anbar.ui.screens.productlist.SaveButton
-import ir.yar.anbar.ui.theme.BHoma
-import ir.yar.anbar.ui.theme.BKoodak
 import ir.yar.anbar.ui.theme.color.costPrice
 import ir.yar.anbar.ui.theme.color.salePrice
 import ir.yar.anbar.utils.dimen
@@ -85,7 +84,7 @@ fun AddProductPriceBottomSheet(
                     textAlign = TextAlign.Start,
                     text = product.name.value,
                     style = MaterialTheme.typography.titleMedium,
-                    fontFamily = BKoodak,
+                    fontFamily = Vazir,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -116,12 +115,12 @@ fun AddProductPriceBottomSheet(
                         Text(
                             text = it,
                             fontSize = dimenTextSize(R.dimen.text_size_md),
-                            fontFamily = BHoma
+                            fontFamily = Vazir
                         )
                     } ?: Text(
                         text = "N/A",
                         fontSize = dimenTextSize(R.dimen.text_size_md),
-                        fontFamily = BHoma
+                        fontFamily = Vazir
                     )
 
                 }
@@ -139,7 +138,7 @@ fun AddProductPriceBottomSheet(
                     Text(
                         text = product.subcategoryId?.value.toString(),
                         fontSize = dimenTextSize(R.dimen.text_size_md),
-                        fontFamily = BHoma
+                        fontFamily = Vazir
                     )
                 }
 

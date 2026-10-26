@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.setting
 
+import ir.yar.anbar.ui.theme.Vazir
 import android.content.Context
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.border
@@ -34,8 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.theme.BKoodak
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.str
@@ -71,7 +70,7 @@ fun CurrencySelector() {
             Column(modifier = Modifier.weight(3f)) {
                 Text(
                     text = str(R.string.select_currency),
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_lg),
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -79,7 +78,7 @@ fun CurrencySelector() {
                 Text(
                     text = if (selectedCurrency == "Rial") str(R.string.rial) else str(R.string.toman),
                     fontSize = dimenTextSize(R.dimen.text_size_md),
-                    fontFamily = BKoodak,
+                    fontFamily = Vazir,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
