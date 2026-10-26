@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.productlist
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -58,7 +59,6 @@ import ir.yar.anbar.ui.components.util.SnackyHost
 import ir.yar.anbar.ui.components.util.SnackyType
 import ir.yar.anbar.ui.components.util.rememberSnackyHostState
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.viewmodels.ProductsViewModel
 import ir.yar.anbar.ui.viewmodels.SaveResult
 import ir.yar.anbar.utils.dimen
@@ -110,7 +110,7 @@ fun ProductDetailsScreen(
 
                     Text(
                         str(R.string.product_details),
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         fontSize = dimenTextSize(R.dimen.text_size_xl)
                     )
 

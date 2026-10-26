@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.invoicelist
 
+import ir.yar.anbar.ui.theme.Vazir
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,8 +45,6 @@ import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.InvoiceType
 import ir.yar.anbar.domain.model.InvoiceWithProducts
 import ir.yar.anbar.ui.components.customnavbars.navigationBarOverlayBottomPadding
-import ir.yar.anbar.ui.theme.BComps
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.viewmodels.InvoiceListEvent
 import ir.yar.anbar.ui.viewmodels.InvoiceListViewModel
 import ir.yar.anbar.utils.dimen
@@ -242,7 +241,7 @@ private fun SelectionModeTopBar(
     Text(
         text = if (selectedCount == 0) str(R.string.select_invoices_to_delete)
         else str(R.string.selected_invoices_count).format(selectedCount),
-        fontFamily = BComps,
+        fontFamily = Vazir,
         fontSize = dimenTextSize(R.dimen.text_size_lg)
     )
 
@@ -283,7 +282,7 @@ private fun NormalModeTopBar(
 ) {
     Text(
         str(R.string.sale_invoices),
-        fontFamily = Beirut_Medium,
+        fontFamily = Vazir,
         fontSize = dimenTextSize(R.dimen.text_size_xl)
     )
 
@@ -429,7 +428,7 @@ private fun EmptyInvoicesState(
             style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.SemiBold
             ),
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
@@ -439,7 +438,7 @@ private fun EmptyInvoicesState(
             Text(
                 text = str(R.string.try_changing_filter),
                 style = MaterialTheme.typography.bodyMedium,
-                fontFamily = BComps,
+                fontFamily = Vazir,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )

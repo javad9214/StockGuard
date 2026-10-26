@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.productlist
 
+import ir.yar.anbar.ui.theme.Vazir
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -42,6 +43,7 @@ import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -90,8 +92,6 @@ import ir.yar.anbar.ui.components.voice.VoiceListeningDialog
 import ir.yar.anbar.ui.components.voice.VoiceState
 import ir.yar.anbar.ui.components.voice.rememberVoiceInputController
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
-import ir.yar.anbar.ui.theme.BKoodak
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.color.costPrice
 import ir.yar.anbar.ui.theme.color.customError
 import ir.yar.anbar.ui.theme.color.salePrice
@@ -114,10 +114,6 @@ private const val BARCODE_LOOKUP_DEBOUNCE_MS = 700L
 // Cost and sale price sit side by side above this width, stacked below it
 private val WideLayoutBreakpoint = 480.dp
 
-// Room under the scroll content for the fixed bottom SaveButton (button
-// height + its vertical padding) so the last field is never hidden
-private val SaveButtonReserve = 88.dp
-
 @Composable
 fun AddProduct(
     initialBarcode: String? = null,
@@ -126,7 +122,6 @@ fun AddProduct(
     onNavigateBack: () -> Unit,
     productsViewModel: ProductsViewModel = hiltViewModel(),
 ) {
-
 
     // Fetch product if editing; explicitly clear any stale selection when
     // entering the add-new flow, in case this VM instance previously loaded
@@ -444,19 +439,16 @@ fun AddProduct(
         return
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        // Fixed top bar + scrolling body + fixed bottom bar. The viewport
+        // ends above the navigation bar / keyboard, applied once here
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                // Viewport ends above the navigation bar / keyboard so the
-                // last field scrolls clear of both
                 .safeBottomImePadding()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Header with title and close button
+            // ── Fixed: header with title, mic and close button ─────────
             AddProductTopBar(
                 isEditMode = isEditMode,
                 onNavigateBack = requestClose,
@@ -465,11 +457,16 @@ fun AddProduct(
                 isListening = voiceState is VoiceState.Listening
             )
 
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
-
+            // ── Scrolling: the form ────────────────────────────────────
             Column(
-                modifier = Modifier.padding(horizontal = dimen(R.dimen.space_4))
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = dimen(R.dimen.space_4))
             ) {
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_2)))
+
                 // ── Identity: what the product is ──────────────────────
                 // Name, barcode (scanner + field read as one control), and
                 // the photo belong together — tight 12dp gaps inside the
@@ -641,36 +638,38 @@ fun AddProduct(
                     )
                 }
 
-                // Reserve space so the last item isn't hidden behind the fixed SaveButton
-                Spacer(modifier = Modifier.height(SaveButtonReserve))
+                // Small breathing room at the end of the scroll content
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_4)))
+            }
+
+            // ── Fixed: bottom bar with the save button ─────────────────
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 3.dp,
+                shadowElevation = 8.dp
+            ) {
+                SaveButton(
+                    isEditMode = isEditMode,
+                    isSaving = isSaving,
+                    enabled = isFormValid,
+                    onSave = {
+                        productsViewModel.saveProduct(
+                            name = name,
+                            barcode = barcode,
+                            salePrice = salePrice,
+                            costPrice = costPrice,
+                            subcategoryId = subcategoryId,
+                            localImageUri = imageUri?.toString(),
+                            initialStock = initialStock,
+                            unit = selectedUnit?.name,
+                            remoteImageUrl = remoteImageUrl,
+                            catalogProductId = catalogProductId
+                        )
+                    }
+                )
             }
         }
-
-        // Save Button
-        SaveButton(
-            isEditMode = isEditMode,
-            isSaving = isSaving,
-            enabled = isFormValid,
-            onSave = {
-                productsViewModel.saveProduct(
-                    name = name,
-                    barcode = barcode,
-                    salePrice = salePrice,
-                    costPrice = costPrice,
-                    subcategoryId = subcategoryId,
-                    localImageUri = imageUri?.toString(),
-                    initialStock = initialStock,
-                    unit = selectedUnit?.name,
-                    remoteImageUrl = remoteImageUrl,
-                    catalogProductId = catalogProductId
-                )
-            },
-            // Stays above the navigation bar and the keyboard while typing
-            // in the form fields above
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .safeBottomImePadding()
-        )
 
         // Snackbar for save errors
         SnackyHost(hostState = snackyHostState)
@@ -697,7 +696,7 @@ fun AddProduct(
 private fun FieldLabel(labelRes: Int) {
     Text(
         text = stringResource(labelRes),
-        fontFamily = BKoodak,
+        fontFamily = Vazir,
         fontWeight = FontWeight.Bold
     )
 }
@@ -707,7 +706,7 @@ private fun fieldShape() = RoundedCornerShape(dimen(R.dimen.radius_md))
 
 @Composable
 private fun fieldTextStyle() = TextStyle(
-    fontFamily = BKoodak,
+    fontFamily = Vazir,
     fontWeight = FontWeight.Bold,
     fontSize = dimenTextSize(R.dimen.text_size_md)
 )
@@ -772,7 +771,7 @@ private fun ProductLoadErrorState(
         ) {
             Text(
                 text = message,
-                fontFamily = Beirut_Medium,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_lg),
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -827,7 +826,7 @@ fun AddProductTopBar(
             text = stringResource(
                 id = if (isEditMode) R.string.edit_product_title else R.string.add_product_title
             ),
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontSize = dimenTextSize(R.dimen.text_size_xl)
         )
 
@@ -1060,7 +1059,7 @@ private fun UnitDropdownField(
 }
 
 @Composable
- fun PriceField(
+fun PriceField(
     value: String,
     onValueChange: (String) -> Unit,
     label: Int,
@@ -1098,7 +1097,7 @@ private fun UnitDropdownField(
                 Spacer(modifier = Modifier.width(dimen(R.dimen.space_2)))
                 Text(
                     stringResource(label),
-                    fontFamily = BKoodak,
+                    fontFamily = Vazir,
                     fontWeight = FontWeight.Bold,
                     color = colorScheme
                 )
@@ -1166,7 +1165,7 @@ private fun ProfitMarginSummary(
                 PriceValidator.formatPrice(profit),
                 String.format("%.1f", marginPercent)
             ),
-            fontFamily = BKoodak,
+            fontFamily = Vazir,
             fontWeight = FontWeight.Bold,
             fontSize = dimenTextSize(R.dimen.text_size_sm),
             color = statusTint
@@ -1174,7 +1173,7 @@ private fun ProfitMarginSummary(
         if (sellingBelowCost) {
             Text(
                 text = stringResource(R.string.warning_selling_below_cost),
-                fontFamily = BKoodak,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_sm),
                 color = MaterialTheme.colorScheme.customError
             )
@@ -1198,7 +1197,10 @@ fun SaveButton(
         shape = RoundedCornerShape(dimen(R.dimen.radius_md)),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            // Visible-but-inactive instead of the default transparent look
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
         ),
         enabled = enabled && !isSaving
     ) {
@@ -1215,7 +1217,7 @@ fun SaveButton(
             text = stringResource(
                 id = if (isEditMode) R.string.save_changes_button else R.string.add_product_button
             ),
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontWeight = FontWeight.Bold,
             fontSize = dimenTextSize(R.dimen.text_size_lg)
         )

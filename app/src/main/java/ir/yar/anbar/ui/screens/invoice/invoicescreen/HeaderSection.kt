@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.invoice.invoicescreen
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,8 +44,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.InvoiceType
-import ir.yar.anbar.ui.theme.BKoodak
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.ui.theme.color.costPrice
 import ir.yar.anbar.ui.theme.color.costPriceBg
@@ -110,7 +109,7 @@ fun HeaderSection(
 
                 Text(
                     text = "#",
-                    fontFamily = BKoodak,
+                    fontFamily = Vazir,
                     fontWeight = FontWeight.Bold,
                     fontSize = dimenTextSize(R.dimen.text_size_md),
                     modifier = Modifier.padding(start = dimen(R.dimen.space_2))
@@ -118,7 +117,7 @@ fun HeaderSection(
 
                 Text(
                     text = invoiceNumber,
-                    fontFamily = BKoodak,
+                    fontFamily = Vazir,
                     fontWeight = FontWeight.Bold,
                     fontSize = dimenTextSize(R.dimen.text_size_md),
                     modifier = Modifier.padding(start = dimen(R.dimen.space_1))
@@ -169,7 +168,7 @@ fun HeaderSection(
                                 text = str(R.string.sale_invoice),
                                 fontSize = dimenTextSize(R.dimen.text_size_xl),
                                 textAlign = TextAlign.Center,
-                                fontFamily = Beirut_Medium,
+                                fontFamily = Vazir,
                                 color = MaterialTheme.colorScheme.salePrice
                             )
                         } else {
@@ -187,7 +186,7 @@ fun HeaderSection(
                                 text = str(R.string.purchase_invoice),
                                 fontSize = dimenTextSize(R.dimen.text_size_xl),
                                 textAlign = TextAlign.Center,
-                                fontFamily = Beirut_Medium,
+                                fontFamily = Vazir,
                                 color = MaterialTheme.colorScheme.costPrice
                             )
                         }
@@ -224,7 +223,7 @@ fun HeaderSection(
 
                     Text(
                         text = currentTime,
-                        fontFamily = BKoodak,
+                        fontFamily = Vazir,
                         fontWeight = FontWeight.Bold,
                         fontSize = dimenTextSize(R.dimen.text_size_lg),
                         modifier = Modifier.padding(top = 2.dp)
@@ -235,7 +234,7 @@ fun HeaderSection(
                 Row{
                     Text(
                         text = persianDate,
-                        fontFamily = BKoodak,
+                        fontFamily = Vazir,
                         fontWeight = FontWeight.Bold,
                         fontSize = dimenTextSize(R.dimen.text_size_lg),
                         modifier = Modifier.padding(top = 2.dp)
@@ -268,7 +267,7 @@ fun HeaderSection(
 
                     Text(
                         text = str(R.string.unknown),
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(horizontal = dimen(R.dimen.space_1))
                     )
@@ -276,7 +275,7 @@ fun HeaderSection(
                     Text(
                         text = if (isSaleInvoice) str(R.string.buyer) else str(R.string.seller),
                         fontWeight = FontWeight.Medium,
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         modifier = Modifier.padding(horizontal = dimen(R.dimen.space_1))
                     )
 

@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.versionupdate
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,8 +34,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.UpdateStatus
-import ir.yar.anbar.ui.theme.BKoodak
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
@@ -103,7 +102,7 @@ fun UpdateDialog(
                         str(R.string.update_available),
                     style = MaterialTheme.typography.headlineSmall.copy(
                         fontWeight = FontWeight.Bold,
-                        fontFamily = Beirut_Medium
+                        fontFamily = Vazir
                     ),
                     fontSize = dimenTextSize(R.dimen.text_size_3xl),
                     color = MaterialTheme.colorScheme.onSurface,
@@ -120,7 +119,7 @@ fun UpdateDialog(
                         str(R.string.update_available_message)
                     },
                     style = MaterialTheme.typography.bodyMedium,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_md),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -162,7 +161,7 @@ fun UpdateDialog(
                         text = str(R.string.whats_new),
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            fontFamily = Beirut_Medium
+                            fontFamily = Vazir
                         ),
                         fontSize = dimenTextSize(R.dimen.text_size_xl),
                         color = MaterialTheme.colorScheme.onSurface
@@ -185,7 +184,7 @@ fun UpdateDialog(
                         Text(
                             text = releaseNotes,
                             style = MaterialTheme.typography.bodyMedium,
-                            fontFamily = Beirut_Medium,
+                            fontFamily = Vazir,
                             fontSize = dimenTextSize(R.dimen.text_size_sm),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             lineHeight = dimenTextSize(R.dimen.text_size_xl)
@@ -212,7 +211,7 @@ fun UpdateDialog(
                             text = str(R.string.update_now),
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.SemiBold,
-                                fontFamily = Beirut_Medium
+                                fontFamily = Vazir
                             ),
                             fontSize = dimenTextSize(R.dimen.text_size_xl)
                         )
@@ -234,7 +233,7 @@ fun UpdateDialog(
                                 text = str(R.string.skip),
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.Medium,
-                                    fontFamily = Beirut_Medium
+                                    fontFamily = Vazir
                                 ),
                                 fontSize = dimenTextSize(R.dimen.text_size_xl)
                             )
@@ -251,7 +250,7 @@ fun UpdateDialog(
                                 text = str(R.string.update),
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.SemiBold,
-                                    fontFamily = Beirut_Medium
+                                    fontFamily = Vazir
                                 ),
                                 fontSize = dimenTextSize(R.dimen.text_size_xl)
                             )
@@ -289,7 +288,7 @@ private fun VersionInfoRow(
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontSize = dimenTextSize(R.dimen.text_size_md),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -298,7 +297,7 @@ private fun VersionInfoRow(
             text = version,
             style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.Bold,
-                fontFamily = BKoodak
+                fontFamily = Vazir
             ),
             fontSize = dimenTextSize(R.dimen.text_size_lg),
             color = if (isOld)

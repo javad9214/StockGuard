@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.invoice.productselection
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,7 +20,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
-import ir.yar.anbar.ui.theme.BRoya
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.price.PriceValidator
 import ir.yar.anbar.utils.str
@@ -86,7 +86,7 @@ fun ProductSelectionItem(
 
                 Text(
                     text = str(R.string.stock_with_value, product.stock.value),
-                    fontFamily = BRoya,
+                    fontFamily = Vazir,
                     style = MaterialTheme.typography.bodySmall,
                     color = if (product.stock.value > 0)
                         MaterialTheme.colorScheme.primary

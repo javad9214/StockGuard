@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.home
 
+import ir.yar.anbar.ui.theme.Vazir
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -53,7 +54,6 @@ import ir.yar.anbar.R
 import ir.yar.anbar.ui.components.customnavbars.navigationBarOverlayBottomPadding
 import ir.yar.anbar.ui.navigation.Screen
 import ir.yar.anbar.ui.screens.component.DatePickerBottomDialog
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.ui.theme.color.customError
 import ir.yar.anbar.ui.viewmodels.InvoiceViewModel
@@ -129,7 +129,7 @@ fun HomeScreen(
         ) {
             Text(
                 text = persianDate,
-                fontFamily = Beirut_Medium,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_xl)
             )
 
@@ -215,7 +215,7 @@ fun HomeScreen(
                         Text(
                             text = str(selectedDate.getResourceId()),
                             style = MaterialTheme.typography.bodyLarge,
-                            fontFamily = Beirut_Medium,
+                            fontFamily = Vazir,
                             fontSize = dimenTextSize(R.dimen.text_size_lg)
                         )
                     }
@@ -283,7 +283,7 @@ fun HomeScreen(
                     modifier = Modifier.padding(start = dimen(R.dimen.space_4)),
                     text = str(R.string.most_sold_products),
                     style = MaterialTheme.typography.bodyLarge,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_lg)
                 )
 
@@ -322,7 +322,7 @@ fun HomeScreen(
                     modifier = Modifier.padding(start = dimen(R.dimen.space_4)),
                     text = str(R.string.most_profitable_products),
                     style = MaterialTheme.typography.bodyLarge,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_lg)
                 )
 
@@ -361,7 +361,7 @@ fun HomeScreen(
                     modifier = Modifier.padding(start = dimen(R.dimen.space_4)),
                     text = str(R.string.stock_running_out),
                     style = MaterialTheme.typography.bodyLarge,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_lg)
                 )
 
@@ -413,7 +413,7 @@ fun HomeEmptyState(modifier: Modifier = Modifier) {
         Text(
             text = str(R.string.home_empty_title),
             style = MaterialTheme.typography.titleLarge,
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontSize = dimenTextSize(R.dimen.text_size_xl),
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
@@ -424,7 +424,7 @@ fun HomeEmptyState(modifier: Modifier = Modifier) {
         Text(
             text = str(R.string.home_empty_message),
             style = MaterialTheme.typography.bodyMedium,
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontSize = dimenTextSize(R.dimen.text_size_md),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -466,7 +466,7 @@ fun HomeErrorState(
         Text(
             text = str(R.string.home_error_title),
             style = MaterialTheme.typography.titleLarge,
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontSize = dimenTextSize(R.dimen.text_size_xl),
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
@@ -477,7 +477,7 @@ fun HomeErrorState(
         Text(
             text = message,
             style = MaterialTheme.typography.bodyMedium,
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             fontSize = dimenTextSize(R.dimen.text_size_md),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -495,7 +495,7 @@ fun HomeErrorState(
             Spacer(modifier = Modifier.width(dimen(R.dimen.space_1)))
             Text(
                 text = str(R.string.retry),
-                fontFamily = Beirut_Medium
+                fontFamily = Vazir
             )
         }
     }

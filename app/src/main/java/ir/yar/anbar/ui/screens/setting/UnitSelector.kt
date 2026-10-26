@@ -1,6 +1,7 @@
 package ir.yar.anbar.ui.screens.setting
 
 // imports
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,8 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.material3.MenuAnchorType
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.UnitOfMeasure
-import ir.yar.anbar.ui.theme.AppFont.BKoodak
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.str
@@ -67,7 +66,7 @@ fun UnitSelector(
         ) {
             Text(
                 text = str(R.string.default_unit),
-                fontFamily = Beirut_Medium,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_lg),
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -84,7 +83,7 @@ fun UnitSelector(
                     label = {
                         Text(
                             str(R.string.units),
-                            fontFamily = BKoodak,
+                            fontFamily = Vazir,
                             fontWeight = FontWeight.Bold
                         )
                     },
@@ -101,7 +100,7 @@ fun UnitSelector(
                     ),
                     singleLine = true,
                     textStyle = TextStyle(
-                        fontFamily = BKoodak,
+                        fontFamily = Vazir,
                         fontWeight = FontWeight.Bold,
                         fontSize = dimenTextSize(R.dimen.text_size_md)
                     )
@@ -118,7 +117,7 @@ fun UnitSelector(
                                 text = {
                                     Text(
                                         unit.faName,
-                                        fontFamily = BKoodak,
+                                        fontFamily = Vazir,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = dimenTextSize(R.dimen.text_size_md)
                                     )

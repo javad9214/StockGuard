@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.components.util
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,7 +30,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.color.customError
 import ir.yar.anbar.ui.theme.color.info
 import ir.yar.anbar.ui.theme.color.success
@@ -145,7 +145,7 @@ fun Confirmy(
                 // Message
                 Text(
                     text = confirmyState.message,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
@@ -172,7 +172,7 @@ fun Confirmy(
                     ) {
                         Text(
                             confirmyState.confirmText,
-                            fontFamily = Beirut_Medium,
+                            fontFamily = Vazir,
                             fontSize = dimenTextSize(R.dimen.text_size_md)
                         )
                     }
@@ -188,7 +188,7 @@ fun Confirmy(
                     ) {
                         Text(
                             confirmyState.cancelText,
-                            fontFamily = Beirut_Medium,
+                            fontFamily = Vazir,
                             fontSize = dimenTextSize(R.dimen.text_size_md)
                         )
                     }

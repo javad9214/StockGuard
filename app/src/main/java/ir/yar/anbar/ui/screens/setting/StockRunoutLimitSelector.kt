@@ -1,6 +1,7 @@
 package ir.yar.anbar.ui.screens.setting
 
 // imports
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -11,8 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.theme.AppFont.BKoodak
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.viewmodels.SettingUiState
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
@@ -40,7 +39,7 @@ fun StockRunoutLimitSelector(
         ) {
             Text(
                 text = str(R.string.stock_runout_limit),
-                fontFamily = Beirut_Medium,
+                fontFamily = Vazir,
                 fontSize = dimenTextSize(R.dimen.text_size_lg),
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -50,7 +49,7 @@ fun StockRunoutLimitSelector(
                 Text(
                     text = "$limit",
                     fontSize = dimenTextSize(R.dimen.text_size_md),
-                    fontFamily = BKoodak,
+                    fontFamily = Vazir,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.align(Alignment.TopCenter)

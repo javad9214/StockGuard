@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.home
 
+import ir.yar.anbar.ui.theme.Vazir
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,8 +33,6 @@ import ir.yar.anbar.domain.model.StockQuantity
 import ir.yar.anbar.domain.model.StockStatus
 import ir.yar.anbar.domain.model.type.Money
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
-import ir.yar.anbar.ui.theme.BMitra
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
@@ -91,7 +90,7 @@ fun LowStockProductItem(
                 Text(
                     text = product.name.value,
                     style = MaterialTheme.typography.bodyLarge,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_lg),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -106,7 +105,7 @@ fun LowStockProductItem(
                         text = urgencyLabel,
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        fontFamily = BMitra,
+                        fontFamily = Vazir,
                         color = urgencyColor,
                         modifier = Modifier
                             .background(
@@ -217,7 +216,7 @@ private fun StockInfoRow(
             label,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
-            fontFamily = BMitra,
+            fontFamily = Vazir,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
@@ -230,7 +229,7 @@ private fun StockInfoRow(
                     text = it,
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Medium,
-                    fontFamily = BMitra,
+                    fontFamily = Vazir,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .background(
@@ -263,7 +262,7 @@ private fun StockInfoRow(
                     text = value,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = BMitra,
+                    fontFamily = Vazir,
                     color = textColor
                 )
             }
@@ -303,7 +302,7 @@ private fun DeadStockWarning() {
             text = str(R.string.dead_stock_warning),
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Medium,
-            fontFamily = BMitra,
+            fontFamily = Vazir,
             color = MaterialTheme.colorScheme.error
         )
     }

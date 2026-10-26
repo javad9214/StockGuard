@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.invoice.invoicescreen
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import ir.yar.anbar.R
 import ir.yar.anbar.ui.components.safeBottomPadding
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
-import ir.yar.anbar.ui.theme.BHoma
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.str
@@ -64,7 +64,7 @@ fun BottomTotalSection(
             Text(
                 text = PriceValidator.formatPrice(totalPrice),
                 style = MaterialTheme.typography.titleMedium,
-                fontFamily = BHoma,
+                fontFamily = Vazir,
                 fontWeight = FontWeight.Bold,
                 fontSize = dimenTextSize(R.dimen.text_size_4xl),
                 modifier = Modifier.padding(start = dimen(R.dimen.space_2))
@@ -80,7 +80,7 @@ fun BottomTotalSection(
             ) {
                 Text(
                     text = str(R.string.finalize_factor),
-                    fontFamily = BHoma,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_xxl),
                     modifier = Modifier.padding(
                         vertical = dimen(R.dimen.space_2), horizontal = dimen(R.dimen.space_4)))

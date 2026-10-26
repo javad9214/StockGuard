@@ -1,6 +1,7 @@
 package ir.yar.anbar.ui.screens.invoice.invoicescreen
 
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,8 +41,6 @@ import ir.yar.anbar.domain.model.InvoiceProduct
 import ir.yar.anbar.domain.model.InvoiceType
 import ir.yar.anbar.domain.model.Product
 import ir.yar.anbar.ui.screens.component.CurrencyIcon
-import ir.yar.anbar.ui.theme.BKoodak
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.color.customError
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
@@ -113,7 +112,7 @@ fun InvoiceProductItem(
                 ) {
                     Text(
                         text = "${str(R.string.product_unit_price)}: ",
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -128,7 +127,7 @@ fun InvoiceProductItem(
                     Text(
                         text = PriceValidator.formatPrice(priceToShow),
                         style = MaterialTheme.typography.bodyMedium.copy(
-                            fontFamily = BKoodak,
+                            fontFamily = Vazir,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -139,7 +138,7 @@ fun InvoiceProductItem(
 
                     Text(
                         text = str(R.string.stock_with_value, product.stock.value),
-                        fontFamily = BKoodak,
+                        fontFamily = Vazir,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = if (isAtStockLimit)
@@ -199,7 +198,7 @@ fun InvoiceProductItem(
                             Text(
                                 text = productWithQuantity.quantity.value.toString(),
                                 style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontFamily = BKoodak,
+                                    fontFamily = Vazir,
                                     fontWeight = FontWeight.Bold,
                                     textAlign = TextAlign.Center,
                                     color = if (isAtStockLimit)
@@ -264,7 +263,7 @@ fun InvoiceProductItem(
                                     .align(Alignment.Bottom)
                                     .padding(end = dimen(R.dimen.space_1)),
                                 style = MaterialTheme.typography.titleMedium.copy(
-                                    fontFamily = BKoodak,
+                                    fontFamily = Vazir,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary
                                 )

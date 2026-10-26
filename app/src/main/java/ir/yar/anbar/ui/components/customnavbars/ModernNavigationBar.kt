@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.components.customnavbars
 
+import ir.yar.anbar.ui.theme.Vazir
 import android.view.HapticFeedbackConstants
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
@@ -65,7 +66,6 @@ import androidx.navigation.compose.rememberNavController
 import ir.yar.anbar.R
 import ir.yar.anbar.ui.navigation.BottomNavItem
 import ir.yar.anbar.ui.navigation.Routes
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import kotlin.math.PI
 import kotlin.math.sin
@@ -307,7 +307,7 @@ private fun NavItem(
             text = title,
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.labelSmall,
-            fontFamily = Beirut_Medium,
+            fontFamily = Vazir,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,

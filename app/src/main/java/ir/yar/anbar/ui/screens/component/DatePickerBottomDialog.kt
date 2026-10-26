@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.component
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import ir.yar.anbar.R
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.utils.dateandtime.TimeRange
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
@@ -167,7 +167,7 @@ private fun DatePickerItem(
                 Text(
                     text = text,
                     style = MaterialTheme.typography.bodyLarge,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_lg)
                 )
 

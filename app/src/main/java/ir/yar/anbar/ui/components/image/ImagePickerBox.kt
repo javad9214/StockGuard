@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.components.image
 
+import ir.yar.anbar.ui.theme.Vazir
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -54,7 +55,6 @@ import ir.yar.anbar.ui.components.util.SnackyDuration
 import ir.yar.anbar.ui.components.util.SnackyHost
 import ir.yar.anbar.ui.components.util.SnackyType
 import ir.yar.anbar.ui.components.util.rememberSnackyHostState
-import ir.yar.anbar.ui.theme.BKoodak
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import kotlinx.coroutines.launch
@@ -192,7 +192,7 @@ fun ImagePickerBox(
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "برای افزودن تصویر کلیک کنید",
-                        fontFamily = BKoodak,
+                        fontFamily = Vazir,
                         fontWeight = FontWeight.Bold,
                         fontSize = dimenTextSize(R.dimen.text_size_md),
                         color = MaterialTheme.colorScheme.onSurface

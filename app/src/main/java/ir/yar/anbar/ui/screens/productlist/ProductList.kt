@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.productlist
 
+import ir.yar.anbar.ui.theme.Vazir
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -60,8 +61,6 @@ import ir.yar.anbar.ui.components.util.rememberConfirmyHostState
 import ir.yar.anbar.ui.components.util.rememberSnackyHostState
 import ir.yar.anbar.ui.navigation.Screen
 import ir.yar.anbar.ui.screens.component.NoBarcodeFoundDialog
-import ir.yar.anbar.ui.theme.BMitra
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.domain.model.SortOrder
 import ir.yar.anbar.ui.viewmodels.MainProductsViewModel
 import ir.yar.anbar.ui.viewmodels.ProductsViewModel
@@ -308,7 +307,7 @@ fun ProductScreenContent(
 
                 Text(
                     str(R.string.myProducts),
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_xl)
                 )
 
@@ -378,7 +377,7 @@ fun ProductScreenContent(
                 placeholder = {
                     Text(
                         str(R.string.search_products),
-                        fontFamily = BMitra
+                        fontFamily = Vazir
                     )
                 },
                 leadingIcon = {

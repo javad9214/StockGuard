@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.setting
 
+import ir.yar.anbar.ui.theme.Vazir
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.UpdateStatus
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.viewmodels.versionupdate.VersionViewModel
 import ir.yar.anbar.utils.VersionUtils
 import ir.yar.anbar.utils.dimen
@@ -74,7 +74,7 @@ fun SettingsVersionSection(
                 text = str(R.string.app_information),
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    fontFamily = Beirut_Medium
+                    fontFamily = Vazir
                 ),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -92,7 +92,7 @@ fun SettingsVersionSection(
                         text = str(R.string.current_version),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontFamily = Beirut_Medium
+                        fontFamily = Vazir
                     )
                     Text(
                         text = VersionUtils.getFullVersionInfo(context),
@@ -117,7 +117,7 @@ fun SettingsVersionSection(
                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onErrorContainer,
-                                fontFamily = Beirut_Medium
+                                fontFamily = Vazir
                             )
                         }
                     }
@@ -133,7 +133,7 @@ fun SettingsVersionSection(
                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onPrimary,
-                                fontFamily = Beirut_Medium
+                                fontFamily = Vazir
                             )
                         }
                     }
@@ -159,7 +159,7 @@ fun SettingsVersionSection(
                                     text = str(R.string.up_to_date),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                    fontFamily = Beirut_Medium
+                                    fontFamily = Vazir
                                 )
                             }
                         }
@@ -184,7 +184,7 @@ fun SettingsVersionSection(
                             text = str(R.string.latest_version),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontFamily = Beirut_Medium
+                            fontFamily = Vazir
                         )
                         Text(
                             text = versionInfo.lastVersionName,
@@ -215,7 +215,7 @@ fun SettingsVersionSection(
                                 fontWeight = FontWeight.Bold
                             ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontFamily = Beirut_Medium
+                            fontFamily = Vazir
                         )
                         Spacer(modifier = Modifier.height(dimen(R.dimen.space_1)))
                         Text(
@@ -254,7 +254,7 @@ fun SettingsVersionSection(
                             fontWeight = FontWeight.Bold
                         ),
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -290,7 +290,7 @@ fun SettingsVersionSection(
                             fontWeight = FontWeight.Medium
                         ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontFamily = Beirut_Medium
+                        fontFamily = Vazir
                     )
                 }
 
@@ -310,7 +310,7 @@ fun SettingsVersionSection(
                     text = uiState.errorMessage ?: "",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error,
-                    fontFamily = Beirut_Medium
+                    fontFamily = Vazir
                 )
             }
         }

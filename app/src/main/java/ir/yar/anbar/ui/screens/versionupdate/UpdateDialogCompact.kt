@@ -1,5 +1,6 @@
 package ir.yar.anbar.ui.screens.versionupdate
 
+import ir.yar.anbar.ui.theme.Vazir
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,8 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ir.yar.anbar.R
 import ir.yar.anbar.domain.model.UpdateStatus
-import ir.yar.anbar.ui.theme.BKoodak
-import ir.yar.anbar.ui.theme.Beirut_Medium
 import ir.yar.anbar.ui.theme.ComposeTrainerTheme
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
@@ -74,7 +73,7 @@ fun UpdateDialogCompact(
                     str(R.string.update_available),
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
-                    fontFamily = Beirut_Medium
+                    fontFamily = Vazir
                 ),
                 fontSize = dimenTextSize(R.dimen.text_size_xxl),
                 textAlign = TextAlign.Center,
@@ -93,7 +92,7 @@ fun UpdateDialogCompact(
                         str(R.string.update_available_message)
                     },
                     style = MaterialTheme.typography.bodyMedium,
-                    fontFamily = Beirut_Medium,
+                    fontFamily = Vazir,
                     fontSize = dimenTextSize(R.dimen.text_size_sm),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -111,7 +110,7 @@ fun UpdateDialogCompact(
                         Text(
                             text = str(R.string.current),
                             style = MaterialTheme.typography.labelSmall,
-                            fontFamily = Beirut_Medium,
+                            fontFamily = Vazir,
                             fontSize = dimenTextSize(R.dimen.text_size_xs),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -119,7 +118,7 @@ fun UpdateDialogCompact(
                             text = currentVersion,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.SemiBold,
-                                fontFamily = BKoodak
+                                fontFamily = Vazir
                             ),
                             fontSize = dimenTextSize(R.dimen.text_size_md),
                             color = MaterialTheme.colorScheme.error
@@ -129,7 +128,7 @@ fun UpdateDialogCompact(
                     Text(
                         text = "←",
                         style = MaterialTheme.typography.headlineMedium,
-                        fontFamily = BKoodak,
+                        fontFamily = Vazir,
                         color = MaterialTheme.colorScheme.primary
                     )
 
@@ -137,7 +136,7 @@ fun UpdateDialogCompact(
                         Text(
                             text = str(R.string.latest),
                             style = MaterialTheme.typography.labelSmall,
-                            fontFamily = Beirut_Medium,
+                            fontFamily = Vazir,
                             fontSize = dimenTextSize(R.dimen.text_size_xs),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -145,7 +144,7 @@ fun UpdateDialogCompact(
                             text = latestVersion,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.SemiBold,
-                                fontFamily = BKoodak
+                                fontFamily = Vazir
                             ),
                             fontSize = dimenTextSize(R.dimen.text_size_md),
                             color = MaterialTheme.colorScheme.primary
@@ -161,7 +160,7 @@ fun UpdateDialogCompact(
                         text = str(R.string.whats_new_compact),
                         style = MaterialTheme.typography.labelLarge.copy(
                             fontWeight = FontWeight.Bold,
-                            fontFamily = Beirut_Medium
+                            fontFamily = Vazir
                         ),
                         fontSize = dimenTextSize(R.dimen.text_size_md),
                         modifier = Modifier.fillMaxWidth()
@@ -183,7 +182,7 @@ fun UpdateDialogCompact(
                         Text(
                             text = releaseNotes,
                             style = MaterialTheme.typography.bodySmall,
-                            fontFamily = Beirut_Medium,
+                            fontFamily = Vazir,
                             fontSize = dimenTextSize(R.dimen.text_size_xs),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             lineHeight = dimenTextSize(R.dimen.text_size_lg)
@@ -204,7 +203,7 @@ fun UpdateDialogCompact(
                         str(R.string.update),
                     style = MaterialTheme.typography.labelLarge.copy(
                         fontWeight = FontWeight.SemiBold,
-                        fontFamily = Beirut_Medium
+                        fontFamily = Vazir
                     ),
                     fontSize = dimenTextSize(R.dimen.text_size_md)
                 )
@@ -216,7 +215,7 @@ fun UpdateDialogCompact(
                     Text(
                         text = str(R.string.skip),
                         style = MaterialTheme.typography.labelLarge,
-                        fontFamily = Beirut_Medium,
+                        fontFamily = Vazir,
                         fontSize = dimenTextSize(R.dimen.text_size_md)
                     )
                 }
