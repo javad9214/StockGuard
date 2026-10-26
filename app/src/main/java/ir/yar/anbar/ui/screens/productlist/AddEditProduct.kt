@@ -293,7 +293,7 @@ fun AddProduct(
                             applied.joinToString("، ") { context.getString(it.labelRes()) }
                         ),
                         type = SnackyType.SUCCESS,
-                        duration = SnackyDuration.SHORT
+                        duration = SnackyDuration.MEDIUM
                     )
                 }
             }
