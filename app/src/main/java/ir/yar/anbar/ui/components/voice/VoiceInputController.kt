@@ -18,6 +18,13 @@ import kotlinx.coroutines.flow.StateFlow
 private const val TAG = "VoiceInputController"
 
 /**
+ * How many times a session silently restarts after the service gives up on
+ * silence (ERROR_NO_MATCH / ERROR_SPEECH_TIMEOUT) — each restart grants the
+ * user another endpointer window before the error is finally surfaced.
+ */
+private const val MAX_AUTO_RESTARTS = 3
+
+/**
  * Recognition session state. [Result.candidates] is ordered best-first —
  * later steps can offer the alternates as quick corrections for mishears.
  */
@@ -32,7 +39,10 @@ sealed interface VoiceState {
  * Persian (fa-IR) speech-to-text wrapper around the platform
  * [SpeechRecognizer]. A fresh recognizer instance is created per session —
  * instances left in an error state refuse to restart, and per-session
- * creation sidesteps ERROR_RECOGNIZER_BUSY entirely.
+ * creation sidesteps ERROR_RECOGNIZER_BUSY entirely. Sessions also survive
+ * the service's early silence verdicts: ERROR_NO_MATCH with an interim
+ * transcript is delivered as a result, and bare silence errors silently
+ * restart the session a few times before surfacing.
  *
  * All methods must be called from the main thread (composition and click
  * handlers already are); callbacks arrive there too.
@@ -49,6 +59,7 @@ class VoiceInputController(
 
     private val appContext = context.applicationContext
     private var recognizer: SpeechRecognizer? = null
+    private var autoRestartsLeft = 0
 
     /** True when the device has a speech recognition service at all. */
     fun isAvailable(): Boolean = SpeechRecognizer.isRecognitionAvailable(appContext)
@@ -57,7 +68,12 @@ class VoiceInputController(
     fun start() {
         destroy()
         partialFlow.value = ""
+        autoRestartsLeft = MAX_AUTO_RESTARTS
         stateFlow.value = VoiceState.Listening
+        startRecognition()
+    }
+
+    private fun startRecognition() {
         recognizer = SpeechRecognizer.createSpeechRecognizer(appContext).apply {
             setRecognitionListener(listener)
             startListening(recognitionIntent)
@@ -120,7 +136,28 @@ class VoiceInputController(
             // The UI collapses codes into user-facing messages; the exact
             // code (see SpeechRecognizer ERROR_* constants) only matters here
             Log.w(TAG, "Recognition failed, error code $error")
-            stateFlow.value = VoiceState.Error(error)
+            // A destroyed recognizer can still race one last callback in —
+            // once the session is no longer live (cancelled), ignore it
+            if (stateFlow.value !is VoiceState.Listening) return
+            val heardSpeech = partialFlow.value.isNotBlank()
+            when {
+                // The endpointer gave up but the interims prove speech was
+                // heard — the partial is the best transcript this session
+                // will produce, so deliver it instead of the error
+                error == SpeechRecognizer.ERROR_NO_MATCH && heardSpeech ->
+                    stateFlow.value = VoiceState.Result(listOf(partialFlow.value.trim()))
+                // Silence verdicts arrive after just a couple of seconds of
+                // pause — restart so the user gets more time to speak, as
+                // long as the budget lasts
+                (error == SpeechRecognizer.ERROR_NO_MATCH ||
+                    error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT) &&
+                    autoRestartsLeft > 0 -> {
+                    autoRestartsLeft--
+                    destroy()
+                    startRecognition()
+                }
+                else -> stateFlow.value = VoiceState.Error(error)
+            }
         }
 
         override fun onResults(results: Bundle?) {

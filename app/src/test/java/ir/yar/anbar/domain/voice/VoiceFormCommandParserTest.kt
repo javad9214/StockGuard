@@ -51,6 +51,23 @@ class VoiceFormCommandParserTest {
     }
 
     @Test
+    fun `short anchors نام and تعداد work`() {
+        val fills = VoiceFormCommandParser.parse("نام شیر تعداد دوازده")
+        assertEquals("شیر", fills[VoiceField.NAME])
+        assertEquals("12", fills[VoiceField.INITIAL_STOCK])
+    }
+
+    @Test
+    fun `bare نام does not cut off نام محصول anchoring`() {
+        // Longest phrase wins at the same position, so «نام محصول» still
+        // swallows both tokens and the value starts at شیر
+        assertEquals(
+            "شیر",
+            VoiceFormCommandParser.parse("نام محصول شیر")[VoiceField.NAME]
+        )
+    }
+
+    @Test
     fun `zero-width non-joiner inside a keyword is normalized away`() {
         val fills = VoiceFormCommandParser.parse("موجودی\u200cاولیه دوازده")
         assertEquals("12", fills[VoiceField.INITIAL_STOCK])
@@ -115,6 +132,7 @@ class VoiceFormCommandParserTest {
     fun `biasing phrases cover the primary labels`() {
         val phrases = VoiceFormCommandParser.biasingPhrases
         assertTrue(phrases.contains("نام محصول"))
+        assertTrue(phrases.contains("نام"))
         assertTrue(phrases.contains("موجودی اولیه"))
         assertTrue(phrases.contains("قیمت خرید"))
         assertTrue(phrases.contains("قیمت فروش"))

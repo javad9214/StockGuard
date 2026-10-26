@@ -15,6 +15,9 @@ enum class VoiceField { NAME, INITIAL_STOCK, COST_PRICE, SALE_PRICE }
  *
  * → name=شیر, initialStock=12, costPrice=200000, salePrice=250000
  *
+ * Short anchors work too — «نام شیر تعداد دوازده» fills NAME and
+ * INITIAL_STOCK just the same.
+ *
  * Any subset, in any order, in a single utterance. A field's value is the
  * text between its keyword and the next keyword; numeric fields run
  * through [PersianWordToNumber], the name is kept verbatim. When the same
@@ -29,7 +32,7 @@ object VoiceFormCommandParser {
     // which is what keeps «قیمت خرید» from matching as «قیمت» + a value
     // starting with «خرید»
     private val keywordPhrases: List<Pair<List<String>, VoiceField>> = listOf(
-        listOf("نام محصول", "اسم محصول") to VoiceField.NAME,
+        listOf("نام محصول", "اسم محصول", "نام") to VoiceField.NAME,
         listOf("موجودی اولیه", "موجودی", "تعداد") to VoiceField.INITIAL_STOCK,
         listOf("قیمت تمام شده", "قیمت خرید", "قیمت خریداری", "خرید") to VoiceField.COST_PRICE,
         listOf("قیمت فروش", "قیمت", "فروش") to VoiceField.SALE_PRICE,
