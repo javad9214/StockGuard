@@ -8,7 +8,7 @@ plugins {
 }
 
 val major = 0
-val minor = 57
+val minor = 58
 val patch = 0
 
 android {

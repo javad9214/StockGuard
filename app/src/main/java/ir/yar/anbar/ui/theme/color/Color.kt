@@ -97,9 +97,9 @@ val md_theme_dark_errorContainer = Color(0xFF93000A)
 val md_theme_dark_onError = Color(0xFF690005)
 val md_theme_dark_onErrorContainer = Color(0xFFFFDAD6)
 
-val md_theme_dark_background = Charcoal     // near-black base
+val md_theme_dark_background = Charcoal
 val md_theme_dark_onBackground = Color(0xFFE2E2E9)
-val md_theme_dark_surface = Onyx       // elevated base for cards
+val md_theme_dark_surface = Onyx
 val md_theme_dark_onSurface = Color(0xFFE2E2E9)
 val md_theme_dark_surfaceVariant = Color(0xFF22262C)
 val md_theme_dark_onSurfaceVariant = Color(0xFFC4C6CF)
