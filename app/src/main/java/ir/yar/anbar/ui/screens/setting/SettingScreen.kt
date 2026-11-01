@@ -1,7 +1,6 @@
 package ir.yar.anbar.ui.screens.setting
 
-import ir.yar.anbar.ui.theme.Vazir
-import androidx.compose.foundation.background
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +17,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +25,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.yar.anbar.BuildConfig
 import ir.yar.anbar.R
@@ -34,11 +38,11 @@ import ir.yar.anbar.ui.components.util.SnackyDuration
 import ir.yar.anbar.ui.components.util.SnackyHost
 import ir.yar.anbar.ui.components.util.SnackyType
 import ir.yar.anbar.ui.components.util.rememberSnackyHostState
+import ir.yar.anbar.ui.theme.Vazir
 import ir.yar.anbar.ui.viewmodels.SettingViewModel
 import ir.yar.anbar.utils.dimen
 import ir.yar.anbar.utils.dimenTextSize
 import ir.yar.anbar.utils.str
-
 
 @Composable
 fun SettingScreen(
@@ -47,12 +51,17 @@ fun SettingScreen(
     onNavigateBack: () -> Unit,
     settingViewModel: SettingViewModel = hiltViewModel(),
 ) {
-
     val uiState by settingViewModel.uiState.collectAsState()
     val snackyHostState = rememberSnackyHostState()
+    val scrollState = rememberScrollState()
 
-    // Surface preference load/save failures as a snackbar, then drop the
-    // message so it isn't re-displayed on recomposition
+    // Toolbar shadow appears only when content is scrolled under it
+    val toolbarElevation by animateDpAsState(
+        targetValue = if (scrollState.canScrollBackward) 4.dp else 0.dp,
+        label = "toolbarElevation"
+    )
+
+    // Surface preference load/save failures as a snackbar, then clear the message
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let { message ->
             snackyHostState.show(
@@ -64,86 +73,94 @@ fun SettingScreen(
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                // Last section scrolls clear of the system navigation bar
-                .safeBottomPadding()
-                .verticalScroll(rememberScrollState())
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(start = dimen(R.dimen.space_6), end = dimen(R.dimen.space_2)),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        Column(modifier = Modifier.fillMaxSize()) {
+
+            // ---- Fixed toolbar ----
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.surface,
+                shadowElevation = toolbarElevation
             ) {
-
-                Text(
-                    str(R.string.setting),
-                    fontFamily = Vazir,
-                    fontSize = dimenTextSize(R.dimen.text_size_xl)
-                )
-
-                IconButton(onClick = onNavigateBack) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = str(R.string.close)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = dimen(R.dimen.space_6),
+                            end = dimen(R.dimen.space_2)
+                        ),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = str(R.string.setting),
+                        fontFamily = Vazir,
+                        fontSize = dimenTextSize(R.dimen.text_size_xl),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.semantics { heading() }
                     )
+
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = str(R.string.close)
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_1)))
+            // ---- Scrollable content (takes all remaining space) ----
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+            ) {
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_1)))
 
-            CurrencySelector()
+                CurrencySelector()
 
-            ThemeSelector(
-                isDarkTheme = isDarkTheme,
-                onToggleTheme = onToggleTheme
+                ThemeSelector(
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = onToggleTheme
+                )
+
+                StockRunoutLimitSelector(
+                    limit = uiState.stockRunoutLimit,
+                    onLimitChange = { settingViewModel.saveStockRunoutLimit(it) }
+                )
+
+                UnitSelector(
+                    selected = UnitOfMeasure.fromName(uiState.defaultUnit),
+                    onSelect = { settingViewModel.saveDefaultUnit(it.name) },
+                    visibleUnits = uiState.visibleUnits
+                )
+
+                VisibleUnitsSelector(
+                    visibleUnits = uiState.visibleUnits,
+                    onChange = { settingViewModel.saveVisibleUnits(it) }
+                )
+
+                SettingsVersionSection()
+
+                Spacer(modifier = Modifier.height(dimen(R.dimen.space_4)))
+            }
+
+            // ---- Fixed footer: version always at the bottom ----
+            Text(
+                text = str(R.string.app_version, BuildConfig.VERSION_NAME),
+                fontFamily = Vazir,
+                fontSize = dimenTextSize(R.dimen.text_size_sm),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .safeBottomPadding()
+                    .padding(vertical = dimen(R.dimen.space_4))
             )
-
-            StockRunoutLimitSelector(
-                limit = uiState.stockRunoutLimit,
-                onLimitChange = { settingViewModel.saveStockRunoutLimit(it) }
-            )
-
-            UnitSelector(
-                selected = UnitOfMeasure.fromName(uiState.defaultUnit),
-                onSelect = { settingViewModel.saveDefaultUnit(it.name) },
-                visibleUnits = uiState.visibleUnits
-            )
-
-            VisibleUnitsSelector(
-                visibleUnits = uiState.visibleUnits,
-                onChange = { settingViewModel.saveVisibleUnits(it) }
-            )
-
-            SettingsVersionSection()
-
-            // Room for the pinned version label so it never overlaps the last section
-            Spacer(modifier = Modifier.height(dimen(R.dimen.space_8)))
-
         }
 
-        Text(
-            text = str(R.string.app_version, BuildConfig.VERSION_NAME),
-            fontFamily = Vazir,
-            fontSize = dimenTextSize(R.dimen.text_size_sm),
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .safeBottomPadding()
-                .padding(bottom = dimen(R.dimen.space_4))
-        )
-
         SnackyHost(hostState = snackyHostState)
-
     }
-
-
 }
